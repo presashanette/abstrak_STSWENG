@@ -1,0 +1,110 @@
+@import "base.css";
+
+
+.main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.header {
+    /* border-bottom: 1px solid black; */
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex: 0 0 10%;
+    padding: 1%;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.user-badge {
+    display: flex;
+    flex-direction: row;
+    align-items: center;    
+    gap: 1rem;
+}
+
+
+
+.menu-icon{
+    /* margin-left: 5%; */
+    height: 2rem;
+    width: 2rem;
+}
+
+.user-down-icon  {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.collections-grid {
+    flex: 0 0 90%;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.grid-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5%;
+    /* border-bottom: 1px solid black; */
+
+}
+
+.filter-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.add-collection-button {
+    border-radius: 25px;
+    padding: 2%;
+    width: 150px;
+    height: 50px;
+    color: white;
+    cursor: pointer;
+    /* border: 1px solid black; */
+    background-color: black;
+    font-family: 'DM Sans';
+}
+
+.add-collection-button:hover {
+    background-color: #333333;
+    border: 1px solid #333333;
+}
+
+.grid-items {
+    /* border: 1px solid pink; */
+    display: flex;
+    justify-content: center;
+}
+
+.grid-wrapper {
+    padding-top: 4%;
+    width: 80%;
+    min-width: 80%;
+
+}
+
+.collection-cover {
+    height: 15rem;
+    width: 15rem;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
+
+.collection-item-container {
+    border: 1px solid black;
+    padding: 2%;
+    border-bottom: 10px solid black;
+    /* border-right: 10px solid black; */
+    width: 240px;
+    text-align: center;
+}

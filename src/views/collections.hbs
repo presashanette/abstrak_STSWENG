@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/collections.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <title>Document</title>
+</head>
+<body>
+    <div class="main">
+        <div class="header">
+            <div class="header-menu">
+                <img src="/assets/menu.png" alt="" class="menu-icon">
+            </div>
+            <div class="header-logo-title">
+                ABSTRÄKMOTIF INVENTO
+            </div>
+            <div class="header-user">
+                <div class="user-badge">
+                    <p class="user-name">Taylor Swift</p>
+                    <img src="/assets/user-down.png" alt="" class="user-down-icon">
+
+                </div>
+            </div>
+
+        </div>
+        <div class="collections-grid">
+            <div class="grid-header">
+                <div class="grid-filter-menu">
+                    <img src="/assets/setting.png" alt="" class="filter-icon">
+                </div>
+                <div class="grid-title">
+                    <p>COLLECTIONS</p>
+                </div>
+                <div class="grid-add-collection">
+                    <button class="add-collection-button">Add Collection</button>
+                </div>
+            </div>
+            <div class="grid-items">
+                <div class="grid-wrapper">
+                    <div class="collection-item-container">
+                        <img src="/assets/cover.jpg" alt="" class="collection-cover">
+                        <p>Made Human</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function(){
+        $(".add-collection-button").click(function(){
+            window.location.href = "/addcollection";
+        });
+    });
+</script>
+</html>
