@@ -18,4 +18,8 @@ router.get('/addcollection', (req, res) => {
     res.render("addcollection");
 });
 
+router.post('/api/collections/add', (req, res) => {
+    
+})
+
 module.exports = router;

@@ -90,8 +90,37 @@
     padding-top: 4%;
     width: 80%;
     min-width: 80%;
-
+    display: flex;
+    gap: 10rem;
+    margin-bottom: 5%;
+    overflow-x: auto;
+    padding-bottom: 4%;
 }
+
+.grid-wrapper::-webkit-scrollbar {
+    width: 12px; 
+    height: 12px; 
+}
+
+.grid-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 10px;
+}
+
+.grid-wrapper::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px;
+    border: 3px solid #f1f1f1; 
+}
+
+.grid-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.grid-wrapper::-webkit-scrollbar-corner {
+    background: #f1f1f1; 
+}
+
 
 .collection-cover {
     height: 15rem;
@@ -104,7 +133,6 @@
     border: 1px solid black;
     padding: 2%;
     border-bottom: 10px solid black;
-    /* border-right: 10px solid black; */
     width: 240px;
     text-align: center;
 }
