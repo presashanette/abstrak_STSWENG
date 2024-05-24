@@ -21,7 +21,7 @@ $(document).ready(function(){
         var formData = new FormData();
         formData.append("name", name);
         formData.append("description", description);
-        formData.append("image", image);
+        formData.append("collectionPicture", image);
         $.ajax({
             url: "/api/collections/add",
             type: "POST",
