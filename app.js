@@ -6,6 +6,7 @@ const express = require('express');
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
+const load = require('./src/routes/loader.js');
 
 const app = express();
 
@@ -22,6 +23,15 @@ async function connectToDB (){
 
 }
 
+
+function initializeLoad(){
+    try {
+        load();
+    } catch (err){
+        console.log(err);
+    }
+
+}
 
 function initializeHandlebars() {
     app.engine("hbs", exphbs.engine({
@@ -49,7 +59,9 @@ async function main() {
     // use routing file
 
     app.listen(process.env.SERVER_PORT, connectToDB());
-     
+
+    initializeLoad();
+    
 }
 
 main()

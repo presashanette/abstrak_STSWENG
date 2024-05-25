@@ -15,32 +15,24 @@
         <div class="catalogue">
 
             <div class="gallery">
-                <div class="container">
-                    <div class="product-pic-container">
-                        <img src="/uploads/products/memories.png" alt="" srcset="" class="product-pic">
-                    </div>
-                    <div class="product-name">
-                        <p>Memories</p>
-                        <span class="three-dots-product-option">&nbsp;&nbsp;&#8286;</span>
+                {{#each products}}
+                    <div class="container">
+                        <div class="product-pic-container">
+                            <img src="/uploads/products/{{pictures}}" alt="" srcset="" class="product-pic">
+                        </div>
+                        <div class="product-name">
+                            <p>{{name}}</p>
+                            <span class="three-dots-product-option">&nbsp;&nbsp;&#8286;</span>
 
+                        </div>
+                        <div class="product-options-popup">
+                            <p><a href="" class="product-option-popup">Edit</a></p>
+                            <p><a href="" class="product-option-popup">Delete</a></p>
+                        </div>
                     </div>
-                    <div class="product-options-popup">
-                        <p><a href="" class="product-option-popup">Edit</a></p>
-                        <p><a href="" class="product-option-popup">Delete</a></p>
-                    </div>
-                </div>
-                <div class="container">
-                    dasdjsadjsadjsa
-                </div>
-                <div class="container">
-                    dasdjsadjsadjsa
-                </div>
-                 <div class="container">
-                    dasdjsadjsadjsa
-                </div>
-                 <div class="container">
-                    dasdjsadjsadjsa
-                </div>
+                {{/each}}
+              
+                
             </div>
         </div>
     </div>    

@@ -5,6 +5,7 @@ const router = express.Router();
 const multer = require('multer');
 
 const Collection = require('../models/AbstrakCol');
+const Product = require('../models/Product');
 
 
 const storageCollectionPicture = multer.diskStorage({
@@ -16,6 +17,8 @@ const storageCollectionPicture = multer.diskStorage({
     }
   });
 
+
+ 
 
 const uploadRestaurantPicture = multer({ storage: storageCollectionPicture });
 
@@ -29,7 +32,7 @@ router.get('/collections', async (req, res) => {
     try {
         const collections = await Collection.find({}).lean();
         console.log(collections)
-        res.render("collections", { collections });
+        res.render("collections", { collections, "grid-add-button": "Collection", "grid-title": "COLLECTIONS" });
     } catch (err) {
         // Handle error
         console.error(err);
@@ -44,7 +47,16 @@ router.get('/addcollection', (req, res) => {
 
 
 router.get('/collections/:id', async (req, res) => {
-    res.render("products");
+    try {
+        // console.log(req.params.id)
+        const products  = await Collection.findById(req.params.id).populate('pieces').lean();
+        
+        res.render("products", { products: products.pieces, "grid-add-button": "Product", "grid-title": products.name});
+    } catch (err) {
+        // Handle error
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPicture'),(req, res) => {
@@ -63,5 +75,6 @@ router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPi
         console.log("error in add collections: " + error)
     }
 })
+
 
 module.exports = router;
