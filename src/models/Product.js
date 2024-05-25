@@ -7,8 +7,7 @@ const productSchema = new Schema ({
     price: {type: Number, required: true},
     SKU: {type: String, required: true},
     material: {type: [String], required: true},
-    variations: {type: Map, of: String, required: true},
-    
+    variations: {type: Map, of: [], required: true},    
 })
 
 const Product = model('product', productSchema)

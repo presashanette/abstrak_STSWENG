@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+        <link rel="stylesheet" href="/styles/products.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class="main">
+        {{>navbar}}
+        {{>gridheader}}
+        <div class="catalogue">
+
+            <div class="gallery">
+                <div class="container">
+                    <div class="product-pic-container">
+                        <img src="/uploads/products/memories.png" alt="" srcset="" class="product-pic">
+                    </div>
+                    <div class="product-name">
+                        <p>Memories</p>
+                        <span class="three-dots-product-option">&nbsp;&nbsp;&#8286;</span>
+
+                    </div>
+                    <div class="product-options-popup">
+                        <p><a href="" class="product-option-popup">Edit</a></p>
+                        <p><a href="" class="product-option-popup">Delete</a></p>
+                    </div>
+                </div>
+                <div class="container">
+                    dasdjsadjsadjsa
+                </div>
+                <div class="container">
+                    dasdjsadjsadjsa
+                </div>
+                 <div class="container">
+                    dasdjsadjsadjsa
+                </div>
+                 <div class="container">
+                    dasdjsadjsadjsa
+                </div>
+            </div>
+        </div>
+    </div>    
+</body>
+
+<script>
+    $(document).ready(function(){
+        $(".three-dots-product-option").click(function(){
+            $(".product-options").toggle();
+        });
+    });
+</script>
+</html>

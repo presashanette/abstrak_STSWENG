@@ -42,6 +42,11 @@ router.get('/addcollection', (req, res) => {
     res.render("addcollection");
 });
 
+
+router.get('/collections/:id', async (req, res) => {
+    res.render("products");
+});
+
 router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPicture'),(req, res) => {
     try {
         const { name, description } = req.body
@@ -54,9 +59,6 @@ router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPi
         })
 
         newCollection.save();
-
-
-        // console.log(name, description, collectionPicture.filename)
     } catch (error) {
         console.log("error in add collections: " + error)
     }
