@@ -25,12 +25,18 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/collections', (req, res) => {
-    Collection.find({}, (err, collections) => {
-        res.render("collections", {collections});
-    })
-    res.render("collections");
-})
+router.get('/collections', async (req, res) => {
+    try {
+        const collections = await Collection.find({}).lean();
+        console.log(collections)
+        res.render("collections", { collections });
+    } catch (err) {
+        // Handle error
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 router.get('/addcollection', (req, res) => {  
     res.render("addcollection");
@@ -39,7 +45,7 @@ router.get('/addcollection', (req, res) => {
 router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPicture'),(req, res) => {
     try {
         const { name, description } = req.body
-        const collectionPicture = req.file
+        const collectionPicture = req.file || { filename: 'default.jpg' }
 
         const newCollection = new Collection({
             name,
@@ -50,7 +56,7 @@ router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPi
         newCollection.save();
 
 
-        console.log(name, description, collectionPicture.filename)
+        // console.log(name, description, collectionPicture.filename)
     } catch (error) {
         console.log("error in add collections: " + error)
     }
