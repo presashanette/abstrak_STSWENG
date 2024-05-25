@@ -16,7 +16,7 @@
 
             <div class="gallery">
                 {{#each products}}
-                    <div class="container">
+                    <div class="container" data-id="{{_id}}">
                         <div class="product-pic-container">
                             <img src="/uploads/products/{{pictures}}" alt="" srcset="" class="product-pic">
                         </div>
@@ -47,20 +47,20 @@
     $(document).ready(function(){
         $(".three-dots-product-option").click(function(event){
             event.stopPropagation(); // Prevents the event from bubbling up the DOM tree
-            togglePopup();
+            var $popup = $(this).closest('.container').find('.product-options-popup');
+            $(".product-options-popup").not($popup).hide(); // Hide other popups
+            $popup.toggle(); // Toggle the clicked popup
         });
 
-        $(".product-options-popup").hide();
-
-        // Close popup when clicking outside of it
         $(document).click(function(event) {
             if (!$(event.target).closest('.product-options-popup').length && !$(event.target).hasClass('three-dots-product-option')) {
                 $(".product-options-popup").hide();
             }
         });
 
-        $()
+        $(".product-options-popup").hide();
     });
+
 </script>
 
 </html>
