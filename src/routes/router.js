@@ -31,7 +31,7 @@ const uploadRestaurantPicture = multer({ storage: storageCollectionPicture });
 router.get(['/', '/collections'], async (req, res) => {
     try {
         const collections = await Collection.find({}).lean();
-        console.log(collections)
+
         res.render("collections", { collections, "grid-add-button": "Collection", "grid-title": "COLLECTIONS" });
     } catch (err) {
         // Handle error
@@ -48,10 +48,16 @@ router.get('/addcollection', (req, res) => {
 
 router.get('/collections/:id', async (req, res) => {
     try {
-        // console.log(req.params.id)
-        const products  = await Collection.findById(req.params.id).populate('pieces').lean();
+        const collection  = await Collection.findById(req.params.id).populate('pieces').lean();
+        const products = collection.pieces;
         
-        res.render("products", { products: products.pieces, "grid-add-button": "Product", "grid-title": products.name});
+        products.forEach(product => {
+            stocks = product.stocks;
+            
+            product.totalStock = Object.values(stocks).reduce((a, b) => a + b, 0);
+        })
+        
+        res.render("products", { products: collection.pieces, "grid-add-button": "Product", "grid-title": collection.name});
     } catch (err) {
         // Handle error
         console.error(err);

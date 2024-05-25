@@ -1,46 +1,32 @@
 const Collection = require('../models/AbstrakCol');
 const Product = require('../models/Product');
+const fs = require('fs')
 
-async function load() {
-    try {
-        // Delete all documents in Collection and Product collections
-        await Promise.all([Collection.deleteMany({}), Product.deleteMany({})]);
-        
-        // Create a new Collection document
-        const coll = await new Collection({
-            name: 'Made Human',
-            pieces: [],
-            collectionPicture: 'madehuman.jpg'
-        }).save();
 
-        // Create a new Product document
-        const prod = await new Product({
-            name: 'Memories',
-            status: 'Available',
-            pictures: ['memories1.png'],
-            price: 100,
-            SKU: 'MEM001',
-            material: ['Cotton', 'Polyester'],
-            variations: {
-                'A': 20,
-                'B': 30,
-                'C': 10,
-                'D': 40,
-                'E': 50,
-                'F': 60
-            }
-        }).save();
+const collectionsJson = "src/models/data/data-abstrakcols.json";
+const productsJson = "src/models/data/data-products.json";
 
-        // Push the _id of the newly created Product document into the pieces array of the Collection
-        coll.pieces.push(prod._id);
 
-        // Save the updated Collection document
-        await coll.save();
 
-        console.log('Data loaded successfully.');
-    } catch (err) {
-        console.error('Error:', err);
-    }
+function parseJson(pathToJson){
+    return JSON.parse(fs.readFileSync(pathToJson))
 }
 
-module.exports = load;
+
+async function loadCollections() {
+    result = parseJson(collectionsJson)
+    await Collection.deleteMany({}).then(() => {
+        Collection.insertMany(result)
+    });
+}
+
+
+async function loadProducts() {
+    result = parseJson(productsJson)
+    await Product.deleteMany({}).then(() => {
+        Product.insertMany(result)
+    });
+}
+
+
+module.exports = { loadCollections, loadProducts  };

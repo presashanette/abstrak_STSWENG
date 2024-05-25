@@ -6,7 +6,7 @@ const express = require('express');
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
-const load = require('./src/routes/loader.js');
+const { loadCollections, loadProducts } = require('./src/routes/loader.js');
 
 const app = express();
 
@@ -24,19 +24,27 @@ async function connectToDB (){
 }
 
 
-function initializeLoad(){
-    try {
-        load();
-    } catch (err){
-        console.log(err);
-    }
-
+async function initializeLoad(){
+    await loadCollections();
+    await loadProducts();
 }
 
 function initializeHandlebars() {
     app.engine("hbs", exphbs.engine({
         extname: "hbs",
         defaultLayout: false,
+        helpers: {
+         
+            stockStatus: function(stock){
+                if(stock ==  0){
+                    return "no";
+                } else if (stock <= 3) {
+                    return "low";
+                } else {
+                    return "high";
+                }
+            }
+        }
     }));
     app.set("view engine", "hbs");
     app.set("views", "./src/views");
@@ -60,7 +68,7 @@ async function main() {
 
     app.listen(process.env.SERVER_PORT, connectToDB());
 
-    initializeLoad();
+    await initializeLoad();
     
 }
 

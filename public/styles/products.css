@@ -33,9 +33,9 @@
 .container {
     height: 350px;
     width: 250px;
-    border: 1px solid black;
+    /* border: 1px solid black;
 
-    border-bottom: 10px solid black;
+    border-bottom: 10px solid black; */
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
 
     position: relative;
@@ -55,6 +55,37 @@
     object-fit: contain;
     max-width: 100%;
 }
+
+.product-stock {
+    margin-top: 5px;
+    padding-top: 2px;
+    font-size: 13px;
+    width: 120px;
+    text-align: center;
+    height: 20px;
+}
+
+.high-stock {
+    /* background-color: #D4EDBC;
+    color: #268058; */
+
+    background-color: #0F734C;
+    color: #C9E6B6;
+
+}
+
+.low-stock {
+    background-color: #FFE5A0;
+    color: #473821;
+
+}
+
+.no-stock {
+    background-color: #B10201;
+    color: #FFCFCA;
+}
+
+
 
 .three-dots-product-option {
     position: absolute;
