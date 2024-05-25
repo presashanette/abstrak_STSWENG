@@ -47,10 +47,25 @@
 </body>
 
 <script>
+    function togglePopup() {
+        $(".product-options-popup").toggle();
+    }
+
     $(document).ready(function(){
-        $(".three-dots-product-option").click(function(){
-            $(".product-options").toggle();
+        $(".three-dots-product-option").click(function(event){
+            event.stopPropagation(); // Prevents the event from bubbling up the DOM tree
+            togglePopup();
+        });
+
+        $(".product-options-popup").hide();
+
+        // Close popup when clicking outside of it
+        $(document).click(function(event) {
+            if (!$(event.target).closest('.product-options-popup').length && !$(event.target).hasClass('three-dots-product-option')) {
+                $(".product-options-popup").hide();
+            }
         });
     });
 </script>
+
 </html>
