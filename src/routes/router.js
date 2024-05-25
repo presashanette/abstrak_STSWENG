@@ -23,9 +23,9 @@ const storageCollectionPicture = multer.diskStorage({
 const uploadRestaurantPicture = multer({ storage: storageCollectionPicture });
 
 
-router.get('/', (req, res) => {
-    // res.render("collections");
-});
+// router.get('/', (req, res) => {
+//     // res.render("collections");
+// });
 
 
 router.get(['/', '/collections'], async (req, res) => {
