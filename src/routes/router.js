@@ -24,11 +24,11 @@ const uploadRestaurantPicture = multer({ storage: storageCollectionPicture });
 
 
 router.get('/', (req, res) => {
-    res.render("collections");
+    // res.render("collections");
 });
 
 
-router.get('/collections', async (req, res) => {
+router.get(['/', '/collections'], async (req, res) => {
     try {
         const collections = await Collection.find({}).lean();
         console.log(collections)

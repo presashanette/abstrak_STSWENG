@@ -21,7 +21,14 @@ async function load() {
             price: 100,
             SKU: 'MEM001',
             material: ['Cotton', 'Polyester'],
-            variations: {}
+            variations: {
+                'A': 20,
+                'B': 30,
+                'C': 10,
+                'D': 40,
+                'E': 50,
+                'F': 60
+            }
         }).save();
 
         // Push the _id of the newly created Product document into the pieces array of the Collection
