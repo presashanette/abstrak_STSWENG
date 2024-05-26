@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-        <link rel="stylesheet" href="/styles/products.css">
+    <link rel="stylesheet" href="/styles/products.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
 </head>
 <body>
     <div class="main">
         {{>navbar}}
         {{>gridheader}}
         <div class="catalogue">
-
             <div class="gallery">
                 {{#each products}}
                     <div class="container" data-id="{{_id}}">
@@ -26,7 +24,6 @@
                             <p>{{name}}</p>
                             <p class="product-stock {{#stockStatus totalStock}}{{/stockStatus}}-stock">{{totalStock}} in stock</p>
                             <span class="three-dots-product-option">&nbsp;&nbsp;&#8286;</span>
-
                         </div>
                         <div class="product-options-popup">
                             <p><a href="" class="product-option-popup">Edit</a></p>
@@ -34,41 +31,92 @@
                         </div>
                     </div>
                 {{/each}}
-              
-                
             </div>
         </div>
     </div>    
 
+    <div class="add-product-modal">
+
     <div class="add-product-form">
         <div class="add-product-form-left">
-            
+            <div class="main-picture">
+                <img src="/assets/upload-icon.png" name="collectionPicture" alt="" id="upload-icon" accept="image/*">
+                <input type="file" name="main-image" id="imageInput">
+            </div>
+        </div>
+        <div class="add-product-form-right">
+            <span class="exit-form">x</span>
+            <input type="text" name="" placeholder="Name" id="product-name-input" class="product-detail-input" required>
+            <input type="number" name="" placeholder="Price (PHP)" id="product-price-input" class="product-detail-input">
+            <input type="text" name="" placeholder="SKU" id="product-sku-input" class="product-detail-input">
+            <div class="product-material-container">
+                <div id="material-list" class="material-list"></div>
+                <input type="text" id="material-input" class="material-input" placeholder="Add a material and press Enter">
+            </div>
+            <button class="to-product-form2-button">Next 1/2</button>
         </div>
     </div>
-</body>
+    </div>
 
-<script>
-    function togglePopup() {
-        $(".product-options-popup").toggle();
-    }
+    <script>
+        $(document).ready(function(){
 
-    $(document).ready(function(){
-        $(".three-dots-product-option").click(function(event){
-            event.stopPropagation(); 
-            var $popup = $(this).closest('.container').find('.product-options-popup');
-            $(".product-options-popup").not($popup).hide(); 
-            $popup.toggle(); 
-        });
+            $(".three-dots-product-option").click(function(event){
+                event.stopPropagation(); 
+                var $popup = $(this).closest('.container').find('.product-options-popup');
+                $(".product-options-popup").not($popup).hide(); 
+                $popup.toggle(); 
+            });
 
-        $(document).click(function(event) {
-            if (!$(event.target).closest('.product-options-popup').length && !$(event.target).hasClass('three-dots-product-option')) {
-                $(".product-options-popup").hide();
+            $(document).click(function(event) {
+                if (!$(event.target).closest('.product-options-popup').length && !$(event.target).hasClass('three-dots-product-option')) {
+                    $(".product-options-popup").hide();
+                }
+            });
+
+            $(".product-options-popup").hide();
+
+            $('#material-input').keydown(function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    var tag = $(this).val().trim();
+                    if (tag) {
+                        addTag(tag);
+                        $(this).val('');
+                    }
+                }
+            });
+
+            $('.add-product-modal').hide()
+
+            $('.grid-header-add-button').on('click', function() {
+                $('.add-product-modal').fadeIn();
+            })
+
+            $('.exit-form').on('click', function() {
+                $('.add-product-modal').fadeOut();
+            })
+            
+             $(".main-picture").click(function(event){
+                // event.stopPropagation();
+                // console.log("clicked");
+                $("#imageInput").click();
+            });
+
+            $("#imageInput").click(function(event){
+                event.stopPropagation();
+            });
+
+
+            function addTag(tag) {
+                var tagElement = $('<div>').addClass('material').text(tag);
+                var removeButton = $('<span>').addClass('remove-material').text('×').click(function() {
+                    $(this).parent().remove();
+                });
+                tagElement.append(removeButton);
+                $('#material-list').append(tagElement);
             }
         });
-
-        $(".product-options-popup").hide();
-    });
-
-</script>
-
+    </script>
+</body>
 </html>
