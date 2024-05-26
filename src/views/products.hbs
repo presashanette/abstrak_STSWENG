@@ -6,12 +6,14 @@
     <title>Document</title>
     <link rel="stylesheet" href="/styles/products.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="main">
         {{>navbar}}
         {{>gridheader}}
         <div class="catalogue">
+
             <div class="gallery">
                 {{#each products}}
                     <div class="container" data-id="{{_id}}">
@@ -24,18 +26,21 @@
                             <p>{{name}}</p>
                             <p class="product-stock {{#stockStatus totalStock}}{{/stockStatus}}-stock">{{totalStock}} in stock</p>
                             <span class="three-dots-product-option">&nbsp;&nbsp;&#8286;</span>
+                        
                         </div>
                         <div class="product-options-popup">
-                            <p><a href="" class="product-option-popup">Edit</a></p>
-                            <p><a href="" class="product-option-popup">Delete</a></p>
+                            <p><a href="" class="product-option-popup edit-product">Edit</a></p>
+                            <p><a href="" class="product-option-popup delete-product">Delete</a></p>
                         </div>
                     </div>
                 {{/each}}
+
+
             </div>
         </div>
     </div>    
 
-    <div class="add-product-modal">
+     <div class="add-product-modal">
 
     <div class="add-product-form">
         <div class="add-product-form-left">
@@ -116,6 +121,70 @@
                 tagElement.append(removeButton);
                 $('#material-list').append(tagElement);
             }
+        });
+
+        // delete SWAL
+        $(document).ready(function(){
+            $(".delete-product").click(function(event){
+                event.preventDefault();
+                const deleteProductId = $(this).closest('.container').data('id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to delete this product?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Delete associated details?',
+                            text: "Do you also want to delete the associated details?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete associations',
+                            cancelButtonText: 'No, keep associations'
+                        }).then((assocResult) => {
+                            if (assocResult.isConfirmed) {
+                                $.ajax({
+                                    url: '/api/products/delete/' + deleteProductId + '?deleteAssociations=true',
+                                    type: 'DELETE',
+                                    success: function(result) {
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Product and associations have been deleted.',
+                                            'success'
+                                        ).then(() => location.reload());
+                                    },
+                                    error: function(err) {
+                                        Swal.fire('Error', 'Error deleting product.', 'error');
+                                    }
+                                });
+                            } else if (assocResult.dismiss === Swal.DismissReason.cancel) {
+                                $.ajax({
+                                    url: '/api/products/delete/' + deleteProductId + '?deleteAssociations=false',
+                                    type: 'DELETE',
+                                    success: function(result) {
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Product has been deleted, associations retained.',
+                                            'success'
+                                        ).then(() => location.reload());
+                                    },
+                                    error: function(err) {
+                                        Swal.fire('Error', 'Error deleting product.', 'error');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
 </body>
