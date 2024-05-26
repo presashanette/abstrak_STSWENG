@@ -36,6 +36,29 @@
         </div>
     </div>    
 
+    <div class="edit-product-modal">
+        <div class="edit-product-form">
+            <div class="edit-product-form-left">
+                <div class="edit-main-picture">
+                    <img src="/assets/upload-icon.png" name="collectionPicture" alt="" id="edit-upload-icon" accept="image/*" aria-required="true">
+                    <input type="file" name="main-image" id="edit-imageInput">
+                </div>
+            </div>
+            <div class="edit-product-form-right">
+                <span class="edit-exit-form">x</span>
+                <input type="text" name="" placeholder="Name" id="edit-product-name-input" class="product-detail-input" required>
+                <input type="number" name="" placeholder="Price (PHP)" id="edit-product-price-input" class="product-detail-input" required>
+                <input type="text" name="" placeholder="SKU" id="edit-product-sku-input" class="product-detail-input" required>
+                <div class="product-material-container">
+                    <div id="edit-material-list" class="material-list"></div>
+                    <input type="text" id="edit-material-input" class="material-input" placeholder="Add a material and press Enter" required>
+                </div>
+                <button class="to-product-form2-button">Next 1/2</button>
+            </div>
+        </div>
+    </div>
+
+
     <div class="add-product-modal">
         <div class="add-product-form">
             <h1 class="add-product-title">Add Product</h1>
@@ -165,19 +188,37 @@
 
             $('.add-product-modal').hide();
 
+            $(".edit-product-modal").hide();
+
             $('.grid-header-add-button').on('click', function() {
                 $('.add-product-modal').fadeIn();
+            });
+
+            $('.edit-product').on('click', function() {
+                $('.edit-product-modal').fadeIn();
             });
 
             $('.exit-form').on('click', function() {
                 $('.add-product-modal').fadeOut();
             });
 
+            $('.edit-exit-form').on('click', function() {
+                $('.edit-product-modal').fadeOut();
+            });
+
             $(".main-picture").click(function(event){
                 $("#imageInput").click();
             });
 
+            $(".edit-main-picture").click(function(event){
+                $("#edit-imageInput").click();
+            });
+
             $("#imageInput").click(function(event){
+                event.stopPropagation();
+            });
+
+            $("#edit-imageInput").click(function(event){
                 event.stopPropagation();
             });
 
@@ -220,6 +261,7 @@
 
 
             });
+
 
             // delete SWAL
             $(".delete-product").click(function(event){
