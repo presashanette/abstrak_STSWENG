@@ -59,6 +59,8 @@
     </div>
 
     <script>
+        let tagList = []
+
         $(document).ready(function(){
 
             $(".three-dots-product-option").click(function(event){
@@ -76,6 +78,28 @@
 
             $(".product-options-popup").hide();
 
+            
+            $("#imageInput").change(function(event){
+                var file = this.files[0];
+                var reader = new FileReader();
+                
+                mediaContainer = $(".main-picture")
+                reader.onload = function(e){
+                    const photoContainer = document.createElement('div');
+                    photoContainer.className = 'product-photo-container';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'product-photo';
+                    photoContainer.appendChild(img);
+
+                    mediaContainer.append(photoContainer);
+
+                }
+                reader.readAsDataURL(file);
+            });
+
+
             $('#material-input').keydown(function(event) {
                 if (event.key === 'Enter') {
                     event.preventDefault();
@@ -86,6 +110,67 @@
                     }
                 }
             });
+
+            $('#product-name-input').on('keyup', function() {
+                const name = $(this).val();
+
+             
+
+                if (name === ""){
+                    $('#product-name-input').removeClass('correct-input')
+                    $('#product-name-input').addClass('wrong-input')
+                } else {
+                    $.ajax({
+                        url: '/api/products/check-name',
+                        type: 'POST',
+                        data: {
+                            name: name
+                        },
+                        success: function(data) {
+                            if(data.success ){
+                                $('#product-name-input').removeClass('wrong-input')
+                                $('#product-name-input').addClass('correct-input')
+                            } else {
+                                $('#product-name-input').addClass('wrong-input')
+                            }
+                        }
+
+
+
+                    });
+                };
+
+            });
+
+            $('#product-price-input').on('keyup', function() {
+                if(Number($(this).val()) > 0) {
+                    console.log("correct");
+                    $('#product-price-input').removeClass('wrong-input')
+                    $('#product-price-input').addClass('correct-input')
+                } else {
+                    $('#product-price-input').removeClass('correct-input')
+                    $('#product-price-input').addClass('wrong-input')
+                }
+            });
+
+            $('#product-sku-input').on('keyup', function() {
+                $.ajax({
+                    url: '/api/products/check-sku',
+                    type: 'POST',
+                    data: {
+                        sku: $(this).val()
+                    },
+                    success: function(data) {
+                        if(data.success){
+                            $('#product-sku-input').removeClass('wrong-input')
+                            $('#product-sku-input').addClass('correct-input')
+                        } else {
+                            $('#product-sku-input').addClass('wrong-input')
+                        }
+                    }
+                });
+            });
+
 
             $('.add-product-modal').hide()
 
@@ -107,15 +192,29 @@
                 event.stopPropagation();
             });
 
+           function addTag(tag) {
+                // Check if tag already exists in the global list
+                if (tagList.includes(tag)) {
+                    console.log('Tag already exists:', tag);
+                    return; // Exit the function if tag already exists
+                }
 
-            function addTag(tag) {
+                // Add tag to the global list
+                tagList.push(tag);
+
                 var tagElement = $('<div>').addClass('material').text(tag);
                 var removeButton = $('<span>').addClass('remove-material').text('×').click(function() {
+                    // Remove the tag from the global list when removed from the UI
+                    var index = tagList.indexOf(tag);
+                    if (index !== -1) {
+                        tagList.splice(index, 1);
+                    }
                     $(this).parent().remove();
                 });
                 tagElement.append(removeButton);
                 $('#material-list').append(tagElement);
             }
+
         });
     </script>
 </body>
