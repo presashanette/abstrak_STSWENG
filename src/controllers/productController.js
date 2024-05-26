@@ -1,14 +1,4 @@
-// const { Product, AbstrakCol } = require('./models');
 
-// router.get('/collections', async (req, res) => {
-//     try {
-//         const collections = await AbstrakCol.find().populate('pieces').exec();
-//         res.render('collections', { collections });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).send('Server Error');
-//     }
-// });
 
 
 const Product = require('../models/Product');
