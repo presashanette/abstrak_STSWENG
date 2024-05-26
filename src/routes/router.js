@@ -5,6 +5,8 @@ const router = express.Router();
 const multer = require('multer');
 
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest } = require('../controllers/collectionControllers');
+const { deleteProductById } = require('../controllers/productController');
+
 
 
 const storageCollectionPicture = multer.diskStorage({
@@ -25,6 +27,8 @@ router.get(['/', '/collections'], handleCollectionPageRequest);
 router.get('/addcollection', (req, res) => { res.render("addcollection");});
 router.get('/collections/:id', handleCollectionProductsRequest);
 router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPicture'), handleAddCollectionRequest)
+router.delete('/api/products/delete/:id', deleteProductById);
+
 router.post('/api/products/check-name', (req, res) => {
   const name = req.body.name;
 
