@@ -36,9 +36,8 @@ async function handleCollectionProductsRequest (req, res) {
         const products = collection.pieces;
         
         products.forEach(product => {
-            stocks = product.stocks;
+            product.totalStock = product.variations.reduce((a, b) => a + b.stocks, 0);
             
-            product.totalStock = Object.values(stocks).reduce((a, b) => a + b, 0);
         })
         
         res.render("products", { products: collection.pieces, "grid-add-button": "Product", "grid-title": collection.name});

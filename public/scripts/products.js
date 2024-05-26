@@ -33,7 +33,11 @@ $(document).ready(function(){
 
     $('#product-sku-input').on('keyup', validateSKUInput);
     
-    $(".to-product-form2-button").click(toForm2Click);
+    $("#next-form-button").click(toForm2Click);
+
+    $(".add-row-button").click(addVariation);
+
+    $("#back-form-button").click(toForm1Click);
 
 
     

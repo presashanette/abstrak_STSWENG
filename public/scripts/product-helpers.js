@@ -1,6 +1,6 @@
 
 let tagList = [];
-
+let name, price, sku, materials;
 
 function popupClick(event){
     event.stopPropagation(); // do not bubble up to the DOM window
@@ -185,12 +185,12 @@ function deleteProduct(){
         });
 }
 
-function toForm2Click(event){
+function nextForm(event){
     event.preventDefault();
-    const name = $('#product-name-input').val();
-    const price = $('#product-price-input').val();
-    const sku = $('#product-sku-input').val();
-    const materials = tagList;
+    name = $('#product-name-input').val();
+    price = $('#product-price-input').val();
+    sku = $('#product-sku-input').val();
+    materials = tagList;
 
     if(name === "" || price === "" || sku === "" || materials.length === 0){
         Swal.fire({
@@ -201,7 +201,71 @@ function toForm2Click(event){
         return;
     }
 
+    $(".form-1").hide();
+    $(".form-2").show();
+    $("#next-form-button").text("Submit");
+    $("#back-form-button").show();
+}
+
+function submitProduct(event){
+    event.preventDefault();
+
+    const product = {
+        name: name,
+        price: price,
+        sku: sku,
+        materials: materials,
+        variations: []
+    };
+
+    const variations = $('.add-product-variation-row');
+    let isValid = true;
+
+    for (let i = 0; i < variations.length; i++) {
+        const variation = {};
+        variation.name = $(variations[i]).find('.product-variation').val();
+        variation.size = $(variations[i]).find('.product-size').val();
+        variation.manuCost = $(variations[i]).find('.product-manu-cost').val();
+
+        if (!variation.name || !variation.manuCost) {
+            isValid = false;
+            break;
+        }
+
+        product.variations.push(variation);
+
+    }
+
+    if(!isValid){
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please fill out all fields!',
+        })
+        return;
+    }
+
+    console.log(product);   
+}
+
+function toForm1Click(event){
+    $(".form-1").show();
+    $(".form-2").hide();
+    $("#next-form-button").text("Next");
+    $("#back-form-button").hide();
+}
+
+function toForm2Click(event){
+    
+    $("#next-form-button").text() === "Submit" ? submitProduct(event) : nextForm(event);    
 
 
 }
 
+
+
+function addVariation() {
+    var newVariationRow = $('.add-product-variation-row:first').clone();
+    newVariationRow.find('input').val('');
+    $('.add-row-frame').append(newVariationRow);
+}

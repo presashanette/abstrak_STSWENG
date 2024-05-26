@@ -81,7 +81,18 @@
                         <input type="text" id="material-input" class="material-input" placeholder="Add a material and press Enter" required>
                     </div>
                 </div>
-                <button class="to-product-form2-button">Next 1/2</button>
+                <div class="form-2">
+                    <div class="add-row-frame">
+                        {{>variations}}
+
+                    </div>
+                    <button class="add-row-button">Add variation</button>
+
+                </div>
+                 <div class="product-form-buttons">
+                    <button class="to-product-form2-button" id="back-form-button">Back</button>
+                    <button class="to-product-form2-button" id="next-form-button">Next</button>
+                </div>
             </div>
         </div>
     </div>
@@ -92,6 +103,12 @@
         $('.add-product-modal').hide();
 
         $(".edit-product-modal").hide();
+
+        
+        $(".form-2").hide();
+
+        $("#back-form-button").hide();
+
 
     </script>
 </body>

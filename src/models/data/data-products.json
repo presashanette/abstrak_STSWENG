@@ -11,22 +11,38 @@
     "Cotton",
     "Polyester"
   ],
-  "stocks": {
-    "A": 0,
-    "B": 0,
-    "C": 0,
-    "D": 0,
-    "E": 0,
-    "F": 1
-  },
-  "manufacturingCost": {
-    "A": 10,
-    "B": 10,
-    "C": 10,
-    "D": 10,
-    "E": 10,
-    "F": 10
-  },
+  "variations": [
+    {
+      "variation": "S",
+      "stocks": 50,
+      "manufacturingCost": 10
+    },
+    {
+      "variation": "M",
+      "stocks": 45,
+      "manufacturingCost": 10
+    },
+    {
+      "variation": "L",
+      "stocks": 30,
+      "manufacturingCost": 10
+    },
+    {
+      "variation": "XL",
+      "stocks": 20,
+      "manufacturingCost": 10
+    },
+    {
+      "variation": "XXL",
+      "stocks": 25,
+      "manufacturingCost": 10
+    },
+    {
+      "variation": "XXXL",
+      "stocks": 1,
+      "manufacturingCost": 10
+    }
+  ],
   "__v": 0
 },
 
@@ -43,22 +59,18 @@
     "Cotton",
     "Polyester"
   ],
-  "stocks": {
-    "A": 50,
-    "B": 45,
-    "C": 30,
-    "D": 20,
-    "E": 25,
-    "F": 1
-  },
-  "manufacturingCost": {
-    "A": 10,
-    "B": 10,
-    "C": 10,
-    "D": 10,
-    "E": 10,
-    "F": 10
-  },
+  "variations": [
+    {
+      "variation": "S",
+      "stocks": 0,
+      "manufacturingCost": 10
+    },
+    {
+      "variation": "M",
+      "stocks": 0,
+      "manufacturingCost": 10
+    }
+  ],
   "__v": 0
 }
 
