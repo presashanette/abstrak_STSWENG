@@ -42,25 +42,25 @@
 
      <div class="add-product-modal">
 
-    <div class="add-product-form">
-        <div class="add-product-form-left">
-            <div class="main-picture">
-                <img src="/assets/upload-icon.png" name="collectionPicture" alt="" id="upload-icon" accept="image/*">
-                <input type="file" name="main-image" id="imageInput">
+        <div class="add-product-form">
+            <div class="add-product-form-left">
+                <div class="main-picture">
+                    <img src="/assets/upload-icon.png" name="collectionPicture" alt="" id="upload-icon" accept="image/*" aria-required="true">
+                    <input type="file" name="main-image" id="imageInput">
+                </div>
+            </div>
+            <div class="add-product-form-right">
+                <span class="exit-form">x</span>
+                <input type="text" name="" placeholder="Name" id="product-name-input" class="product-detail-input" required>
+                <input type="number" name="" placeholder="Price (PHP)" id="product-price-input" class="product-detail-input" required>
+                <input type="text" name="" placeholder="SKU" id="product-sku-input" class="product-detail-input" required>
+                <div class="product-material-container">
+                    <div id="material-list" class="material-list"></div>
+                    <input type="text" id="material-input" class="material-input" placeholder="Add a material and press Enter" required>
+                </div>
+                <button class="to-product-form2-button">Next 1/2</button>
             </div>
         </div>
-        <div class="add-product-form-right">
-            <span class="exit-form">x</span>
-            <input type="text" name="" placeholder="Name" id="product-name-input" class="product-detail-input" required>
-            <input type="number" name="" placeholder="Price (PHP)" id="product-price-input" class="product-detail-input">
-            <input type="text" name="" placeholder="SKU" id="product-sku-input" class="product-detail-input">
-            <div class="product-material-container">
-                <div id="material-list" class="material-list"></div>
-                <input type="text" id="material-input" class="material-input" placeholder="Add a material and press Enter">
-            </div>
-            <button class="to-product-form2-button">Next 1/2</button>
-        </div>
-    </div>
     </div>
 
     <script>
@@ -159,21 +159,28 @@
             });
 
             $('#product-sku-input').on('keyup', function() {
-                $.ajax({
-                    url: '/api/products/check-sku',
-                    type: 'POST',
-                    data: {
-                        sku: $(this).val()
-                    },
-                    success: function(data) {
-                        if(data.success){
-                            $('#product-sku-input').removeClass('wrong-input')
-                            $('#product-sku-input').addClass('correct-input')
-                        } else {
-                            $('#product-sku-input').addClass('wrong-input')
+
+                if($(this).val() === "") {
+                    $('#product-sku-input').removeClass('correct-input')
+                    $('#product-sku-input').addClass('wrong-input');
+                } else {
+                    $.ajax({
+                        url: '/api/products/check-sku',
+                        type: 'POST',
+                        data: {
+                            sku: $(this).val()
+                        },
+                        success: function(data) {
+                            if(data.success){
+                                $('#product-sku-input').removeClass('wrong-input')
+                                $('#product-sku-input').addClass('correct-input')
+                            } else {
+                                $('#product-sku-input').addClass('wrong-input')
+                            }
                         }
-                    }
-                });
+                    });
+                }
+              
             });
 
 
@@ -219,6 +226,26 @@
                 tagElement.append(removeButton);
                 $('#material-list').append(tagElement);
             }
+
+        });
+
+        $(".to-product-form2-button").click(function(event){
+            event.preventDefault();
+            const name = $('#product-name-input').val();
+            const price = $('#product-price-input').val();
+            const sku = $('#product-sku-input').val();
+            const materials = tagList;
+
+            if(name === "" || price === "" || sku === "" || materials.length === 0){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please fill out all fields!',
+                })
+                return;
+            }
+
+            
 
         });
 

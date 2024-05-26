@@ -11,7 +11,6 @@ $(document).ready(function(){
         $(".add-collection-modal").hide();
     });
 
- 
     
     $("#imageInput").change(function(event){
         var file = this.files[0];

@@ -46,14 +46,42 @@ async function deleteProductById(req, res) {
     }
 }
 
-async function getCollections(req, res) {
-    try {
-        const collections = await AbstrakCol.find().populate('pieces').exec();
-        res.render('collections', { collections });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-    }
+async function checkName(req, res) {
+    const name = req.body.name;
+
+    Product.findOne({ name: name }).lean().then(product => {
+    if(product) {
+        res.send({ success: false, message: 'Product name is not available' })
+      } else {
+        res.send({ success: true, message: 'Product name is available' })
+      }
+  
+     
+    }).catch(err => {
+        res.status(500).json({ error: 'Internal Server Error' });
+    });   
+
 }
 
-module.exports = { deleteProductById, getCollections };
+
+async function checkSKU(req, res) {
+    const sku = req.body.sku;
+
+    Product
+      .findOne({ SKU: sku })
+      .lean()
+      .then(product => {
+        if(product) {
+          res.send({ success: false, message: 'SKU is not available' })
+        } else {
+          res.send({ success: true, message: 'SKU is available' })
+        }
+      })
+      .catch(err => {
+        res.status(500).json({ error: 'Internal Server Error' });
+      });   
+
+
+
+}
+module.exports = { deleteProductById, checkName, checkSKU };
