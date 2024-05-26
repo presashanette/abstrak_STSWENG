@@ -94,10 +94,15 @@
 }
 
 .main-picture {
-    height: 72%;
-    width: 80%;;
+    min-height: 317px;
+    max-height: 317px;
+    min-width: 350px;
+    max-width: 350px;
     overflow: hidden;
     border: 2px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .main-picture:hover {
@@ -106,9 +111,9 @@
 }
 
 #upload-icon {
-    height: 15%;
-    width: 15%;
-    opacity: 0.5;
+    height: 12.5%;
+    width: 12.5%;
+    opacity: 0.2;
 }
 
 .upload-icon-container {
@@ -133,4 +138,12 @@ button:hover {
     background-color: black;
     color: white;
     cursor: pointer;
+}
+
+#imageInput {
+    display: none;
+}
+
+.collection-photo {
+    object-fit:contain;
 }

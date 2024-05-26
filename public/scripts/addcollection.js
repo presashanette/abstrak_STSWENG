@@ -1,6 +1,12 @@
 $(document).ready(function(){
-    $("#upload-icon").click(function(){
+    $(".main-picture").click(function(event){
+        // event.stopPropagation();
+        // console.log("clicked");
         $("#imageInput").click();
+    });
+
+    $("#imageInput").click(function(event){
+        event.stopPropagation();
     });
 
  
@@ -8,8 +14,19 @@ $(document).ready(function(){
     $("#imageInput").change(function(event){
         var file = this.files[0];
         var reader = new FileReader();
+        
+        mediaContainer = $(".main-picture")
         reader.onload = function(e){
-            $(".main-picture").css("background-image", "url("+e.target.result+")");
+            const photoContainer = document.createElement('div');
+            photoContainer.className = 'collection-photo-container';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'collection-photo';
+            photoContainer.appendChild(img);
+
+            mediaContainer.append(photoContainer);
+
         }
         reader.readAsDataURL(file);
     });

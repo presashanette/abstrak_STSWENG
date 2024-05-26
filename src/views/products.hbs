@@ -18,7 +18,9 @@
                 {{#each products}}
                     <div class="container" data-id="{{_id}}">
                         <div class="product-pic-container">
-                            <img src="/uploads/products/{{pictures}}" alt="" srcset="" class="product-pic">
+                            <div class="product-actual-photo-container">
+                                <img src="/uploads/products/{{pictures}}" alt="" srcset="" class="product-pic">
+                            </div>
                         </div>
                         <div class="product-name">
                             <p>{{name}}</p>
@@ -37,6 +39,12 @@
             </div>
         </div>
     </div>    
+
+    <div class="add-product-form">
+        <div class="add-product-form-left">
+            
+        </div>
+    </div>
 </body>
 
 <script>
@@ -46,10 +54,10 @@
 
     $(document).ready(function(){
         $(".three-dots-product-option").click(function(event){
-            event.stopPropagation(); // Prevents the event from bubbling up the DOM tree
+            event.stopPropagation(); 
             var $popup = $(this).closest('.container').find('.product-options-popup');
-            $(".product-options-popup").not($popup).hide(); // Hide other popups
-            $popup.toggle(); // Toggle the clicked popup
+            $(".product-options-popup").not($popup).hide(); 
+            $popup.toggle(); 
         });
 
         $(document).click(function(event) {
