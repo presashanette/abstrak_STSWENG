@@ -38,6 +38,7 @@
 
     <div class="add-product-modal">
         <div class="add-product-form">
+            <h1 class="add-product-title">Add Product</h1>
             <div class="add-product-form-left">
                 <div class="main-picture">
                     <img src="/assets/upload-icon.png" name="collectionPicture" alt="" id="upload-icon" accept="image/*" aria-required="true">
@@ -46,12 +47,14 @@
             </div>
             <div class="add-product-form-right">
                 <span class="exit-form">x</span>
-                <input type="text" name="" placeholder="Name" id="product-name-input" class="product-detail-input" required>
-                <input type="number" name="" placeholder="Price (PHP)" id="product-price-input" class="product-detail-input" required>
-                <input type="text" name="" placeholder="SKU" id="product-sku-input" class="product-detail-input" required>
-                <div class="product-material-container">
-                    <div id="material-list" class="material-list"></div>
-                    <input type="text" id="material-input" class="material-input" placeholder="Add a material and press Enter" required>
+                <div class="form-1">
+                    <input type="text" name="" placeholder="Name" id="product-name-input" class="product-detail-input" required>
+                    <input type="number" name="" placeholder="Price (PHP)" id="product-price-input" class="product-detail-input" required>
+                    <input type="text" name="" placeholder="SKU" id="product-sku-input" class="product-detail-input" required>
+                    <div class="product-material-container">
+                        <div id="material-list" class="material-list"></div>
+                        <input type="text" id="material-input" class="material-input" placeholder="Add a material and press Enter" required>
+                    </div>
                 </div>
                 <button class="to-product-form2-button">Next 1/2</button>
             </div>

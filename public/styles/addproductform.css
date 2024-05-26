@@ -15,13 +15,13 @@
 .add-product-form {
     width: 70%;
     background-color: #fcfcfc;
-    height: 500px;
+    height: 550px;
     display: flex;
     flex-direction: row;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 6px 6px rgba(0, 0, 0, 0.10);
     border-radius: 25px;
     padding: 3%;
-    padding-top: 5%;
+    padding-top: 7%;
     position: relative;
     gap: 3rem; 
 }
@@ -34,13 +34,30 @@
  
 }
 
+.add-product-title {
+    font-family: 'DM Sans', sans-serif;
+    position: fixed;
+    top: 125px;
+    left: 650px;
+    /* font-size: 20px; */
+
+}
+
 .add-product-form-right {
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 15px;
     height: 100%;
 }
+
+.form-1 {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+
 
 #upload-icon {
     height: 12.5%;
