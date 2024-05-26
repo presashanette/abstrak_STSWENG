@@ -1,6 +1,7 @@
 @import "base.css";
 @import "navbar.css";
 @import "gridheader.css";
+@import "addcollection.css";
 
 .main {
     height: 100%;
@@ -73,4 +74,5 @@
     width: 240px;
     text-align: center;
 }
+
 

@@ -1,12 +1,14 @@
 $(document).ready(function(){
     $(".main-picture").click(function(event){
-        // event.stopPropagation();
-        // console.log("clicked");
         $("#imageInput").click();
     });
 
     $("#imageInput").click(function(event){
         event.stopPropagation();
+    });
+
+    $(".exit").click(function(event){
+        $(".add-collection-modal").hide();
     });
 
  
@@ -31,7 +33,7 @@ $(document).ready(function(){
         reader.readAsDataURL(file);
     });
 
-    $("button").click(function(){
+    $(".submit-collection-button").click(function(){
         var name = $("#collection-name-input").val();
         var description = $("#collection-description-input").val();
         var image = $("#imageInput")[0].files[0];
