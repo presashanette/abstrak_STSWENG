@@ -2,6 +2,7 @@
 @import "navbar.css";
 @import "gridheader.css";
 @import "addproductform.css";
+@import "swal.css";
 
 
 .main {
@@ -127,5 +128,4 @@
 .product-option-popup:hover {
     opacity: 50%;
 }
-
 

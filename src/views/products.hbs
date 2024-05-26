@@ -13,20 +13,18 @@
         {{>navbar}}
         {{>gridheader}}
         <div class="catalogue">
-
             <div class="gallery">
                 {{#each products}}
-                    <div class="container" data-id="{{_id}}">
+                    <div class="container" data-id="{{_id}}" data-name="{{name}}" data-picture="/uploads/products/{{pictures}}">
                         <div class="product-pic-container">
                             <div class="product-actual-photo-container">
-                                <img src="/uploads/products/{{pictures}}" alt="" srcset="" class="product-pic">
+                                <img src="/uploads/products/{{pictures}}" alt="" class="product-pic">
                             </div>
                         </div>
                         <div class="product-name">
                             <p>{{name}}</p>
                             <p class="product-stock {{#stockStatus totalStock}}{{/stockStatus}}-stock">{{totalStock}} in stock</p>
                             <span class="three-dots-product-option">&nbsp;&nbsp;&#8286;</span>
-                        
                         </div>
                         <div class="product-options-popup">
                             <p><a href="" class="product-option-popup edit-product">Edit</a></p>
@@ -34,14 +32,11 @@
                         </div>
                     </div>
                 {{/each}}
-
-
             </div>
         </div>
     </div>    
 
-     <div class="add-product-modal">
-
+    <div class="add-product-modal">
         <div class="add-product-form">
             <div class="add-product-form-left">
                 <div class="main-picture">
@@ -64,7 +59,7 @@
     </div>
 
     <script>
-        let tagList = []
+        let tagList = [];
 
         $(document).ready(function(){
 
@@ -83,7 +78,6 @@
 
             $(".product-options-popup").hide();
 
-            
             $("#imageInput").change(function(event){
                 var file = this.files[0];
                 var reader = new FileReader();
@@ -99,11 +93,9 @@
                     photoContainer.appendChild(img);
 
                     mediaContainer.append(photoContainer);
-
                 }
                 reader.readAsDataURL(file);
             });
-
 
             $('#material-input').keydown(function(event) {
                 if (event.key === 'Enter') {
@@ -119,11 +111,8 @@
             $('#product-name-input').on('keyup', function() {
                 const name = $(this).val();
 
-             
-
                 if (name === ""){
-                    $('#product-name-input').removeClass('correct-input')
-                    $('#product-name-input').addClass('wrong-input')
+                    $('#product-name-input').removeClass('correct-input').addClass('wrong-input');
                 } else {
                     $.ajax({
                         url: '/api/products/check-name',
@@ -132,37 +121,27 @@
                             name: name
                         },
                         success: function(data) {
-                            if(data.success ){
-                                $('#product-name-input').removeClass('wrong-input')
-                                $('#product-name-input').addClass('correct-input')
+                            if(data.success){
+                                $('#product-name-input').removeClass('wrong-input').addClass('correct-input');
                             } else {
-                                $('#product-name-input').addClass('wrong-input')
+                                $('#product-name-input').addClass('wrong-input');
                             }
                         }
-
-
-
                     });
-                };
-
+                }
             });
 
             $('#product-price-input').on('keyup', function() {
                 if(Number($(this).val()) > 0) {
-                    console.log("correct");
-                    $('#product-price-input').removeClass('wrong-input')
-                    $('#product-price-input').addClass('correct-input')
+                    $('#product-price-input').removeClass('wrong-input').addClass('correct-input');
                 } else {
-                    $('#product-price-input').removeClass('correct-input')
-                    $('#product-price-input').addClass('wrong-input')
+                    $('#product-price-input').removeClass('correct-input').addClass('wrong-input');
                 }
             });
 
             $('#product-sku-input').on('keyup', function() {
-
                 if($(this).val() === "") {
-                    $('#product-sku-input').removeClass('correct-input')
-                    $('#product-sku-input').addClass('wrong-input');
+                    $('#product-sku-input').removeClass('correct-input').addClass('wrong-input');
                 } else {
                     $.ajax({
                         url: '/api/products/check-sku',
@@ -172,31 +151,26 @@
                         },
                         success: function(data) {
                             if(data.success){
-                                $('#product-sku-input').removeClass('wrong-input')
-                                $('#product-sku-input').addClass('correct-input')
+                                $('#product-sku-input').removeClass('wrong-input').addClass('correct-input');
                             } else {
-                                $('#product-sku-input').addClass('wrong-input')
+                                $('#product-sku-input').addClass('wrong-input');
                             }
                         }
                     });
                 }
-              
             });
 
-
-            $('.add-product-modal').hide()
+            $('.add-product-modal').hide();
 
             $('.grid-header-add-button').on('click', function() {
                 $('.add-product-modal').fadeIn();
-            })
+            });
 
             $('.exit-form').on('click', function() {
                 $('.add-product-modal').fadeOut();
-            })
-            
-             $(".main-picture").click(function(event){
-                // event.stopPropagation();
-                // console.log("clicked");
+            });
+
+            $(".main-picture").click(function(event){
                 $("#imageInput").click();
             });
 
@@ -204,19 +178,16 @@
                 event.stopPropagation();
             });
 
-           function addTag(tag) {
-                // Check if tag already exists in the global list
+            function addTag(tag) {
                 if (tagList.includes(tag)) {
                     console.log('Tag already exists:', tag);
-                    return; // Exit the function if tag already exists
+                    return;
                 }
 
-                // Add tag to the global list
                 tagList.push(tag);
 
                 var tagElement = $('<div>').addClass('material').text(tag);
                 var removeButton = $('<span>').addClass('remove-material').text('×').click(function() {
-                    // Remove the tag from the global list when removed from the UI
                     var index = tagList.indexOf(tag);
                     if (index !== -1) {
                         tagList.splice(index, 1);
@@ -227,37 +198,37 @@
                 $('#material-list').append(tagElement);
             }
 
-        });
+            $(".to-product-form2-button").click(function(event){
+                event.preventDefault();
+                const name = $('#product-name-input').val();
+                const price = $('#product-price-input').val();
+                const sku = $('#product-sku-input').val();
+                const materials = tagList;
 
-        $(".to-product-form2-button").click(function(event){
-            event.preventDefault();
-            const name = $('#product-name-input').val();
-            const price = $('#product-price-input').val();
-            const sku = $('#product-sku-input').val();
-            const materials = tagList;
+                if(name === "" || price === "" || sku === "" || materials.length === 0){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please fill out all fields!',
+                    })
+                    return;
+                }
 
-            if(name === "" || price === "" || sku === "" || materials.length === 0){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please fill out all fields!',
-                })
-                return;
-            }
 
-            
 
-        });
+            });
 
-        // delete SWAL
-        $(document).ready(function(){
+            // delete SWAL
             $(".delete-product").click(function(event){
                 event.preventDefault();
-                const deleteProductId = $(this).closest('.container').data('id');
+                const $container = $(this).closest('.container');
+                const deleteProductId = $container.data('id');
+                const productName = $container.data('name');
+                const productPicture = $container.data('picture');
 
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "Do you want to delete this product?",
+                    html: `<p>Do you want to delete the product "<strong>${productName}</strong>"?</p><img src="${productPicture}" alt="${productName}" class="swal-product-image">`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -268,7 +239,7 @@
                     if (result.isConfirmed) {
                         Swal.fire({
                             title: 'Delete associated details?',
-                            text: "Do you also want to delete the associated details?",
+                            html: `<p>Do you also want to delete the associated details for "<strong>${productName}</strong>"?</p><img src="${productPicture}" alt="${productName}" class="swal-product-image">`,
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
@@ -283,7 +254,7 @@
                                     success: function(result) {
                                         Swal.fire(
                                             'Deleted!',
-                                            'Product and associations have been deleted.',
+                                            `Product "<strong>${productName}</strong>" and associations have been deleted.`,
                                             'success'
                                         ).then(() => location.reload());
                                     },
@@ -298,7 +269,7 @@
                                     success: function(result) {
                                         Swal.fire(
                                             'Deleted!',
-                                            'Product has been deleted, associations retained.',
+                                            `Product "<strong>${productName}</strong>" has been deleted, associations retained.`,
                                             'success'
                                         ).then(() => location.reload());
                                     },
