@@ -2,6 +2,12 @@
 let tagList, variations = [];
 let name, price, sku, materials, editingProductId;
 
+const ROW_VARIATION = '.product-form-variation'
+const ROW_STOCK = ".product-form-stock"
+const ROW_MANUCOST = ".product-form-manucost"
+
+
+
 function popupClick(event){
     event.stopPropagation(); // do not bubble up to the DOM window
     var $popup = $(this).closest('.container').find('.product-options-popup');
@@ -109,9 +115,6 @@ function validatePriceInput() {
     }
 }
 
-function validateVariation() {
-    )
-}
 
 
 function validateSKUInput() {
@@ -304,13 +307,10 @@ function nextForm(event){
     price = $('#product-price-input').val();
     sku = $('#product-sku-input').val();
     materials = tagList;
+    picture = $(".product-photo-container")
 
-    if(name === "" || price === "" || sku === "" || materials.length === 0){
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Please fill out all fields!',
-        })
+    if(name === "" || price === "" || sku === "" || materials.length === 0 || picture.length === 0){
+        fireErrorSwal("Please fill out all fields and ensure that a picture is uploaded!")
         return;
     }
 
@@ -318,6 +318,34 @@ function nextForm(event){
     $(".form-2").show();
     $("#next-form-button").text("Submit");
     $("#back-form-button").show();
+}
+
+function validateForm2(product){
+    
+    const uniqueVariations = []
+    const variations = $('.add-product-variation-row');
+
+    for (let i = 0; i < variations.length; i++) {
+        const variation = {};
+        variation.variation = $(variations[i]).find(ROW_VARIATION).val();
+        variation.stocks = parseInt($(variations[i]).find(ROW_STOCK).val()); 
+        variation.manufacturingCost = parseFloat($(variations[i]).find(ROW_MANUCOST).val()); 
+
+        if (!variation.variation || variation.stocks < 0 || variation.manufacturingCost <= 0) {
+  
+            fireErrorSwal("Please fill out all fields and ensure that stock and manufacturing cost are valid numbers!")
+            return;
+        }
+
+        if(uniqueVariations.includes(variation.variation)){
+            fireErrorSwal("Variations must be unique!")
+            return;
+        }
+
+        uniqueVariations.push(variation.variation);
+        product.variations.push(variation);
+    }
+
 }
 
 function submitProduct(event) {
@@ -340,38 +368,14 @@ function submitProduct(event) {
         variations: []
     };
 
+
+
     const filename = $('#upload-icon').data('filename');
 
-    // Assign the filename to the product object
     product.pictures = filename;
 
-    // Get variations
-    const variations = $('.add-product-variation-row');
-    let isValid = true;
+    validateForm2(product);
 
-    for (let i = 0; i < variations.length; i++) {
-        const variation = {};
-        variation.variation = $(variations[i]).find('.product-variation').val();
-        variation.stocks = parseInt($(variations[i]).find('.product-size').val()); 
-        variation.manufacturingCost = parseFloat($(variations[i]).find('.product-manu-cost').val()); 
-
-        if (!variation.variation || isNaN(variation.stocks) || isNaN(variation.manufacturingCost)) {
-            isValid = false;
-            break;
-        }
-
-        product.variations.push(variation);
-    }
-
-    // Check if all fields are filled and valid
-    if (!isValid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Please fill out all fields and ensure that stock and manufacturing cost are valid numbers!',
-        });
-        return;
-    }
 
     if (existingProductId) {
         // Update existing product
@@ -396,7 +400,7 @@ function submitProduct(event) {
                 }, 5000);
             },
             error: function(xhr, status, error) {
-                Swal.fire('Error', 'There was an error updating the product.', 'error');
+                fireErrorSwal("Error updating product. Please try again.");
             }
         });
     }
@@ -425,7 +429,8 @@ function toForm2Click(event){
 function addVariation() {
     var newVariationRow = $('.add-product-variation-row:first').clone();
     newVariationRow.find('input').val('');
-    newVariationRow.find('.product-form-stock').removeClass('wrong-input').remove('correct-input');
+    newVariationRow.find(ROW_STOCK).removeClass('wrong-input').remove('correct-input');
+    newVariationRow.find(ROW_MANUCOST).removeClass('wrong-input').remove('correct-input');
     $('.add-row-frame').append(newVariationRow);
 }
 
