@@ -3,6 +3,7 @@
 
 const Product = require('../models/Product');
 const AbstrakCol = require('../models/AbstrakCol');
+const { addProductToCollection } = require('./collectionControllers');
 
 async function deleteProductById(req, res) {
     try {
@@ -51,6 +52,30 @@ async function checkName(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     });   
 
+}
+
+async function addProduct(req, res) {
+    const { name, price, SKU, material, variations, collectionId } = req.body;
+
+    const newProduct = new Product({
+        name,
+        picture: req.file.filename ,
+        price,
+        SKU,
+        material: JSON.parse(material),
+        variations: JSON.parse(variations)
+    });
+
+
+    try{
+        await newProduct.save();
+        addProductToCollection(collectionId, newProduct._id);
+        res.send({ success: true, message: 'Product added successfully' });
+        
+    } catch (err) {
+        console.log("error in add product: " + err)
+    }
+    
 }
 
 async function fetchSizeStockCost(req, res) {
@@ -112,4 +137,4 @@ async function checkSKU(req, res) {
 
 
 }
-module.exports = { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct };
+module.exports = { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct };

@@ -11,13 +11,39 @@ $(document).ready(function(){
         $(".add-collection-modal").hide();
     });
 
+    $("#collection-name-input").keyup(function(event){
+        if($(this).val() == ""){
+            $(this).removeClass("correct-input");
+            $(this).addClass("wrong-input");
+        } else {
+            $(this).removeClass("wrong-input");
+            $(this).addClass("correct-input");
+        }
+
+        $.ajax({
+            url: "/api/collections/checkName",
+            type: "POST",
+            data: {name: $(this).val()},
+            success: function(data){
+                if(data.success){
+                    $("#collection-name-input").removeClass("wrong-input");
+                    $("#collection-name-input").addClass("correct-input");
+                } else {
+                    $("#collection-name-input").removeClass("correct-input");
+                    $("#collection-name-input").addClass("wrong-input");
+                }
+            }
+        });
+    
+    });
+
     
     $("#imageInput").change(function(event){
         var file = this.files[0];
         var reader = new FileReader();
         
         $(".collection-photo-container").remove();
-        
+
         mediaContainer = $(".main-picture")
         reader.onload = function(e){
             const photoContainer = document.createElement('div');
@@ -49,7 +75,8 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
             success: function(data){
-                window.location.href = "/collections";
+                if(data.success)
+                    window.location.href = "/collections";
             }
         });
     });

@@ -12,6 +12,12 @@ async function handleCollectionPageRequest (req, res) {
     }
 }
 
+async function addProductToCollection (collectionId, productId) {
+    const collection = await Collection.findById(collectionId);
+    collection.pieces.push(productId);
+    collection.save();
+}
+
 async function handleAddCollectionRequest (req, res) {
     try {
         const { name, description } = req.body
@@ -20,13 +26,30 @@ async function handleAddCollectionRequest (req, res) {
         const newCollection = new Collection({
             name,
             description,
+            pieces: [],
             collectionPicture: collectionPicture.filename
         })
 
         newCollection.save();
+        res.send({ success: true, message: 'Collection added successfully' })
     } catch (error) {
         console.log("error in add collections: " + error)
     }
+}
+
+async function checkCollectionName (req, res) {
+    const name = req.body.name;
+
+    Collection.findOne({ name: name }).lean().then(collection => {
+        if(collection) {
+            res.send({ success: false, message: 'Collection name is not available' })
+        } else {
+            res.send({ success: true, message: 'Collection name is available' })
+        }
+    }
+    ).catch(err => {
+        res.status(500).json({ error: 'Internal Server Error' });
+    });
 }
 
 
@@ -40,7 +63,7 @@ async function handleCollectionProductsRequest (req, res) {
             
         })
         
-        res.render("products", { products: collection.pieces, "grid-add-button": "Product", "grid-title": collection.name});
+        res.render("products", { products: collection.pieces, "grid-add-button": "Product", "grid-title": collection.name, "collectionId": collection._id});
     } catch (err) {
         // Handle error
         console.error(err);
@@ -49,6 +72,8 @@ async function handleCollectionProductsRequest (req, res) {
 }   
 module.exports = {  handleCollectionPageRequest,
                     handleAddCollectionRequest,
-                    handleCollectionProductsRequest
+                    handleCollectionProductsRequest,
+                    checkCollectionName,
+                    addProductToCollection
                 
                 };

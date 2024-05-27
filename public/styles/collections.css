@@ -76,3 +76,13 @@
 }
 
 
+
+
+
+.correct-input {
+    border: 2px solid #0F734C;
+}
+
+.wrong-input {
+    border: 2px solid #B10201;
+}
