@@ -1,5 +1,5 @@
 
-let tagList = [];
+let tagList, variations = [];
 let name, price, sku, materials, editingProductId;
 
 function popupClick(event){
@@ -90,12 +90,27 @@ function validateProductName() {
     }
 }
 
+function validateStockInput() {
+    const targetCell = $(this);
+    const value = Number(targetCell.val()); 
+
+    if (value >= 0) {
+        targetCell.removeClass('wrong-input').addClass('correct-input'); 
+    } else {
+        targetCell.removeClass('correct-input').addClass('wrong-input'); 
+    }
+}
+
 function validatePriceInput() {
     if(Number($(this).val()) > 0) {
-        $('#product-price-input').removeClass('wrong-input').addClass('correct-input');
+        $(this).removeClass('wrong-input').addClass('correct-input');
     } else {
-        $('#product-price-input').removeClass('correct-input').addClass('wrong-input');
+        $(this).removeClass('correct-input').addClass('wrong-input');
     }
+}
+
+function validateVariation() {
+    )
 }
 
 
@@ -410,5 +425,8 @@ function toForm2Click(event){
 function addVariation() {
     var newVariationRow = $('.add-product-variation-row:first').clone();
     newVariationRow.find('input').val('');
+    newVariationRow.find('.product-form-stock').removeClass('wrong-input').remove('correct-input');
     $('.add-row-frame').append(newVariationRow);
 }
+
+

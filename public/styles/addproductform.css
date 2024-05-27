@@ -192,14 +192,6 @@
     object-fit:contain;
 }
 
-.correct-input {
-    border: 2px solid #0F734C;
-}
-
-.wrong-input {
-    border: 2px solid #B10201;
-}
-
 .table-type {
     display: flex;
     /* flex-direction: row; */
@@ -210,6 +202,12 @@
     border-radius: 10px;
     height: 50px;
 }
+
+.table-type:focus {
+    outline: none;
+}
+
+
 
 .form-2 {
     display: flex;
@@ -261,4 +259,14 @@
     justify-content: space-between;
     margin-top: 20px;
     max-width: 500px;
+}
+
+
+
+.correct-input {
+    border: 2px solid #0F734C;
+}
+
+.wrong-input {
+    border: 2px solid #B10201;
 }

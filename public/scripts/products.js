@@ -40,7 +40,14 @@ $(document).ready(function(){
 
     $("#back-form-button").click(toForm1Click);
 
+    $(".product-form-stock").on('keyup', validateStockInput);
 
+    $(document).on('input', '.product-form-stock', validateStockInput); // bind the dynamically added stuff
+
+
+    $(".product-form-manucost").on('keyup', validatePriceInput);
+
+    $(document).on('input', '.product-form-manucost', validatePriceInput); // bind the dynamically added stuff
     
     // edit product form
     $(".edit-product").click(editProduct);

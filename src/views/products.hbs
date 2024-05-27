@@ -60,6 +60,10 @@
                 </div>
                 <div class="form-2">
                     <div class="add-row-frame">
+                        <div class="add-row-template">
+                            {{>variations}}
+                        </div>
+
                         {{>variations}}
 
                     </div>
@@ -86,6 +90,7 @@
 
         $("#back-form-button").hide();
 
+        $(".add-row-template").hide();
 
     </script>
 </body>
