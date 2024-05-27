@@ -53,6 +53,44 @@ async function checkName(req, res) {
 
 }
 
+async function fetchSizeStockCost(req, res) {
+  const productId = req.params.id;
+  console.log(productId);
+  try {
+      const product = await Product.findById(productId).lean();
+      console.log(product);
+      
+      if (!product) {
+          return res.status(404).json({ error: "Product not found" });
+      }
+      
+      res.json(product);  // Send the product data as a JSON response
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error fetching product data" });
+  }
+}
+
+async function updateProduct(req, res) {
+  const productId = req.params.id;
+  const productData = req.body;
+
+  try {
+      // Find the product by ID and update its details
+      const updatedProduct = await Product.findByIdAndUpdate(productId, productData, { new: true });
+
+      if (!updatedProduct) {
+          return res.status(404).json({ error: 'Product not found' });
+      }
+
+      res.json(updatedProduct); // Return the updated product
+  } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ error: 'Error updating product' });
+  }
+}
+
+
 
 async function checkSKU(req, res) {
     const sku = req.body.sku;
@@ -74,4 +112,4 @@ async function checkSKU(req, res) {
 
 
 }
-module.exports = { deleteProductById, checkName, checkSKU };
+module.exports = { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct };

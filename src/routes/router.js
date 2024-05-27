@@ -5,7 +5,7 @@ const router = express.Router();
 const multer = require('multer');
 
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest } = require('../controllers/collectionControllers');
-const { deleteProductById, checkName, checkSKU } = require('../controllers/productController');
+const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct } = require('../controllers/productController');
 
 
 
@@ -30,6 +30,8 @@ router.delete('/api/products/delete/:id', deleteProductById);
 
 // products
 router.post('/api/products/check-name', checkName);
-router.post('/api/products/check-sku', checkSKU)
+router.post('/api/products/check-sku', checkSKU);
+router.get('/products/:id', fetchSizeStockCost);
+router.put('/api/products/update/:id', updateProduct);
 
 module.exports = router;
