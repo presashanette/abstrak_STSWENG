@@ -357,22 +357,24 @@ function submitProduct(event) {
     const name = $('#product-name-input').val();
     const price = parseFloat($('#product-price-input').val()); // Convert price to float
     const sku = $('#product-sku-input').val();
-    const material = $('#material-list').children().map(function() { return $(this).text(); }).get();
+    const material = $('#material-list').children().map(function() { return $(this).text().replace("×", ""); }).get();
     const existingProductId = editingProductId;
-    var image = $("#imageInput")[0].files[0];
+    const image = $("#imageInput")[0].files[0];
+    const collectionId = $('.main').data('id');
 
     variations = validateForm2();
+    
+    console.log(variations);
+    console.log(material);
 
     var formData = new FormData();
     formData.append("name", name);
     formData.append("price", price);
     formData.append("SKU", sku);
-    formData.append("material", material);
+    formData.append("material", JSON.stringify(material));
     formData.append("picture", image);
-    formData.append("variations", variations)
-
-    console.log(formData);
-
+    formData.append("variations", JSON.stringify(variations));
+    formData.append("collectionId", collectionId);
 
 
 
@@ -407,19 +409,18 @@ function submitProduct(event) {
             }
         });
     } else {
-        // $.ajax({
-        //     url: '/api/products/add',
-        //     type: 'POST',
-        //     data: formData,
-        //     contentType: false,
-        //     processData: false,
-        //     success: function(data){
-        //         window.location.href = "/products";
-        //     }
-        // });
+        $.ajax({
+            url: '/api/products/add',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                window.location.reload();
+            }
+        });
     }
 
-    console.log(product);
 }
 
 

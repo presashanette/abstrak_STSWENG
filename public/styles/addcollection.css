@@ -75,6 +75,10 @@
 
 }
 
+.text-input:focus {
+    outline: none;
+}
+
 #collection-name-input {
     font-weight: 200;
 }
