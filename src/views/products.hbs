@@ -17,7 +17,7 @@
         <div class="catalogue">
             <div class="gallery">
                 {{#each products}}
-                    <div class="container" data-id="{{_id}}" data-name="{{name}}" data-picture="/uploads/products/{{pictures}}">
+                    <div class="container" data-id="{{_id}}" data-name="{{name}}" data-price="{{price}}" data-sku="{{SKU}}" data-materials="{{material}}" data-picture="/uploads/products/{{pictures}}">
                         <div class="product-pic-container">
                             <div class="product-actual-photo-container">
                                 <img src="/uploads/products/{{pictures}}" alt="" class="product-pic">
@@ -37,29 +37,6 @@
             </div>
         </div>
     </div>    
-
-    <div class="edit-product-modal">
-        <div class="edit-product-form">
-            <div class="edit-product-form-left">
-                <div class="edit-main-picture">
-                    <img src="/assets/upload-icon.png" name="collectionPicture" alt="" id="edit-upload-icon" accept="image/*" aria-required="true">
-                    <input type="file" name="main-image" id="edit-imageInput">
-                </div>
-            </div>
-            <div class="edit-product-form-right">
-                <span class="edit-exit-form">x</span>
-                <input type="text" name="" placeholder="Name" id="edit-product-name-input" class="product-detail-input" required>
-                <input type="number" name="" placeholder="Price (PHP)" id="edit-product-price-input" class="product-detail-input" required>
-                <input type="text" name="" placeholder="SKU" id="edit-product-sku-input" class="product-detail-input" required>
-                <div class="product-material-container">
-                    <div id="edit-material-list" class="material-list"></div>
-                    <input type="text" id="edit-material-input" class="material-input" placeholder="Add a material and press Enter" required>
-                </div>
-                <button class="to-product-form2-button">Next 1/2</button>
-            </div>
-        </div>
-    </div>
-
 
     <div class="add-product-modal">
         <div class="add-product-form">

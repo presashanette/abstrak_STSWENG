@@ -9,6 +9,7 @@ $(document).ready(function(){
 
     // add product form
     $('.grid-header-add-button').on('click', function() {
+        clearForm();
         $('.add-product-modal').fadeIn();
     });
 
@@ -42,22 +43,7 @@ $(document).ready(function(){
 
     
     // edit product form
-    $('.edit-product').on('click', function() {
-        $('.edit-product-modal').fadeIn();
-    });
-
-
-    $('.edit-exit-form').on('click', function() {
-        $('.edit-product-modal').fadeOut();
-    });
-
-    $(".edit-main-picture").click(function(event){
-        $("#edit-imageInput").click();
-    });
-
-    $("#edit-imageInput").click(function(event){
-        event.stopPropagation();
-    });
+    $(".edit-product").click(editProduct);
 
 
 
