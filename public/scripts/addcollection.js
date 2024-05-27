@@ -16,6 +16,8 @@ $(document).ready(function(){
         var file = this.files[0];
         var reader = new FileReader();
         
+        $(".collection-photo-container").remove();
+        
         mediaContainer = $(".main-picture")
         reader.onload = function(e){
             const photoContainer = document.createElement('div');

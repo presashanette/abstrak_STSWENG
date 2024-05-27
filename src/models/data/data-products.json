@@ -1,10 +1,7 @@
 [{
   "_id": "6651ead6a17e4939441ea32b",
   "name": "Letterless",
-  "status": "Available",
-  "pictures": [
-    "letterless1.png"
-  ],
+  "picture": "letterless1.png",
   "price": 100,
   "SKU": "MEM001",
   "material": [
@@ -49,10 +46,7 @@
 {
   "_id": "6651f0d4f6accfe89090a8a6",
   "name": "Memories",
-  "status": "Available",
-  "pictures": [
-    "memories1.png"
-  ],
+  "picture": "memories1.png",
   "price": 100,
   "SKU": "MEM002",
   "material": [

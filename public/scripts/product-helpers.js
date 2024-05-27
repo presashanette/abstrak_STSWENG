@@ -27,6 +27,7 @@ function displayUploadedImage(event) {
     var reader = new FileReader();
     
     mediaContainer = $(".main-picture")
+    $(".product-photo-container").remove();
     reader.onload = function(e){
         const photoContainer = document.createElement('div');
         photoContainer.className = 'product-photo-container';
@@ -320,9 +321,9 @@ function nextForm(event){
     $("#back-form-button").show();
 }
 
-function validateForm2(product){
-    
+function validateForm2(){
     const uniqueVariations = []
+    const productVariations = []
     const variations = $('.add-product-variation-row');
 
     for (let i = 0; i < variations.length; i++) {
@@ -343,8 +344,10 @@ function validateForm2(product){
         }
 
         uniqueVariations.push(variation.variation);
-        product.variations.push(variation);
+        productVariations.push(variation);
     }
+
+    return productVariations
 
 }
 
@@ -354,27 +357,27 @@ function submitProduct(event) {
     const name = $('#product-name-input').val();
     const price = parseFloat($('#product-price-input').val()); // Convert price to float
     const sku = $('#product-sku-input').val();
-    const materials = $('#material-list').children().map(function() { return $(this).text(); }).get();
+    const material = $('#material-list').children().map(function() { return $(this).text(); }).get();
     const existingProductId = editingProductId;
+    var image = $("#imageInput")[0].files[0];
+
+    variations = validateForm2();
+
+    var formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("SKU", sku);
+    formData.append("material", material);
+    formData.append("picture", image);
+    formData.append("variations", variations)
+
+    console.log(formData);
 
 
-    const product = {
-        existingProductId: existingProductId,
-        name: name,
-        price: price,
-        sku: sku,
-        material: materials,
-        pictures: '',
-        variations: []
-    };
 
 
 
-    const filename = $('#upload-icon').data('filename');
 
-    product.pictures = filename;
-
-    validateForm2(product);
 
 
     if (existingProductId) {
@@ -403,6 +406,17 @@ function submitProduct(event) {
                 fireErrorSwal("Error updating product. Please try again.");
             }
         });
+    } else {
+        // $.ajax({
+        //     url: '/api/products/add',
+        //     type: 'POST',
+        //     data: formData,
+        //     contentType: false,
+        //     processData: false,
+        //     success: function(data){
+        //         window.location.href = "/products";
+        //     }
+        // });
     }
 
     console.log(product);

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/styles/products.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/scripts/general.js"></script>
     <script src="/scripts/product-helpers.js"></script>
     <script src="/scripts/products.js"></script>
 </head>
@@ -20,7 +21,7 @@
                     <div class="container" data-id="{{_id}}" data-name="{{name}}" data-price="{{price}}" data-sku="{{SKU}}" data-materials="{{material}}" data-picture="/uploads/products/{{pictures}}">
                         <div class="product-pic-container">
                             <div class="product-actual-photo-container">
-                                <img src="/uploads/products/{{pictures}}" alt="" class="product-pic">
+                                <img src="/uploads/products/{{picture}}" alt="" class="product-pic">
                             </div>
                         </div>
                         <div class="product-name">
