@@ -1,7 +1,52 @@
 [{
-  "_id": "6651ead6a17e4939441ea328",
-  "name": "Made Human",
-  "pieces": [ "6651ead6a17e4939441ea32b", "6651f0d4f6accfe89090a8a6" ],
-  "collectionPicture": "madehuman.jpg",
+  "_id": "6651ead6a17e4939441ea321",
+  "name": "ÄLL PRODUCTS",
+  "pieces": [
+    "6651ead6a17e4939441ea32a",
+    "6651ead6a17e4939441ea32b",
+    "6651ead6a17e4939441ea32c",
+    "6651ead6a17e4939441ea32d",
+    "6651ead6a17e4939441ea32e",
+    "6651ead6a17e4939441ea32f",
+    "6651ead6a17e4939441ea320",
+    "6651ead6a17e4939441ea321",
+    "6651ead6a17e4939441ea322",
+    "6651ead6a17e4939441ea323",
+    "6651ead6a17e4939441ea324",
+    "6651ead6a17e4939441ea325",
+    "6651ead6a17e4939441ea326",
+    "6651ead6a17e4939441ea327",
+    "6651ead6a17e4939441ea329",
+    "6651ead6a17e4939441ea32a"
+  ],
+  "collectionPicture": "all_products_collection.png",
   "__v": 1
-}]
+},
+  {
+    "_id": "6651ead6a17e4939441ea328",
+    "name": "Made Human",
+    "pieces": [
+      "6651ead6a17e4939441ea325",
+      "6651ead6a17e4939441ea326",
+      "6651ead6a17e4939441ea327"
+    ],
+    "collectionPicture": "madehuman.jpg",
+    "__v": 1
+  },
+  {
+    "_id": "6651ead6a17e4939441ea322",
+    "name": "Love Letters",
+    "pieces": [
+      "6651ead6a17e4939441ea32a",
+      "6651ead6a17e4939441ea32b",
+      "6651ead6a17e4939441ea32c",
+      "6651ead6a17e4939441ea32d",
+      "6651ead6a17e4939441ea32e",
+      "6651ead6a17e4939441ea32f",
+      "6651ead6a17e4939441ea320",
+      "6651ead6a17e4939441ea321"
+    ],
+    "collectionPicture": "love_letters.jpg",
+    "__v": 1
+  }
+]
