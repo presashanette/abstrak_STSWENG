@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-
+const Product = require('../models/Product');
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName } = require('../controllers/collectionControllers');
 const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct } = require('../controllers/productController');
 
@@ -44,4 +44,22 @@ router.post('/api/products/check-sku', checkSKU);
 router.get('/products/:id', fetchSizeStockCost);
 router.put('/api/products/update/:id', updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
+
+// testing
+router.get('/api/products/name/:name', async (req, res) => {
+  try {
+    const name = req.params.name;
+    const product = await Product.findOne({ name: name });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

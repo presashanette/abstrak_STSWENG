@@ -1,5 +1,8 @@
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const path = require('path');
+const axios = require('axios');
+const chai = require('chai');
+const expect = chai.expect;
 
 async function testProductAddition() {
     let driver;
@@ -109,9 +112,23 @@ async function testProductAddition() {
         console.error('Error occurred:', error);
     } finally {
         if (driver) {
-     
+            (async () => {
+                const productName = 'New Product_15'; 
+              
+                const response = await axios.get(`http://localhost:3000/api/products/name/${productName}`);
+              
+                const product = response.data;
+                console.log(product);
+              
+                expect(product.name).to.equal('New Product_155');
+                expect(product.price).to.equal(1250);
+                expect(product.SKU).to.equal('SKU12345');
+            })();
+    
             await driver.quit();
         }
+
+        
     }
 }
 

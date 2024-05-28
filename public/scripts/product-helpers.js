@@ -1,4 +1,5 @@
 
+
 let tagList, variations = [];
 let name, price, sku, materials, editingProductId;
 
@@ -21,23 +22,27 @@ function closePopup(event){
     }
 }
 
+function createImage(source){
+    mediaContainer = $(".main-picture")
+    const photoContainer = document.createElement('div');
+    photoContainer.className = 'product-photo-container';
+
+    const img = document.createElement('img');
+    img.src = source;
+    img.className = 'product-photo';
+    photoContainer.appendChild(img);
+
+    mediaContainer.append(photoContainer);
+}
+
 function displayUploadedImage(event) {
 
     var file = this.files[0];
     var reader = new FileReader();
     
-    mediaContainer = $(".main-picture")
     $(".product-photo-container").remove();
     reader.onload = function(e){
-        const photoContainer = document.createElement('div');
-        photoContainer.className = 'product-photo-container';
-
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.className = 'product-photo';
-        photoContainer.appendChild(img);
-
-        mediaContainer.append(photoContainer);
+        createImage(e.target.result);
     }
     reader.readAsDataURL(file);
 }
@@ -206,8 +211,7 @@ function populateForm(id, name, price, sku, materials, picture) {
 
     fetchProductData(id);
 
-
-    $('<img>').attr('src', picture).attr('alt', name).appendTo('.main-picture');
+    createImage(picture);
 }
 
 function fetchProductData(productId) {
