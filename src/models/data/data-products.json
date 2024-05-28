@@ -17,29 +17,29 @@
   },
   {
     "_id": "6651ead6a17e4939441ea32b",
-    "name": "Letterless Button-up Shirt A",
+    "name": "Letterless Button-up Shirt",
     "picture": "letterless_button_up_shirt_a.png",
     "price": 1190,
     "SKU": "SHIRT002A",
     "material": ["Cotton", "Polyester"],
     "variations": [
       {
-        "variation": "S",
+        "variation": "A",
         "stocks": 1,
         "manufacturingCost": 10
       },
       {
-        "variation": "M",
+        "variation": "B",
         "stocks": 5,
         "manufacturingCost": 10
       },
       {
-        "variation": "L",
+        "variation": "C",
         "stocks": 0,
         "manufacturingCost": 10
       },
       {
-        "variation": "XL",
+        "variation": "D",
         "stocks": 3,
         "manufacturingCost": 10
       }
@@ -47,224 +47,47 @@
     "__v": 0
   },
   {
-    "_id": "6651ead6a17e4939441ea32c",
-    "name": "Letterless Button-up Shirt B",
-    "picture": "letterless_button_up_shirt_b.png",
-    "price": 1190,
-    "SKU": "SHIRT002B",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 9,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "L",
-        "stocks": 1,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "XL",
-        "stocks": 9,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
-    "_id": "6651ead6a17e4939441ea32d",
-    "name": "Letterless Button-up Shirt C",
-    "picture": "letterless_button_up_shirt_c.png",
-    "price": 1190,
-    "SKU": "SHIRT002C",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "L",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "XL",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
-    "_id": "6651ead6a17e4939441ea32e",
-    "name": "Letterless Button-up Shirt D",
-    "picture": "letterless_button_up_shirt_d.png",
-    "price": 1190,
-    "SKU": "SHIRT002D",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "L",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "XL",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
     "_id": "6651ead6a17e4939441ea32f",
-    "name": "Memories Button-up Shirt A",
+    "name": "Memories Button-up Shirt",
     "picture": "memories_button_up_shirt_a.png",
     "price": 1190,
     "SKU": "SHIRT003A",
     "material": ["Cotton", "Polyester"],
     "variations": [
       {
-        "variation": "S",
+        "variation": "A",
+        "stocks": 1,
+        "manufacturingCost": 10
+      },
+      {
+        "variation": "B",
         "stocks": 0,
         "manufacturingCost": 10
       },
       {
-        "variation": "M",
+        "variation": "C",
+        "stocks": 10,
+        "manufacturingCost": 10
+      },
+      {
+        "variation": "D",
         "stocks": 0,
+        "manufacturingCost": 10
+      },
+      {
+        "variation": "E",
+        "stocks": 5,
+        "manufacturingCost": 10
+      },
+      {
+        "variation": "F",
+        "stocks": 9,
         "manufacturingCost": 10
       }
     ],
     "__v": 0
   },
-  {
-    "_id": "6651ead6a17e4939441ea320",
-    "name": "Memories Button-up Shirt B",
-    "picture": "memories_button_up_shirt_b.png",
-    "price": 1190,
-    "SKU": "SHIRT003B",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
-    "_id": "6651ead6a17e4939441ea321",
-    "name": "Memories Button-up Shirt C",
-    "picture": "memories_button_up_shirt_c.png",
-    "price": 1190,
-    "SKU": "SHIRT003C",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
-    "_id": "6651ead6a17e4939441ea322",
-    "name": "Memories Button-up Shirt D",
-    "picture": "memories_button_up_shirt_d.png",
-    "price": 1190,
-    "SKU": "SHIRT003D",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
-    "_id": "6651ead6a17e4939441ea323",
-    "name": "Memories Button-up Shirt E",
-    "picture": "memories_button_up_shirt_e.png",
-    "price": 1190,
-    "SKU": "SHIRT003E",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
-  {
-    "_id": "6651ead6a17e4939441ea324",
-    "name": "Memories Button-up Shirt F",
-    "picture": "memories_button_up_shirt_f.png",
-    "price": 1190,
-    "SKU": "SHIRT003F",
-    "material": ["Cotton", "Polyester"],
-    "variations": [
-      {
-        "variation": "S",
-        "stocks": 0,
-        "manufacturingCost": 10
-      },
-      {
-        "variation": "M",
-        "stocks": 0,
-        "manufacturingCost": 10
-      }
-    ],
-    "__v": 0
-  },
+
   {
     "_id": "6651ead6a17e4939441ea325",
     "name": "Hand-Drawn Tee",
