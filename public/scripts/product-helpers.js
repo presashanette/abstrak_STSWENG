@@ -447,6 +447,10 @@ function submitProduct(event) {
     }
 
     variations = validateForm2();
+
+    if(variations === undefined){
+        return;
+    }
     
     console.log(variations);
     console.log(material);
