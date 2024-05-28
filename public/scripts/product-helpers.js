@@ -156,6 +156,7 @@ function editProduct() {
 }
 
 function clearForm() {
+    toForm1Click();
     $('.add-product-title').text('Add Product');
     editingProductId = null;
     $('#product-name-input').val('').removeClass('correct-input wrong-input');
@@ -165,6 +166,17 @@ function clearForm() {
     tagList = [];
     $('.main-picture img').remove();
     $('<img>').attr('src', "/assets/upload-icon.png").attr('alt', "upload").attr('id', 'upload-icon').appendTo('.main-picture');
+    const variationContainer = $('.add-product-variation-rows');
+    variationContainer.empty(); // Remove all rows
+
+
+    const emptyRow = `
+        <div class="add-product-variation-row">
+            <input type="text" placeholder="Variation" class="product-form-variation table-type">
+            <input type="number" placeholder="Stock" class="product-form-stock table-type">
+            <input type="number" placeholder="Manufacturing Cost" class="product-form-manucost table-type">
+        </div>`;
+    variationContainer.append(emptyRow);
 }
 
 function preloadTag(tag) {
@@ -185,7 +197,6 @@ function populateForm(id, name, price, sku, materials, picture) {
     $('#product-name-input').val(name).removeClass('correct-input wrong-input');
     $('#product-price-input').val(price).removeClass('correct-input wrong-input');
     $('#product-sku-input').val(sku).removeClass('correct-input wrong-input');
-    tagList.length = 0;
     tagList = materials;
     $('#material-list').empty();
     materials.forEach(material => preloadTag(material));
@@ -351,6 +362,74 @@ function validateForm2(){
 
 }
 
+function updateForm(name, price, sku, materials, existingProductId) {
+    const product = {
+        existingProductId: existingProductId,
+        name: name,
+        price: price,
+        SKU: sku,
+        material: materials,
+        pictures: '',
+        variations: []
+    };
+
+    const filename = $('#upload-icon').data('filename');
+    product.pictures = filename;
+
+
+    const variations = $('.add-product-variation-row');
+    let isValid = true;
+
+    for (let i = 0; i < variations.length; i++) {
+        const variation = {};
+        variation.variation = $(variations[i]).find('.product-variation').val();
+        variation.stocks = parseInt($(variations[i]).find('.product-size').val()); 
+        variation.manufacturingCost = parseFloat($(variations[i]).find('.product-manu-cost').val()); 
+
+        if (!variation.variation || isNaN(variation.stocks) || isNaN(variation.manufacturingCost)) {
+            isValid = false;
+            break;
+        }
+
+        product.variations.push(variation);
+    }
+
+
+    if (!isValid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please fill out all fields and ensure that stock and manufacturing cost are valid numbers!',
+        });
+        return;
+    }
+
+    $.ajax({
+        url: `/api/products/update/${existingProductId}`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(product),
+        success: function(response) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Product updated',
+                text: 'The product has been updated successfully.',
+                showConfirmButton: false // Hide the default "OK" button
+            });
+
+            // Close the modal after 3 seconds (for example)
+            setTimeout(() => {
+                Swal.close(); 
+                window.location.reload();
+            }, 1500);
+        },
+        error: function(xhr, status, error) {
+            Swal.fire('Error', 'There was an error updating the product.', 'error');
+        }
+    });
+
+}
+
 function submitProduct(event) {
     event.preventDefault();
 
@@ -361,6 +440,11 @@ function submitProduct(event) {
     const existingProductId = editingProductId;
     const image = $("#imageInput")[0].files[0];
     const collectionId = $('.main').data('id');
+
+    if (existingProductId) {
+        updateForm(name, price, sku, material, existingProductId);
+        return;
+    }
 
     variations = validateForm2();
     
@@ -377,50 +461,16 @@ function submitProduct(event) {
     formData.append("collectionId", collectionId);
 
 
-
-
-
-
-
-    if (existingProductId) {
-        // Update existing product
-        $.ajax({
-            url: `/api/products/update/${existingProductId}`,
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(product),
-            success: function(response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Product updated',
-                    text: 'The product has been updated successfully.',
-                    showConfirmButton: false // Hide the default "OK" button
-                });
-
-                // Close the modal after 3 seconds (for example)
-                setTimeout(() => {
-                    Swal.close(); // Close the modal programmatically
-                    $('.form-2').hide();
-                    window.location.reload();
-                }, 5000);
-            },
-            error: function(xhr, status, error) {
-                fireErrorSwal("Error updating product. Please try again.");
-            }
-        });
-    } else {
-        $.ajax({
-            url: '/api/products/add',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(data){
-                window.location.reload();
-            }
-        });
-    }
-
+    $.ajax({
+        url: '/api/products/add',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(data){
+            window.location.reload();
+        }
+    });
 }
 
 
