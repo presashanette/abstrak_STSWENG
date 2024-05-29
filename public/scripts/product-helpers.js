@@ -439,14 +439,14 @@ function submitProduct(event) {
     const price = parseFloat($('#product-price-input').val()); // Convert price to float
     const sku = $('#product-sku-input').val();
     const material = $('#material-list').children().map(function() { return $(this).text().replace("×", ""); }).get();
-    // const existingProductId = editingProductId;
+    const existingProductId = editingProductId;
     const image = $("#imageInput")[0].files[0];
     const collectionId = $('.main').data('id');
 
-    // if (existingProductId) {
-    //     updateForm(name, price, sku, material, existingProductId);
-    //     return;
-    // }
+    if (existingProductId) {
+        updateForm(name, price, sku, material, existingProductId);
+        return;
+    }
 
     variations = validateForm2();
 
