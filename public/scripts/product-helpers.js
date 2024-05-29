@@ -334,6 +334,13 @@ function nextForm(event){
         return;
     }
 
+    if(price <= 0){
+        fireErrorSwal("Price must be greater than 0!")
+        return; 
+    }
+
+
+
     $(".form-1").hide();
     $(".form-2").show();
     $("#next-form-button").text("Submit");
@@ -344,6 +351,7 @@ function validateForm2(){
     const uniqueVariations = []
     const productVariations = []
     const variations = $('.add-product-variation-row');
+    const allFilled = true;
 
     // console.log(vs"variations)
 
@@ -351,11 +359,18 @@ function validateForm2(){
         const variation = {};
         variation.variation = $(variations[i]).find(ROW_VARIATION).val();
         variation.stocks = parseInt($(variations[i]).find(ROW_STOCK).val()); 
-        variation.manufacturingCost = parseFloat($(variations[i]).find(ROW_MANUCOST).val()); 
+        variation.manufacturingCost = parseFloat($(variations[i]).find(ROW_MANUCOST).val());
+       
+        $('input.table-type').each(function() {
+            if ($(this).val() === '') {
+                fireErrorSwal("Please fill out all fields")
+                allFilled = false;
+            }
+        });
 
+        if(!allFilled){return;}
+        
         if (!variation.variation || variation.stocks < 0 || variation.manufacturingCost <= 0) {
-            console.log(i)
-            console.log(variation.variation, variation.stocks, variation.manufacturingCost)
             fireErrorSwal("Please fill out all fields and ensure that stock and manufacturing cost are valid numbers!")
             return;
         }
@@ -424,14 +439,14 @@ function submitProduct(event) {
     const price = parseFloat($('#product-price-input').val()); // Convert price to float
     const sku = $('#product-sku-input').val();
     const material = $('#material-list').children().map(function() { return $(this).text().replace("×", ""); }).get();
-    const existingProductId = editingProductId;
+    // const existingProductId = editingProductId;
     const image = $("#imageInput")[0].files[0];
     const collectionId = $('.main').data('id');
 
-    if (existingProductId) {
-        updateForm(name, price, sku, material, existingProductId);
-        return;
-    }
+    // if (existingProductId) {
+    //     updateForm(name, price, sku, material, existingProductId);
+    //     return;
+    // }
 
     variations = validateForm2();
 
