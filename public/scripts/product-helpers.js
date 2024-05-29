@@ -221,8 +221,8 @@ function fetchProductData(productId) {
         url: `/products/${productId}`,
         method: 'GET',
         success: function(response) {
-            console.log(response.variations);
-            $('.add-product-variation-rows').empty();
+            // console.log(response.variations);
+            $('.add-row-frame').empty();
 
             response.variations.forEach(variation => {
                 let newRow = $('<div>').addClass('add-product-variation-row');
@@ -246,7 +246,7 @@ function fetchProductData(productId) {
                     .val(variation.manufacturingCost);
                 
                 newRow.append(variationInput, stockInput, costInput);
-                $('.add-product-variation-rows').append(newRow);
+                $('.add-row-frame').append(newRow);
             });
         },
         error: function(xhr, status, error) {
