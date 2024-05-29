@@ -45,6 +45,7 @@ $(document).ready(function(){
     $(document).on('input', '.product-form-stock', validateStockInput); // bind the dynamically added stuff
 
 
+
     $(".product-form-manucost").on('keyup', validatePriceInput);
 
     $(document).on('input', '.product-form-manucost', validatePriceInput); // bind the dynamically added stuff
@@ -57,5 +58,9 @@ $(document).ready(function(){
     // delete product
     $(".delete-product").click(deleteProduct);
 
+    // delete row in form
+    $('.delete-row-icon').click(deleteRow);
+
+    
 
 });

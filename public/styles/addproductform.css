@@ -270,3 +270,16 @@
 .wrong-input {
     border: 2px solid #B10201;
 }
+
+
+.delete-row-icon {
+    opacity: 0.5;
+    margin-top: 4%;
+    margin-right: -2%;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.delete-row-icon:hover {
+    opacity: 1;
+}
