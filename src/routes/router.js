@@ -27,13 +27,13 @@ const storageProductPicture = multer.diskStorage({
 });
 
 
-const uploadRestaurantPicture = multer({ storage: storageCollectionPicture });
+const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
 
 // collections page
 router.get(['/', '/collections'], handleCollectionPageRequest);
 router.get('/collections/:id', handleCollectionProductsRequest);
-router.post('/api/collections/add', uploadRestaurantPicture.single('collectionPicture'), handleAddCollectionRequest)
+router.post('/api/collections/add', uploadCollectionPicture.single('collectionPicture'), handleAddCollectionRequest)
 router.delete('/api/products/delete/:id', deleteProductById);
 router.post('/api/collections/checkName', checkCollectionName);
 router.post('/api/products/checkName', checkName);
@@ -42,7 +42,7 @@ router.post('/api/products/checkName', checkName);
 router.post('/api/products/check-name', checkName);
 router.post('/api/products/check-sku', checkSKU);
 router.get('/products/:id', fetchSizeStockCost);
-router.put('/api/products/update/:id', updateProduct);
+router.post('/api/products/update/:id', uploadProductPicture.single('picture'), updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
 
 // testing

@@ -1,7 +1,7 @@
 
 
 let tagList, variations = [];
-let name, price, sku, materials, editingProductId;
+let name, price, sku, materials, editingProductId, picture;
 
 const ROW_VARIATION = '.product-form-variation'
 const ROW_STOCK = ".product-form-stock"
@@ -89,7 +89,8 @@ function validateProductName() {
             url: '/api/products/check-name',
             type: 'POST',
             data: {
-                name: name
+                name: name,
+                id: editingProductId
             },
             success: function(data) {
                 if(data.success){
@@ -131,7 +132,8 @@ function validateSKUInput() {
             url: '/api/products/check-sku',
             type: 'POST',
             data: {
-                sku: $(this).val()
+                sku: $(this).val(),
+                id: editingProductId
             },
             success: function(data) {
                 if(data.success){
@@ -228,19 +230,19 @@ function fetchProductData(productId) {
                 let variationInput = $('<input>')
                     .attr('type', 'text')
                     .attr('placeholder', 'Variation')
-                    .addClass('product-variation table-type')
+                    .addClass('product-form-variation table-type')
                     .val(variation.variation);
                     
                 let stockInput = $('<input>')
                     .attr('type', 'number')
                     .attr('placeholder', 'Stock')
-                    .addClass('product-size table-type')
+                    .addClass('product-form-stock table-type')
                     .val(variation.stocks);
                     
                 let costInput = $('<input>')
                     .attr('type', 'text')
                     .attr('placeholder', 'Manufacturing Cost')
-                    .addClass('product-manu-cost table-type')
+                    .addClass('product-form-manucost table-type')
                     .val(variation.manufacturingCost);
                 
                 newRow.append(variationInput, stockInput, costInput);
@@ -324,8 +326,10 @@ function nextForm(event){
     sku = $('#product-sku-input').val();
     materials = tagList;
     picture = $(".product-photo-container")
+    // console.log("hereee")
 
     if(name === "" || price === "" || sku === "" || materials.length === 0 || picture.length === 0){
+        console.log(name, price, sku, materials, picture)
         fireErrorSwal("Please fill out all fields and ensure that a picture is uploaded!")
         return;
     }
@@ -341,6 +345,8 @@ function validateForm2(){
     const productVariations = []
     const variations = $('.add-product-variation-row');
 
+    // console.log(vs"variations)
+
     for (let i = 0; i < variations.length; i++) {
         const variation = {};
         variation.variation = $(variations[i]).find(ROW_VARIATION).val();
@@ -348,7 +354,8 @@ function validateForm2(){
         variation.manufacturingCost = parseFloat($(variations[i]).find(ROW_MANUCOST).val()); 
 
         if (!variation.variation || variation.stocks < 0 || variation.manufacturingCost <= 0) {
-  
+            console.log(i)
+            console.log(variation.variation, variation.stocks, variation.manufacturingCost)
             fireErrorSwal("Please fill out all fields and ensure that stock and manufacturing cost are valid numbers!")
             return;
         }
@@ -367,52 +374,28 @@ function validateForm2(){
 }
 
 function updateForm(name, price, sku, materials, existingProductId) {
-    const product = {
-        existingProductId: existingProductId,
-        name: name,
-        price: price,
-        SKU: sku,
-        material: materials,
-        pictures: '',
-        variations: []
-    };
+    variations = validateForm2();
 
-    const filename = $('#upload-icon').data('filename');
-    product.pictures = filename;
+    var formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("SKU", sku);
+    formData.append("material", JSON.stringify(materials));
+    formData.append("variations", JSON.stringify(variations));
+    formData.append("picture", $("#imageInput")[0].files[0]);
 
 
-    const variations = $('.add-product-variation-row');
-    let isValid = true;
-
-    for (let i = 0; i < variations.length; i++) {
-        const variation = {};
-        variation.variation = $(variations[i]).find('.product-variation').val();
-        variation.stocks = parseInt($(variations[i]).find('.product-size').val()); 
-        variation.manufacturingCost = parseFloat($(variations[i]).find('.product-manu-cost').val()); 
-
-        if (!variation.variation || isNaN(variation.stocks) || isNaN(variation.manufacturingCost)) {
-            isValid = false;
-            break;
-        }
-
-        product.variations.push(variation);
-    }
-
-
-    if (!isValid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Please fill out all fields and ensure that stock and manufacturing cost are valid numbers!',
-        });
+    if(variations === undefined){
         return;
     }
+    
 
     $.ajax({
         url: `/api/products/update/${existingProductId}`,
-        method: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(product),
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
         success: function(response) {
             Swal.fire({
                 icon: 'success',

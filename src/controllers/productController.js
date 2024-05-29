@@ -38,10 +38,12 @@ async function deleteProductById(req, res) {
 }
 
 async function checkName(req, res) {
-    const name = req.body.name;
+    const {name, id }= req.body;
 
     Product.findOne({ name: name }).lean().then(product => {
-    if(product) {
+        console.log(product);
+
+    if(product && product._id != id) {
         res.send({ success: false, message: 'Product name is not available' })
       } else {
         res.send({ success: true, message: 'Product name is available' })
@@ -98,11 +100,24 @@ async function fetchSizeStockCost(req, res) {
 
 async function updateProduct(req, res) {
   const productId = req.params.id;
-  const productData = req.body;
+
+  const { name, price, SKU, material, variations } = req.body;
+
+  const updates = {
+        name,
+        price,
+        SKU,
+        material: JSON.parse(material),
+        variations: JSON.parse(variations),
+    };
+
+    if(req.file) {
+        updates.picture = req.file.filename;
+    }
 
   try {
       // Find the product by ID and update its details
-      const updatedProduct = await Product.findByIdAndUpdate(productId, productData, { new: true });
+      const updatedProduct = await Product.findByIdAndUpdate(productId, updates, { new: true });
 
       if (!updatedProduct) {
           return res.status(404).json({ error: 'Product not found' });
@@ -124,7 +139,8 @@ async function checkSKU(req, res) {
       .findOne({ SKU: sku })
       .lean()
       .then(product => {
-        if(product) {
+        
+        if(product && product._id != req.body.id) {
           res.send({ success: false, message: 'SKU is not available' })
         } else {
           res.send({ success: true, message: 'SKU is available' })
