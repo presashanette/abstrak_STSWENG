@@ -498,7 +498,7 @@ function toForm2Click(event){
 
 
 function addVariation() {
-    var newVariationRow = $('.template').clone();
+    var newVariationRow = $('.add-product-variation-row:first').clone();
     newVariationRow.find('input').val('');
     newVariationRow.find(ROW_STOCK).removeClass('wrong-input').removeClass('correct-input');
     newVariationRow.find(ROW_MANUCOST).removeClass('wrong-input').removeClass('correct-input');
