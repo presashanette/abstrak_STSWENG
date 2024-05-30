@@ -12,10 +12,13 @@ async function handleCollectionPageRequest (req, res) {
     }
 }
 
-async function addProductToCollection (collectionId, productId) {
+async function addProductToCollection(collectionId, productId) {
     const collection = await Collection.findById(collectionId);
-    collection.pieces.push(productId);
-    collection.save();
+    
+    if (!collection.pieces.includes(productId)) {
+        collection.pieces.push(productId);
+        await collection.save();  
+    }
 }
 
 async function handleAddCollectionRequest (req, res) {
