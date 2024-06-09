@@ -4,6 +4,7 @@ const multer = require('multer');
 const Product = require('../models/Product');
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName } = require('../controllers/collectionControllers');
 const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct } = require('../controllers/productController');
+const { getOrders } = require('../controllers/ordersController');
 
 
 
@@ -44,6 +45,10 @@ router.post('/api/products/check-sku', checkSKU);
 router.get('/products/:id', fetchSizeStockCost);
 router.post('/api/products/update/:id', uploadProductPicture.single('picture'), updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
+
+// orders
+router.get('/orders', getOrders);
+
 
 // testing
 router.get('/api/products/name/:name', async (req, res) => {

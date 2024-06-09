@@ -8,12 +8,6 @@ const csv = require('csv-parser');
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
 const productsJson = "src/models/data/data-products.json";
-// const orderscsv = "src/models/data/abstrak-orders.csv";
-// const orderscsv = "src/models/data/Orders.csv";
-// const Salescsv = "src/models/data/Sales.csv";
-
-
-
 
 
 function parseJson(pathToJson){
