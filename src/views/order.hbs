@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders</title>
+    <link rel="stylesheet" href="/styles/orders.css">
+</head>
+<body>
+    <div class="main">
+        {{>navbar}}
+        {{>gridheader}}
+        <div class="catalogue">
+            <h1>Order List</h1>
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Date</th>
+                        <th>Total Order Quantity</th>
+                        <th>Payment Method</th>
+                        <th>Fulfillment Status</th>
+                        <th>Payment Status</th>
+                        <th>Total</th>
+                        <th>Items</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each orders}}
+                    <tr>
+                        <td>{{orderNo}}</td>
+                        <td>{{date}}</td>
+                        <td>{{totalOrderQuantity}}</td>
+                        <td>{{paymentMethod}}</td>
+                        <td>{{fulfillmentStatus}}</td>
+                        <td>{{paymentStatus}}</td>
+                        <td>{{total}}</td>
+                        <td>
+                            <ul>
+                                {{#each items}}
+                                <li>{{name}} - {{quantity}}</li>
+                                {{/each}}
+                            </ul>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
