@@ -32,127 +32,117 @@ async function loadProducts() {
 
 
 async function associateSalesWithOrders() {
-  try {
-    const salesRecords = await Sales.find({});
-    
-    for (const sale of salesRecords) {
-      const order = await OrderInfo.findOne({ orderNo: sale.orderNo });
-      
-      if (order) {
-        order.items.push({ name: sale.name, quantity: sale.qty });
-        await order.save();
-        console.log(`Updated order ${order.orderNo} with item ${sale.name}`);
-      } else {
-        console.warn(`No order found with orderNo: ${sale.orderNo}`);
+    try {
+      const salesRecords = await Sales.find({});
+  
+      for (const sale of salesRecords) {
+        const order = await OrderInfo.findOne({ orderNo: sale.orderNo.trim() });
+  
+        if (order) {
+          order.items.push({
+            name: sale.name,
+            quantity: sale.qty,
+            variant: sale.variant,
+            sku: sale.sku || '' 
+          });
+          await order.save();
+          console.log(`Updated order ${order.orderNo} with item ${sale.name}`);
+        } else {
+          console.warn(`No order found with orderNo: ${sale.orderNo}`);
+        }
       }
+  
+      console.log('Sales association with orders completed.');
+    } catch (error) {
+      console.error('Error associating sales with orders:', error);
     }
-    
-    console.log('Sales association with orders completed.');
-  } catch (error) {
-    console.error('Error associating sales with orders:', error);
   }
-}
-
-
-async function processCsvData() {
-  const orderCsvFilePath = `src/models/data/Orders.csv`; 
-  const salesCsvFilePath = `src/models/data/Sales.csv`; 
-
-  try {
-    // Clear data
-    await OrderInfo.deleteMany({});
-    await Sales.deleteMany({});
-    console.log('Existing orders and sales data cleared');
-
-    const results = [];
-    let totalRecords = 0;
-    let savedRecords = 0;
-    let failedRecords = 0;
-
-    //OrderInfo
-    fs.createReadStream(orderCsvFilePath)
-      .pipe(csv({
-        mapHeaders: ({ header }) => header.trim()
-      }))
-      .on('data', (row) => {
-        totalRecords++;
-        console.log('Order row data:', row);
-        const totalOrderQuantity = parseInt(row['Total order quantity']);
-        const total = parseFloat(row['Total']);
-        if (!isNaN(totalOrderQuantity) && !isNaN(total)) {
-          const order = new OrderInfo({
-            orderNo: row['Order no.'].trim(),
-            date: new Date(row['Date']),
-            totalOrderQuantity: totalOrderQuantity,
-            paymentStatus: row['Payment status'],
-            paymentMethod: row['Payment method'],
-            fulfillmentStatus: row['Fulfillment status'],
-            total: total
-          });
-
-          results.push(order.save()
-            .then(() => {
-              console.log('Order saved');
-              savedRecords++;
+  
+  async function processCsvData() {
+    const orderCsvFilePath = 'src/models/data/Orders.csv';
+    const salesCsvFilePath = 'src/models/data/Sales.csv';
+  
+    try {
+      // Clear existing data
+      await OrderInfo.deleteMany({});
+      await Sales.deleteMany({});
+      console.log('Existing orders and sales data cleared');
+  
+      const orderPromises = [];
+      const salesPromises = [];
+  
+      // Process OrderInfo
+      fs.createReadStream(orderCsvFilePath)
+        .pipe(csv({ mapHeaders: ({ header }) => header.trim() }))
+        .on('data', (row) => {
+          console.log('Order row data:', row);
+          const totalOrderQuantity = parseInt(row['Total order quantity']);
+          const total = parseFloat(row['Total']);
+          if (!isNaN(totalOrderQuantity) && !isNaN(total)) {
+            const order = new OrderInfo({
+              orderNo: row['Order no.'].trim(),
+              date: new Date(row['Date']),
+              totalOrderQuantity: totalOrderQuantity,
+              paymentStatus: row['Payment status'],
+              paymentMethod: row['Payment method'],
+              fulfillmentStatus: row['Fulfillment status'],
+              total: total,
+              items: []
+            });
+  
+            orderPromises.push(
+              order.save()
+                .then(() => console.log('Order saved'))
+                .catch((err) => console.error('Error saving order:', err))
+            );
+          } else {
+            console.error('Invalid total order quantity or total value:', row['Total order quantity'], row['Total']);
+          }
+        })
+        .on('end', async () => {
+          console.log('Order CSV file successfully processed');
+          await Promise.all(orderPromises);
+  
+          // Process Sales
+          fs.createReadStream(salesCsvFilePath)
+            .pipe(csv({ mapHeaders: ({ header }) => header.trim() }))
+            .on('data', (row) => {
+              console.log('Sales row data:', row);
+              const quantity = parseInt(row['Qty']);
+              if (!isNaN(quantity)) {
+                const sale = new Sales({
+                  orderNo: row['Order number'].trim(),
+                  name: row['Item'],
+                  qty: quantity,
+                  sku: row['SKU'] ? row['SKU'].trim() : '',
+                  variant: row['Variant']
+                });
+  
+                salesPromises.push(
+                  sale.save()
+                    .then(() => console.log('Sale saved'))
+                    .catch((err) => console.error('Error saving sale:', err))
+                );
+              } else {
+                console.error('Invalid quantity value:', row['Qty']);
+              }
             })
-            .catch((err) => {
-              console.error('Error saving order:', err);
-              failedRecords++;
-            }));
-        } else {
-          console.error('Invalid total order quantity or total value:', row['Total order quantity'], row['Total']);
-          failedRecords++;
-        }
-      })
-      .on('end', async () => {
-        console.log('Order CSV file successfully processed');
-      })
-      .on('error', (error) => {
-        console.error('Error reading the Order CSV file:', error);
-      });
-
-    fs.createReadStream(salesCsvFilePath)
-      .pipe(csv({
-        mapHeaders: ({ header }) => header.trim()
-      }))
-      .on('data', (row) => {
-        console.log('Sales row data:', row);
-        const quantity = parseInt(row['Qty']);
-        if (!isNaN(quantity)) {
-          const sale = new Sales({
-            orderNo: row['Order no.'].trim(),
-            name: row['Item'],
-            qty: quantity
-          });
-
-          results.push(sale.save()
-            .then(() => {
-              console.log('Sale saved');
-              savedRecords++;
+            .on('end', async () => {
+              await Promise.all(salesPromises);
+              console.log('Sales CSV file successfully processed');
+              await associateSalesWithOrders();
             })
-            .catch((err) => {
-              console.error('Error saving sale:', err);
-              failedRecords++;
-            }));
-        } else {
-          console.error('Invalid quantity value:', row['Qty']);
-          failedRecords++;
-        }
-      })
-      .on('end', async () => {
-        await Promise.all(results);
-        console.log(`Sales CSV file successfully processed. Total Records: ${totalRecords}, Saved Records: ${savedRecords}, Failed Records: ${failedRecords}`);
-        await associateSalesWithOrders();
-      })
-      .on('error', (error) => {
-        console.error('Error reading the Sales CSV file:', error);
-      });
-
-  } catch (error) {
-    console.error('Error processing CSV data:', error);
+            .on('error', (error) => {
+              console.error('Error reading the Sales CSV file:', error);
+            });
+        })
+        .on('error', (error) => {
+          console.error('Error reading the Order CSV file:', error);
+        });
+  
+    } catch (error) {
+      console.error('Error processing CSV data:', error);
+    }
   }
-
-  associateSalesWithOrders();
-}
 
 module.exports = { loadCollections, loadProducts, processCsvData};

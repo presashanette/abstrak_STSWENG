@@ -11,7 +11,7 @@
         {{>navbar}}
         {{>gridheader}}
         <div class="catalogue">
-            <h1>Order List</h1>
+            {{!-- <h1>Order List</h1> --}}
             <table class="orders-table">
                 <thead>
                     <tr>
@@ -38,7 +38,7 @@
                         <td>
                             <ul>
                                 {{#each items}}
-                                <li>{{name}} - {{quantity}}</li>
+                                <li>{{name}} - Variant: {{variant}}, Qty: {{quantity}}</li>
                                 {{/each}}
                             </ul>
                         </td>
@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div id ="add-order-modal"class="modal">
+        <div id="add-order-modal" class="modal">
             <div class="modal-content">
                <div class="exit-button">
                     <img src="assets/back.png" alt="" class="exit">
@@ -89,7 +89,7 @@
                 
                 <div class="items">
                     <h3>Items Ordered</h3>
-                    <div class = "itemdetails">
+                    <div class="itemdetails">
                         <div class="nameandpic">
                             <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
                             <span>"Self-Portrait" Tee</span>
@@ -136,31 +136,24 @@
                     tbody.innerHTML = ''; 
 
                     orders.forEach(order => {
-                        const orderNo = order.orderNo || 'N/A';
-                        const date = order.date ? new Date(order.date).toLocaleDateString() : 'N/A';
-                        const totalOrderQuantity = order.totalOrderQuantity || 'N/A';
-                        const paymentMethod = order.paymentMethod || 'N/A';
-                        const fulfillmentStatus = order.fulfillmentStatus || 'N/A';
-                        const paymentStatus = order.paymentStatus || 'N/A';
-                        const total = order.total || 'N/A';
-                        const items = order.items && Array.isArray(order.items)
-                            ? order.items.map(item => `<li>${item.name || 'N/A'} - ${item.quantity || 'N/A'}</li>`).join('')
-                            : '<li>N/A</li>';
-
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${orderNo}</td>
-                            <td>${date}</td>
-                            <td>${totalOrderQuantity}</td>
-                            <td>${paymentMethod}</td>
-                            <td>${fulfillmentStatus}</td>
-                            <td>${paymentStatus}</td>
-                            <td>${total}</td>
+                        const orderRow = document.createElement('tr');
+                        orderRow.innerHTML = `
+                            <td>${order.orderNo || 'N/A'}</td>
+                            <td>${order.date ? new Date(order.date).toLocaleDateString() : 'N/A'}</td>
+                            <td>${order.totalOrderQuantity || 'N/A'}</td>
+                            <td>${order.paymentMethod || 'N/A'}</td>
+                            <td>${order.fulfillmentStatus || 'N/A'}</td>
+                            <td>${order.paymentStatus || 'N/A'}</td>
+                            <td>${order.total || 'N/A'}</td>
                             <td>
-                                <ul>${items}</ul>
+                                <ul>
+                                    ${order.items.map(item => `
+                                        <li>${item.name} - Variant: ${item.variant}, Qty: ${item.quantity}</li>
+                                    `).join('')}
+                                </ul>
                             </td>
                         `;
-                        tbody.appendChild(tr);
+                        tbody.appendChild(orderRow);
                     });
 
                     pageNumber.textContent = page;
