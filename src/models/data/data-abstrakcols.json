@@ -1,18 +1,4 @@
-[{
-  "_id": "6651ead6a17e4939441ea321",
-  "name": "ÄLL PRODUCTS",
-  "pieces": [
-    "6651ead6a17e4939441ea32a",
-    "6651ead6a17e4939441ea32b",
-    "6651ead6a17e4939441ea32f",
-    "6651ead6a17e4939441ea325",
-    "6651ead6a17e4939441ea326",
-    "6651ead6a17e4939441ea327",
-    "6651ead6a17e4939441ea329"
-  ],
-  "collectionPicture": "all_products_collection.png",
-  "__v": 1
-},
+[
   {
     "_id": "6651ead6a17e4939441ea328",
     "name": "Made Human",
