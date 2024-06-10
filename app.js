@@ -61,7 +61,6 @@ function initializeHandlebars() {
 
 
 
-
 function initializeStaticFolders() {
     app.use(express.static(path.join(__dirname, 'public')));
 

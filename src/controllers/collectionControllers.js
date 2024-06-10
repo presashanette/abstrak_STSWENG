@@ -73,37 +73,10 @@ async function handleCollectionProductsRequest (req, res) {
         res.status(500).send("Internal Server Error");
     }
 }   
-
-async function handleAllProductsRequest(req, res) {
-    try {
-        // Assuming the "ALL PRODUCTS" collection has a specific ID or identifier
-        const allProductsCollectionId = '6651ead6a17e4939441ea321';
-        
-        const collection = await Collection.findById(allProductsCollectionId).populate('pieces').lean();
-        let products = collection.pieces;
-        
-        // Filter products to only include those with totalStock above 1
-        products = products.filter(product => {
-            product.totalStock = product.variations.reduce((a, b) => a + b.stocks, 0);
-            return product.totalStock > 1;
-        });
-
-        console.log(products);
-
-        res.json(products);
-    } catch (err) {
-        // Handle error
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-    }
-}
-
-
 module.exports = {  handleCollectionPageRequest,
                     handleAddCollectionRequest,
                     handleCollectionProductsRequest,
                     checkCollectionName,
-                    addProductToCollection,
-                    handleAllProductsRequest
+                    addProductToCollection
                 
                 };

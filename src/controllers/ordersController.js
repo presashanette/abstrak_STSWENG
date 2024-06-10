@@ -27,7 +27,7 @@ const getOrders = async (req, res) => {
         } else {
             console.log('Rendering orders page');
             res.render('orders', {
-                orders: JSON.stringify(orders),   
+                orders: JSON.stringify(orders),
                 initialOrders,
                 currentPage: page,
                 totalPages,
