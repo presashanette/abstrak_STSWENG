@@ -80,7 +80,13 @@
 
     background-color: #0F734C;
     color: #C9E6B6;
+}
 
+
+
+.delete-row-icon {
+    font-size: 14px;
+    color: lightgray;
 }
 
 .low-stock {

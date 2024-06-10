@@ -8,6 +8,17 @@ const ROW_STOCK = ".product-form-stock"
 const ROW_MANUCOST = ".product-form-manucost"
 
 
+function deleteRow(event) {
+    // if there is only one add product variation row do not remove
+    rowCount = document.getElementsByClassName('add-product-variation-row').length
+    console.log(rowCount)
+    if (rowCount != 1) {
+        $(this).closest('.add-product-variation-row').remove();
+    }
+
+}
+
+
 
 function popupClick(event){
     event.stopPropagation(); // do not bubble up to the DOM window
@@ -124,6 +135,7 @@ function validatePriceInput() {
 
 
 
+
 function validateSKUInput() {
     if($(this).val() === "") {
         $('#product-sku-input').removeClass('correct-input').addClass('wrong-input');
@@ -173,17 +185,10 @@ function clearForm() {
     tagList = [];
     $('.main-picture img').remove();
     $('<img>').attr('src', "/assets/upload-icon.png").attr('alt', "upload").attr('id', 'upload-icon').appendTo('.main-picture');
-    const variationContainer = $('.add-product-variation-rows');
+    const variationContainer = $('.add-row-frame');
     variationContainer.empty(); // Remove all rows
 
-
-    const emptyRow = `
-        <div class="add-product-variation-row">
-            <input type="text" placeholder="Variation" class="product-form-variation table-type">
-            <input type="number" placeholder="Stock" class="product-form-stock table-type">
-            <input type="number" placeholder="Manufacturing Cost" class="product-form-manucost table-type">
-        </div>`;
-    variationContainer.append(emptyRow);
+    addVariation();
 }
 
 function preloadTag(tag) {
@@ -227,6 +232,9 @@ function fetchProductData(productId) {
             response.variations.forEach(variation => {
                 let newRow = $('<div>').addClass('add-product-variation-row');
                 
+                let deleteRowIcon = $('<span>').addClass('delete-row-icon').text('x').click(deleteRow);
+                newRow.append(deleteRowIcon);
+
                 let variationInput = $('<input>')
                     .attr('type', 'text')
                     .attr('placeholder', 'Variation')
@@ -493,19 +501,45 @@ function toForm2Click(event){
     $("#next-form-button").text() === "Submit" ? submitProduct(event) : nextForm(event);    
 
 
+
+
+
 }
 
+
+function clearForm() {
+    $('.form-1').show();
+    $('.form-2').hide();
+    $('#next-form-button').text('Next');
+    $('#back-form-button').hide();
+
+
+    $('.add-product-title').text('Add Product');
+    editingProductId = null;
+    $('#product-name-input').val('').removeClass('correct-input wrong-input');
+    $('#product-price-input').val('').removeClass('correct-input wrong-input');
+    $('#product-sku-input').val('').removeClass('correct-input wrong-input');
+    $('#material-list').empty();
+    tagList = [];
+    $('.main-picture img').remove();
+    $('<img>').attr('src', "/assets/upload-icon.png").attr('alt', "upload").attr('id', 'upload-icon').appendTo('.main-picture');
+    const variationContainer = $('.add-row-frame');
+    variationContainer.empty(); // Remove all rows
+    addVariation();
+
+}
 
 
 function addVariation() {
-    var newVariationRow = $('.add-product-variation-row:first').clone();
-    newVariationRow.find('input').val('');
-    newVariationRow.find(ROW_STOCK).removeClass('wrong-input').removeClass('correct-input');
-    newVariationRow.find(ROW_MANUCOST).removeClass('wrong-input').removeClass('correct-input');
+    var newVariationRow = $('<div>').addClass('add-product-variation-row'); 
+    newVariationRow.append('<span class="delete-row-icon">x</span>');
+    $(newVariationRow).find('.delete-row-icon').click(deleteRow);
+    newVariationRow.append('<input type="text" placeholder="Variation" class="product-form-variation table-type">');
+    $(newVariationRow).find('.product-form-variation').on('keyup', validateProductName);
+    newVariationRow.append('<input type="number" placeholder="Stock" class="product-form-stock table-type">');
+    $(newVariationRow).find('.product-form-stock').on('keyup', validateStockInput)
+    newVariationRow.append('<input type="number" placeholder="Manufacturing Cost" class="product-form-manucost table-type">');
+    $(newVariationRow).find('.product-form-manucost').on('keyup', validatePriceInput)
     $('.add-row-frame').append(newVariationRow);
-}
-
-function deleteRow(event) {
-    $(this).closest('.add-product-variation-row').remove();
 }
 
