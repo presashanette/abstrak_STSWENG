@@ -215,9 +215,11 @@
 }
 .modal-content .items {
     background: #f5f5f5;
+    padding: 15px;
     grid-area: items;
 }
 .modal-content .payment {
+    padding: 15px;
     background: #f5f5f5;
     grid-area: payment;
 }
@@ -238,4 +240,9 @@
     border: none;
     border-radius: 10px;
     cursor: pointer;
+}
+
+.itemdetails {
+    display: flex;
+    justify-content: space-between;
 }

@@ -57,8 +57,7 @@
             </div>
         </div>
 
-        <!-- Modal HTML -->
-        <div id="myModal" class="modal">
+        <div id ="add-order-modal"class="modal">
             <div class="modal-content">
                <div class="exit-button">
                     <img src="assets/back.png" alt="" class="exit">
@@ -109,7 +108,7 @@
                     <option value="paid">Paid</option>
                 </select>
                 <div class="submit">
-                    <class="submitbtn">Submit</button>
+                    <button class="submitbtn">Submit</button>
                 </div>
             </div>
         </div>
@@ -190,7 +189,7 @@
             loadPage(parseInt(pageNumber.textContent));
 
             // Modal functionality
-            const modal = document.getElementById('myModal');
+            const modal = document.getElementById('add-order-modal');
             const addButton = document.querySelector('.grid-header-add-button');
             const closeButton = document.querySelector('.exit');
 
