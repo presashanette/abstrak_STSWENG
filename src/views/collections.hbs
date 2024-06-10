@@ -12,21 +12,19 @@
 <body>
     <div class="main">
         {{>navbar}}
+        {{>gridheader}}
 
         <div class="collections-grid">
-            {{>gridheader}}
-            <div class="grid-items">
-                <div class="grid-wrapper">
+            <div class="grid-wrapper">
 
-                    {{#each collections}}
-                            <div class="collection-item-container" data-id="{{_id}}">
-                                <img src="/uploads/collections/{{collectionPicture}}" alt="" class="collection-cover">
-                                    <p>{{name}}</p>
-                            </div>
-
-                    {{/each}}
-                    
-                </div>
+                {{#each collections}}
+                        <div class="collection-item-container" data-id="{{_id}}">
+                            <img src="/uploads/collections/{{collectionPicture}}" alt="" class="collection-cover">
+                                <p>{{name}}</p>
+                        </div>
+                        
+                {{/each}}
+                
             </div>
         </div>
     </div>
