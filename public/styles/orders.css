@@ -167,7 +167,6 @@
 
 .modal-content > * {
     padding: 10px;
-    border-radius: 5px;
 }
 .exit {
     height: 1rem;
@@ -212,14 +211,15 @@
     grid-area: customer-address;
 }
 .modal-content .items {
-    background: #f5f5f5;
+    background: #f3f3f3;
     padding: 15px;
     grid-area: items;
 }
 .modal-content .payment {
     padding: 15px;
-    background: #f5f5f5;
+    background: #f3f3f3;
     grid-area: payment;
+
 }
 .modal-content .payment-method {
     grid-area: payment-method;
@@ -233,16 +233,31 @@
 }
 
 .submitbtn{
-    background-color: #f5f5f5;
+    background-color: #d9d9d9;
+    color: black;
     padding: 15px;
     border: none;
-    border-radius: 10px;
     cursor: pointer;
+    font-family: "DM Sans";
+}
+
+.submitbtn:hover {
+    background-color: black;
+    color: white;
 }
 
 .itemdetails {
+    margin-top: 15px;
+}
+
+.itemdetails, .nameandpic {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.nameandpic{
+    gap: 15px;
 }
 
 .payment {
@@ -252,4 +267,25 @@
 .payment div {
     display: flex;
     justify-content: space-between;
+}
+select, input[type="date"] {
+    font-family: "DM Sans";
+}
+
+input[type="date"],
+.fulfillmentstatus, .paymentmethod, .paymentstatus {
+    border: 1px solid transparent; 
+    outline: none; 
+    background-color: #f3f3f3;
+    border: 1px solid #c2c2c2;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.itempic{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: #000000 1px 1px 3px;
 }
