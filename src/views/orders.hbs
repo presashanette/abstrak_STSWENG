@@ -89,6 +89,7 @@
                 
                 <div class="items">
                     <h3>Items Ordered</h3>
+                    <span class="plus-sign">+</span>
                     <div class="itemdetails">
                         <div class="nameandpic">
                             <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
@@ -112,13 +113,30 @@
             </div>
         </div>
 
+        <div id="product-list-modal" class="modal">
+            <div class="modal-content">
+                <div class="exit-button">
+                    <img src="assets/back.png" alt="" class="exit-product-list">
+                </div>
+                <div class="form-title">
+                    <h1>AVAILABLE PRODUCTS</h1>
+                </div>
+                <div class="gallery" id="product-gallery">
+                    
+                </div>
+            </div>
+        </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const prevButton = document.getElementById('prev-button');
             const nextButton = document.getElementById('next-button');
             const pageNumber = document.getElementById('page-number');
             const totalPages = parseInt(document.getElementById('total-pages').textContent);
+            const addOrderModal = document.getElementById('add-order-modal');
+            const productListModal = document.getElementById('product-list-modal');
+            const productGallery = document.getElementById('product-gallery');
 
             const loadPage = async (page) => {
                 try {
@@ -180,22 +198,85 @@
 
             loadPage(parseInt(pageNumber.textContent));
 
-            // Modal functionality
-            const modal = document.getElementById('add-order-modal');
             const addButton = document.querySelector('.grid-header-add-button');
             const closeButton = document.querySelector('.exit');
+            const plusSign = document.querySelector('.plus-sign');
+            const productCloseButton = document.querySelector('.exit-product-list');
 
             addButton.addEventListener('click', () => {
-                modal.style.display = 'flex';
+                addOrderModal.style.display = 'flex';
+                document.body.classList.add('modal-open');
             });
 
             closeButton.addEventListener('click', () => {
-                modal.style.display = 'none';
+                addOrderModal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            });
+
+            plusSign.addEventListener('click', async () => {
+                addOrderModal.style.display = 'none';
+                productListModal.style.display = 'flex';
+                document.body.classList.add('modal-open');
+
+                // Fetch products via AJAX
+                try {
+                    const response = await fetch('api/getAbstrakInvento', {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const products = await response.json();
+
+                    // Clear existing products
+                    productGallery.innerHTML = '';
+
+                    // Append fetched products
+                    products.forEach(product => {
+                        const productDiv = document.createElement('div');
+                        productDiv.classList.add('container');
+                        productDiv.dataset.id = product._id;
+                        productDiv.dataset.name = product.name;
+                        productDiv.dataset.price = product.price;
+                        productDiv.dataset.sku = product.SKU;
+                        productDiv.dataset.materials = product.material;
+                        productDiv.dataset.picture = `/uploads/products/${product.picture}`;
+                        
+                        productDiv.innerHTML = `
+                            <div class="product-pic-container">
+                                <div class="product-actual-photo-container">
+                                    <img src="/uploads/products/${product.picture}" alt="" class="product-pic">
+                                </div>
+                            </div>
+                            <div class="product-name">
+                                <p class="product-name-text">${product.name}</p>
+                                <p class="product-stock ${product.totalStock > 0 ? 'high-stock' : 'no-stock'}">${product.totalStock} in stock</p>            
+                            </div>
+                        `;
+                        
+                        productGallery.appendChild(productDiv);
+                    });
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                }
+            });
+
+            productCloseButton.addEventListener('click', () => {
+                productListModal.style.display = 'none';
+                addOrderModal.style.display = 'flex';
+                document.body.classList.remove('modal-open');
             });
 
             window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+                if (event.target === addOrderModal) {
+                    addOrderModal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                }
+                if (event.target === productListModal) {
+                    productListModal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
                 }
             });
         });
