@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders</title>
     <link rel="stylesheet" href="/styles/orders.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <div class="main">
@@ -27,7 +28,7 @@
                 </thead>
                 <tbody id="orders-body">
                     {{#each initialOrders}}
-                    <tr>
+                    <tr class="orders-row">
                         <td>{{orderNo}}</td>
                         <td>{{formatDate date}}</td>
                         <td>{{totalOrderQuantity}}</td>
@@ -128,6 +129,30 @@
         </div>
     </div>
 
+    <div class="view-product-modal">
+        <div class="view-product-content">
+            <div class="exit-button">
+                <img src="assets/back.png" alt="" class="exit">
+            </div>
+            <h1>Order #8286</h1>
+            <p>Ordered on May 15, 2024 10:32 AM from Instagam</p>
+
+            <div class="items">
+                <h3>Items Ordered</h3>
+                <div class = "itemdetails">
+                    <div class="nameandpic">
+                        <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
+                        <span>"Self-Portrait" Tee</span>
+                    </div>
+                    <span>₱885.50</span>
+                    <span>1 pc</span>
+                    <span>Variation</span>
+                </div>
+            </div>
+          
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const prevButton = document.getElementById('prev-button');
@@ -172,6 +197,21 @@
                             </td>
                         `;
                         tbody.appendChild(orderRow);
+                        tbody.appendChild(tr);
+                        tr.addEventListener('click', () => {
+                            $.ajax({
+                                url: '/api/orders/' + orderNo,
+                                type: 'GET',
+                                success: function(response) {
+                                    console.log(response);
+                                },
+                                error: function(error) {
+                                    console.error('Error fetching order:', error);
+                                }
+                            });
+                        });
+                        tr.style.cursor = 'pointer';
+
                     });
 
                     pageNumber.textContent = page;
@@ -181,6 +221,9 @@
                     console.error('Error fetching more orders:', error);
                 }
             };
+
+            
+
 
             nextButton.addEventListener('click', () => {
                 const currentPage = parseInt(pageNumber.textContent);

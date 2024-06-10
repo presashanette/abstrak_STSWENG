@@ -19,7 +19,11 @@ $(document).ready(function(){
 
 
     $('.exit-form').on('click', function() {
+        // clear form
+        clearForm();
+
         $('.add-product-modal').fadeOut();
+
     });
     
     $("#imageInput").change(displayUploadedImage);
@@ -33,7 +37,7 @@ $(document).ready(function(){
     $('#product-price-input').on('keyup', validatePriceInput);
 
     $('#product-sku-input').on('keyup', validateSKUInput);
-    
+
     $("#next-form-button").click(toForm2Click);
 
     $(".add-row-button").click(addVariation);
@@ -59,8 +63,7 @@ $(document).ready(function(){
     $(".delete-product").click(deleteProduct);
 
     // delete row in form
-    $('.delete-row-icon').click(deleteRow);
-
+    $('.delete-row-icon').each(deleteRow);
     
 
 });
