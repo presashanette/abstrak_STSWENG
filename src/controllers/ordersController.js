@@ -30,7 +30,9 @@ const getOrders = async (req, res) => {
                 initialOrders,
                 currentPage: page,
                 totalPages,
-                nextPage 
+                nextPage,
+                "grid-add-button": "Order",
+                "grid-title": "ORDERS" 
             });
         }
     } catch (err) {
