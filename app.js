@@ -6,7 +6,7 @@ const express = require('express');
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
-const { loadCollections, loadProducts } = require('./src/routes/loader.js');
+const { loadCollections, loadProducts, processCsvData  } = require('./src/routes/loader.js');
 
 const app = express();
 
@@ -27,6 +27,7 @@ async function connectToDB (){
 async function initializeLoad(){
     await loadCollections();
     await loadProducts();
+    await processCsvData();
 }
 
 function initializeHandlebars() {
@@ -34,21 +35,29 @@ function initializeHandlebars() {
         extname: "hbs",
         defaultLayout: false,
         helpers: {
-         
-            stockStatus: function(stock){
-                if(stock ==  0){
+            stockStatus: function(stock) {
+                if (stock == 0) {
                     return "no";
                 } else if (stock <= 3) {
                     return "low";
                 } else {
                     return "high";
                 }
+            },
+            formatDate: function(date) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(date).toLocaleDateString(undefined, options);
+            },
+            json: function(context) {
+                return JSON.stringify(context);
             }
         }
     }));
     app.set("view engine", "hbs");
     app.set("views", "./src/views");
 }
+
+
 
 
 

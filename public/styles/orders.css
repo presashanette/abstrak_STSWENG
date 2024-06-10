@@ -1,0 +1,291 @@
+@import "base.css";
+@import "navbar.css";
+@import "gridheader.css";
+@import "swal.css";
+
+/* body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+} */
+
+.main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.catalogue {
+    padding: 2% 0%;
+    width: 90%;
+    margin: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px; 
+    text-align: left;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.orders-table th, .orders-table td {
+    padding: 8px 12px;
+    border: 1px solid #dddddd;
+}
+
+.orders-table th {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.orders-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.orders-table tbody tr:nth-of-type(even) {
+    background-color: #f9f9f9;
+}
+
+.orders-table tbody tr:last-of-type {
+    border-bottom: 2px solid #000000;
+}
+
+.orders-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+.orders-table tbody ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#next-button {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 20px 0;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#next-button:hover {
+    background-color: #333333;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination button, .pagination span {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination button:hover, .pagination span:hover {
+    background-color: #333333;
+}
+
+.pagination .active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.pagination span {
+    display: inline-block;
+    text-align: center;
+    min-width: 40px;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    margin-top: 20px;
+}
+
+/* FOR MODAL */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 700px;
+    position: relative;
+    display: grid;
+    gap: 10px;
+    grid-template-areas:
+        "header header"
+        "order-date fulfillmentstatus"
+        "paymentmethod paymentstatus"
+        "items items"
+        "payment payment"
+        "submit submit";
+}
+
+.modal-content > * {
+    padding: 10px;
+}
+.exit {
+    height: 1rem;
+    width: 1.25rem;
+    
+}
+
+.exit-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    opacity: 70%;
+    cursor: pointer;
+}
+
+.form-title {
+    flex: 0 0 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content .form-title {
+    grid-area: header;
+}
+.modal-content .order-from {
+    grid-area: order-from;
+}
+.modal-content .order-date {
+    grid-area: order-date;
+}
+.modal-content .customer-name {
+    grid-area: customer-name;
+}
+.modal-content .customer-contact {
+    grid-area: customer-contact;
+}
+.modal-content .customer-email {
+    grid-area: customer-email;
+}
+.modal-content .customer-address {
+    grid-area: customer-address;
+}
+.modal-content .items {
+    background: #f3f3f3;
+    padding: 15px;
+    grid-area: items;
+}
+.modal-content .payment {
+    padding: 15px;
+    background: #f3f3f3;
+    grid-area: payment;
+
+}
+.modal-content .payment-method {
+    grid-area: payment-method;
+}
+.modal-content .payment-status {
+    grid-area: payment-status;
+}
+.modal-content .submit {
+    grid-area: submit;
+    text-align: center;
+}
+
+.submitbtn{
+    background-color: #d9d9d9;
+    color: black;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    font-family: "DM Sans";
+}
+
+.submitbtn:hover {
+    background-color: black;
+    color: white;
+}
+
+.itemdetails {
+    margin-top: 15px;
+}
+
+.itemdetails, .nameandpic {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nameandpic{
+    gap: 15px;
+}
+
+.payment {
+    display: flex;
+    flex-direction: column;
+}
+.payment div {
+    display: flex;
+    justify-content: space-between;
+}
+select, input[type="date"] {
+    font-family: "DM Sans";
+}
+
+input[type="date"],
+.fulfillmentstatus, .paymentmethod, .paymentstatus {
+    border: 1px solid transparent; 
+    outline: none; 
+    background-color: #f3f3f3;
+    border: 1px solid #c2c2c2;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.itempic{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: #000000 1px 1px 3px;
+}
