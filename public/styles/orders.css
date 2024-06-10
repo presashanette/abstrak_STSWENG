@@ -2,6 +2,7 @@
 @import "navbar.css";
 @import "gridheader.css";
 @import "swal.css";
+@import "products.css";
 @import "vieworder.css";
 
 /* body {
@@ -146,16 +147,20 @@
     justify-content: center;
     align-items: center;
 }
+
 .modal-content {
     background-color: #fff;
     margin: auto;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 40px;
+    padding-left: 40px;
     border: 1px solid #888;
     width: 80%;
     max-width: 700px;
     position: relative;
     display: grid;
-    gap: 10px;
+    gap: 25px;
     grid-template-areas:
         "header header"
         "order-date fulfillmentstatus"
@@ -168,7 +173,7 @@
 .modal-content > * {
     padding: 10px;
 }
-.exit {
+.exit, .exit-product-list {
     height: 1rem;
     width: 1.25rem;
     
@@ -192,40 +197,34 @@
 .modal-content .form-title {
     grid-area: header;
 }
-.modal-content .order-from {
-    grid-area: order-from;
-}
 .modal-content .order-date {
+    margin-top: 10px;
     grid-area: order-date;
 }
-.modal-content .customer-name {
-    grid-area: customer-name;
-}
-.modal-content .customer-contact {
-    grid-area: customer-contact;
-}
-.modal-content .customer-email {
-    grid-area: customer-email;
-}
-.modal-content .customer-address {
-    grid-area: customer-address;
+.modal-content .fulfillmentstatus {
+    margin-top: 10px;
+    grid-area: fulfillmentstatus;
 }
 .modal-content .items {
     background: #f3f3f3;
-    padding: 15px;
+    padding: 25px;
     grid-area: items;
+    margin-top: 10px;
 }
 .modal-content .payment {
-    padding: 15px;
+    padding: 25px;
     background: #f3f3f3;
     grid-area: payment;
+    margin-top: 10px;
 
 }
-.modal-content .payment-method {
-    grid-area: payment-method;
+.modal-content .paymentmethod {
+    margin-top: 10px;
+    grid-area: paymentmethod;
 }
-.modal-content .payment-status {
-    grid-area: payment-status;
+.modal-content .paymentstatus {
+    margin-top: 10px;
+    grid-area: paymentstatus;
 }
 .modal-content .submit {
     grid-area: submit;
@@ -290,3 +289,51 @@ input[type="date"],
     box-shadow: #000000 1px 1px 3px;
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
+.items {
+    position: relative;
+}
+
+.plus-sign {
+    position: absolute;
+    top: 20px; 
+    right: 25px; 
+    font-size: 24px; 
+    color: #000; 
+    cursor: pointer; 
+}
+
+.plus-sign:hover {
+    color: #d9d9d9;
+}
+
+
+/* Additional CSS for the product list modal */
+
+#product-list-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 90%;
+    max-width: 900px;
+    padding: 20px 40px;
+    align-items: center;
+}
+
+#product-list-modal .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+}
+
+.exit-product-list {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}

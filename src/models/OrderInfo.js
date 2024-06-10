@@ -6,7 +6,9 @@ const OrderInfoSchema = new mongoose.Schema({
   totalOrderQuantity: { type: Number, required: true },
   items: [{ 
     name: String, 
-    quantity: Number 
+    quantity: Number,
+    variant: String,
+    sku: String 
   }],
   paymentStatus: { type: String, required: true },
   paymentMethod: { type: String, required: true },
