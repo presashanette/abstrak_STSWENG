@@ -158,12 +158,10 @@
     gap: 10px;
     grid-template-areas:
         "header header"
-        "order-from order-date"
-        "customer-name customer-contact"
-        "customer-email customer-address"
+        "order-date fulfillmentstatus"
+        "paymentmethod paymentstatus"
         "items items"
         "payment payment"
-        "payment-method payment-status"
         "submit submit";
 }
 
@@ -243,6 +241,15 @@
 }
 
 .itemdetails {
+    display: flex;
+    justify-content: space-between;
+}
+
+.payment {
+    display: flex;
+    flex-direction: column;
+}
+.payment div {
     display: flex;
     justify-content: space-between;
 }

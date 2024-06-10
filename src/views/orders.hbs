@@ -67,17 +67,25 @@
                     <h1>ADD ORDER</h1>
                 </div>
 
-                <select class="order-from">
-                    <option>Order From</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="personal">Personal</option>
-                </select>
                 <input type="date" class="order-date" placeholder="Order Date">
-                <input type="text" class="customer-name" placeholder="Customer Name">
-                <input type="text" class="customer-contact" placeholder="Customer Contact Number">
-                <input type="email" class="customer-email" placeholder="Customer Email Address">
-                <input type="text" class="customer-address" placeholder="Customer Address">
+                
+                <select class="fulfillmentstatus">
+                    <option>Fulfillment Status</option>
+                    <option value="fulfilled">Fulfilled</option>
+                    <option value="canceled">Canceled</option>
+                </select>
+
+                <select class="paymentmethod">
+                    <option>Payment Method</option>
+                    <option value="offline">Offline</option>
+                    <option value="online">Online</option>
+                </select>
+
+                <select class="paymentstatus">
+                    <option>Payment Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="unpaid">Unpaid</option>
+                </select>
                 
                 <div class="items">
                     <h3>Items Ordered</h3>
@@ -90,23 +98,11 @@
                 </div>
                 <div class="payment">
                     <h3>Payment</h3>
-                    <div>Items: ₱800.50</div>
-                    <div>Shipping: ₱85.00</div>
-                    <div>Tax: ₱0.00</div>
-                    <div>Total: ₱885.50</div>
+                    <div><span>Items</span> <span>₱800.50</span></div>
+                    <div><span>Shipping</span> <span>₱85.00</span></div>
+                    <div><span>Tax</span> <span>₱0.00</span></div>
+                    <div><span>Total</span> <span>₱885.50</span></div>
                 </div>
-                <select class="payment-method">
-                    <option>Payment Method</option>
-                    <option value="cash">Cash</option>
-                    <option value="gcash">GCash</option>
-                    <option value="banktransfer">Bank Transfer</option>
-                </select>
-                <select class="payment-status">
-                    <option>Payment Status</option>
-                    <option value="nopayment">No Payment Received</option>
-                    <option value="forconfirmation">For Confirmation</option>
-                    <option value="paid">Paid</option>
-                </select>
                 <div class="submit">
                     <button class="submitbtn">Submit</button>
                 </div>
