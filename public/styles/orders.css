@@ -2,6 +2,7 @@
 @import "navbar.css";
 @import "gridheader.css";
 @import "swal.css";
+@import "vieworder.css";
 
 /* body {
     background-color: #f0f0f0;
@@ -23,7 +24,7 @@
     flex-direction: column;
     align-items: center;
     background-color: #ffffff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); */
     border-radius: 8px;
 }
 
@@ -34,7 +35,7 @@
     font-size: 14px; 
     text-align: left;
     background-color: #ffffff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
     border-radius: 8px;
     overflow: hidden;
 }
@@ -45,11 +46,13 @@
 }
 
 .orders-table th {
-    background-color: #000000;
-    color: #ffffff;
+    /* background-color: #000000; */
+    /* color: #ffffff; */
+
 }
 
 .orders-table tbody tr {
+
     border-bottom: 1px solid #dddddd;
 }
 
@@ -57,9 +60,6 @@
     background-color: #f9f9f9;
 }
 
-.orders-table tbody tr:last-of-type {
-    border-bottom: 2px solid #000000;
-}
 
 .orders-table tbody tr.active-row {
     font-weight: bold;
@@ -289,3 +289,4 @@ input[type="date"],
     border-radius: 5px;
     box-shadow: #000000 1px 1px 3px;
 }
+
