@@ -130,6 +130,25 @@ async function updateProduct(req, res) {
   }
 }
 
+async function getVariation(req, res) {
+    try {
+        const sku = req.query.sku;
+        if (!sku) {
+            return res.status(400).json({ message: 'SKU is required' });
+        }
+
+        const product = await Product.findOne({ SKU: sku }); // Correct Mongoose query
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        res.json(product);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 
 
 async function checkSKU(req, res) {
@@ -153,4 +172,4 @@ async function checkSKU(req, res) {
 
 
 }
-module.exports = { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct };
+module.exports = { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation };

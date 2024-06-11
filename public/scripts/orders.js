@@ -1,4 +1,5 @@
 $(document).ready(() => {
+    let cart = [];
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
     const pageNumber = document.getElementById('page-number');
@@ -176,9 +177,7 @@ $(document).ready(() => {
         if (event.target === productListModal) closeModal(productListModal);
     });
     
-    const openProductDetailsModal = (product) => {
-        console.log(product);
-
+    const openProductDetailsModal = async (product) => {
         const productName = product.dataset.name;
         const productSku = product.dataset.sku;
         const productImgSrc = product.querySelector('.product-pic').src;
@@ -187,9 +186,92 @@ $(document).ready(() => {
         document.querySelector('.sku').textContent = `SKU: ${productSku}`;
         document.querySelector('.img').src = productImgSrc;
     
+        try {
+            const response = await fetch(`/api/product?sku=${productSku}`);
+            if (!response.ok) {
+                throw new Error('Product not found');
+            }
+            const productData = await response.json();
+    
+            const variationSelect = document.querySelector('.variations');
+            const quantityDisplay = document.querySelector('.quantity');
+            const priceDisplay = document.querySelector('.price-value');
+    
+            variationSelect.innerHTML = '';
+            productData.variations.forEach(variation => {
+                const option = document.createElement('option');
+                option.value = variation.variation;
+                option.textContent = variation.variation;
+                variationSelect.appendChild(option);
+            });
+    
+            const updatePrice = () => {
+                const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
+                const quantity = parseInt(quantityDisplay.textContent, 10);
+                const totalPrice = productData.price * quantity;
+                priceDisplay.textContent = totalPrice.toFixed(2);
+            };
+    
+            const minusButton = document.querySelector('.minus');
+            const plusButton = document.querySelector('.plus');
+            const addToCartButton = document.querySelector('.add-to-cart');
+    
+            // Remove previous event listeners
+            minusButton.replaceWith(minusButton.cloneNode(true));
+            plusButton.replaceWith(plusButton.cloneNode(true));
+            addToCartButton.replaceWith(addToCartButton.cloneNode(true));
+    
+            // Re-select the buttons after replacing
+            const newMinusButton = document.querySelector('.minus');
+            const newPlusButton = document.querySelector('.plus');
+            const newAddToCartButton = document.querySelector('.add-to-cart');
+    
+            newMinusButton.addEventListener('click', () => {
+                let quantity = parseInt(quantityDisplay.textContent, 10);
+                if (quantity > 1) {
+                    quantity--;
+                    quantityDisplay.textContent = quantity;
+                    updatePrice();
+                }
+            });
+    
+            newPlusButton.addEventListener('click', () => {
+                let quantity = parseInt(quantityDisplay.textContent, 10);
+                quantity++;
+                quantityDisplay.textContent = quantity;
+                updatePrice();
+            });
+    
+            variationSelect.addEventListener('change', updatePrice);
+            updatePrice(); // Initial price update
+    
+            newAddToCartButton.addEventListener('click', () => {
+                const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
+                const quantity = parseInt(quantityDisplay.textContent, 10);
+                const order = {
+                    name: productName,
+                    sku: productSku,
+                    variation: selectedVariation.variation,
+                    quantity: quantity,
+                    price: productData.price,
+                    total: productData.price * quantity
+                };
+                cart.push(order);
+                console.log('Order added to cart:', order);
+            });
+    
+        } catch (error) {
+            console.error('Error fetching variations:', error);
+        }
+    
         openModal(productDetailsModal);
         closeModal(productListModal);
     };
+    
+    
+    document.querySelector('.exit-product-details').addEventListener('click', () => {
+        document.getElementById('product-details-modal').style.display = 'none';
+    });
     
     
     
