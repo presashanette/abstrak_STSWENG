@@ -4,6 +4,8 @@ const multer = require('multer');
 const { processCsvData } = require('../routes/loader');
 const path = require('path');
 
+let lastUpdatedDate = 'Never';
+
 
 const storageCSV = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -48,6 +50,7 @@ const getOrders = async (req, res) => {
                 currentPage: page,
                 totalPages,
                 nextPage,
+                lastUpdatedDate,
                 "grid-add-button": "Order",
                 "grid-title": "ORDERS"
             });
@@ -59,15 +62,20 @@ const getOrders = async (req, res) => {
 };
 
 
-const uploadCSVFile = (req, res) => {
+const uploadCSVFile = async (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
     const csvFilePath = path.join(__dirname, '../models/data/', req.file.filename);
-    processCsvData(csvFilePath)
-        .then(() => res.status(200).send('File uploaded and processed successfully.'))
-        .catch(error => res.status(500).send('Error processing CSV file: ' + error.message));
+    try {
+        await processCsvData(csvFilePath);
+        lastUpdatedDate = new Date().toLocaleString();
+        res.status(200).json({ message: 'File uploaded and processed successfully.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error processing CSV file: ' + error.message });
+    }
 };
+
 
 
 async function getAnOrder(req, res) {

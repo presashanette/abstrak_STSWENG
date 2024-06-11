@@ -4,7 +4,7 @@
 @import "swal.css";
 @import "vieworder.css";
 @import "products.css";
-
+@import "loader.css";
 /* body {
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
@@ -417,11 +417,36 @@ input[type="date"],
     }
 }
 
-
 /* CSV UPLOAD CSS */
+.upload-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.upload-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-toggle-btn .upload-icon {
+    width: 26px;
+    height: 26px;
+}
+
+.last-updated {
+    font-size: 14px;
+    color: #555;
+}
+
 .upload-container {
-    margin: 20px 0;
     text-align: center;
+    display: none;
 }
 
 .upload-container form {
@@ -445,4 +470,128 @@ input[type="date"],
 
 .upload-container button:hover {
     background-color: #0056b3;
+}
+
+/* search */
+
+#search-button {
+    padding: 8px 15px;
+    color: #ffffff;
+    background-color: #000000;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#search-button:hover {
+    background-color: transparent;
+    color: #333;
+    border: 2px solid #333;
+}
+
+#clear-search-button {
+    padding: 8px 15px;
+    background-color: transparent;
+    color: #333;
+    border: 2px solid #333;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#clear-search-button:hover {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+#search-input {
+    width: 300px; 
+    padding: 8px;
+    border: 2px solid #333;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-right: 35%;
+}
+
+.search-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.success-message {
+    margin-top: 10px;
+    color: green;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* file upload */
+#upload-form {
+    display: flex;
+    flex-direction: column;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: transparent;
+    color: #333;
+    border: 2px solid #333;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+.custom-file-upload:hover {
+    background-color: #0056b3;
+}
+
+#csvFileInput {
+    display: none;
+}
+
+.upload-button {
+    padding: 10px 20px;
+    background-color: transparent;
+    color: #333;
+    border: 2px solid #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #070707;
+    color: #ffffff;
+}
+
+@media (max-width: 600px) {
+    #upload-form {
+        width: 90%;
+    }
 }
