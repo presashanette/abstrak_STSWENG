@@ -107,9 +107,11 @@ $(document).ready(() => {
     const productListModal = document.getElementById('product-list-modal');
     const productGallery = document.getElementById('product-gallery');
     const addButton = document.querySelector('.grid-header-add-button');
-    const closeButton = document.querySelector('.exit');
+    const closeButton = document.querySelector('.exitordermodal');
     const plusSign = document.querySelector('.plus-sign');
     const productCloseButton = document.querySelector('.exit-product-list');
+    const productDetailsModal = document.getElementById('product-details-modal');
+    const exitProductDetailsButton = document.querySelector('.exit-product-details');
 
     const openModal = (modal) => {
         modal.style.display = 'flex';
@@ -173,6 +175,38 @@ $(document).ready(() => {
     window.addEventListener('click', (event) => {
         if (event.target === addOrderModal) closeModal(addOrderModal);
         if (event.target === productListModal) closeModal(productListModal);
+    });
+    
+    const openProductDetailsModal = (product) => {
+        console.log(product);
+
+        const productName = product.dataset.name;
+        const productPrice = product.dataset.price;
+        const productMaterials = product.dataset.materials;
+        const productSku = product.dataset.sku;
+        const productImgSrc = product.querySelector('.product-pic').src;
+    
+        document.querySelector('.samplenamee').textContent = `Name: ${productName}`;
+        document.querySelector('.product-price').textContent = `Price: ${productPrice}`;
+        document.querySelector('.product-materials').textContent = `Materials: ${productMaterials}`;
+        document.querySelector('.product-sku').textContent = `SKU: ${productSku}`;
+        document.querySelector('.product-img').src = productImgSrc;
+    
+        openModal(productDetailsModal);
+        closeModal(productListModal);
+    };
+    
+    
+    productGallery.addEventListener('click', (event) => {
+        const product = event.target.closest('.container');
+        if (product) {
+            openProductDetailsModal(product);
+        }
+    });
+    
+    exitProductDetailsButton.addEventListener('click', () => {
+        closeModal(productDetailsModal);
+        openModal(productListModal);
     });
 
     const initialize = () => {
