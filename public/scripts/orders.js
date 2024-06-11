@@ -8,7 +8,6 @@ $(document).ready(() => {
     $('.view-product-modal').hide();
 
     const loadPage = async (page) => {
-        const target = document.body;
         try {
             const response = await fetch(`/orders?page=${page}`, {
                 headers: {
@@ -108,7 +107,7 @@ $(document).ready(() => {
     const productGallery = document.getElementById('product-gallery');
     const addButton = document.querySelector('.grid-header-add-button');
     const closeButton = document.querySelector('.exitordermodal');
-    const plusSign = document.querySelector('.plus-sign');
+    const plusSign = document.getElementById('plus-sign');
     const productCloseButton = document.querySelector('.exit-product-list');
     const productDetailsModal = document.getElementById('product-details-modal');
     const exitProductDetailsButton = document.querySelector('.exit-product-details');
@@ -128,8 +127,10 @@ $(document).ready(() => {
     closeButton.addEventListener('click', () => closeModal(addOrderModal));
 
     plusSign.addEventListener('click', async () => {
-        closeModal(addOrderModal);
+        console.log('Opening product list modal...')
         openModal(productListModal);
+        closeModal(addOrderModal);
+
 
         try {
             const response = await fetch('api/getAbstrakInvento', {
@@ -177,118 +178,26 @@ $(document).ready(() => {
         if (event.target === productListModal) closeModal(productListModal);
     });
     
-    // const openProductDetailsModal = async (product) => {
-    //     const productName = product.dataset.name;
-    //     const productSku = product.dataset.sku;
-    //     const productImgSrc = product.querySelector('.product-pic').src;
-    
-    //     document.querySelector('.name').textContent = `${productName}`;
-    //     document.querySelector('.sku').textContent = `SKU: ${productSku}`;
-    //     document.querySelector('.img').src = productImgSrc;
-    
-    //     try {
-    //         const response = await fetch(`/api/product?sku=${productSku}`);
-    //         if (!response.ok) {
-    //             throw new Error('Product not found');
-    //         }
-    //         const productData = await response.json();
-    
-    //         const variationSelect = document.querySelector('.variations');
-    //         const quantityDisplay = document.querySelector('.quantity');
-    //         const priceDisplay = document.querySelector('.price-value');
-    
-    //         variationSelect.innerHTML = '';
-    //         productData.variations.forEach(variation => {
-    //             const option = document.createElement('option');
-    //             option.value = variation.variation;
-    //             option.textContent = variation.variation;
-    //             variationSelect.appendChild(option);
-    //         });
-    
-    //         const updatePrice = () => {
-    //             const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
-    //             const quantity = parseInt(quantityDisplay.textContent, 10);
-    //             const totalPrice = productData.price * quantity;
-    //             priceDisplay.textContent = totalPrice.toFixed(2);
-    //         };
-    
-    //         const minusButton = document.querySelector('.minus');
-    //         const plusButton = document.querySelector('.plus');
-    //         const addToCartButton = document.querySelector('.add-to-cart');
-    
-    //         // Remove previous event listeners
-    //         minusButton.replaceWith(minusButton.cloneNode(true));
-    //         plusButton.replaceWith(plusButton.cloneNode(true));
-    //         addToCartButton.replaceWith(addToCartButton.cloneNode(true));
-    
-    //         // Re-select the buttons after replacing
-    //         const newMinusButton = document.querySelector('.minus');
-    //         const newPlusButton = document.querySelector('.plus');
-    //         const newAddToCartButton = document.querySelector('.add-to-cart');
-    
-    //         newMinusButton.addEventListener('click', () => {
-    //             let quantity = parseInt(quantityDisplay.textContent, 10);
-    //             if (quantity > 1) {
-    //                 quantity--;
-    //                 quantityDisplay.textContent = quantity;
-    //                 updatePrice();
-    //             }
-    //         });
-    
-    //         newPlusButton.addEventListener('click', () => {
-    //             let quantity = parseInt(quantityDisplay.textContent, 10);
-    //             quantity++;
-    //             quantityDisplay.textContent = quantity;
-    //             updatePrice();
-    //         });
-    
-    //         variationSelect.addEventListener('change', updatePrice);
-    //         updatePrice(); // Initial price update
-    
-    //         newAddToCartButton.addEventListener('click', () => {
-    //             const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
-    //             const quantity = parseInt(quantityDisplay.textContent, 10);
-    //             const order = {
-    //                 name: productName,
-    //                 sku: productSku,
-    //                 variation: selectedVariation.variation,
-    //                 quantity: quantity,
-    //                 price: productData.price,
-    //                 total: productData.price * quantity,
-    //                 picture: productImgSrc
-    //             };
-    //             cart.push(order);
-                
-    //             console.log('Order added to cart:', order);
-    //         });
-    
-    //     } catch (error) {
-    //         console.error('Error fetching variations:', error);
-    //     }
-    
-    //     openModal(productDetailsModal);
-    //     closeModal(productListModal);
-    // }; 
     const openProductDetailsModal = async (product) => {
         const productName = product.dataset.name;
         const productSku = product.dataset.sku;
         const productImgSrc = product.querySelector('.product-pic').src;
-    
+
         document.querySelector('.name').textContent = `${productName}`;
         document.querySelector('.sku').textContent = `SKU: ${productSku}`;
         document.querySelector('.img').src = productImgSrc;
-    
+
         try {
             const response = await fetch(`/api/product?sku=${productSku}`);
             if (!response.ok) {
                 throw new Error('Product not found');
             }
             const productData = await response.json();
-    
+
             const variationSelect = document.querySelector('.variations');
             const quantityDisplay = document.querySelector('.quantity');
             const priceDisplay = document.querySelector('.price-value');
-    
+
             variationSelect.innerHTML = '';
             productData.variations.forEach(variation => {
                 const option = document.createElement('option');
@@ -296,28 +205,31 @@ $(document).ready(() => {
                 option.textContent = variation.variation;
                 variationSelect.appendChild(option);
             });
-    
+
             const updatePrice = () => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
                 const quantity = parseInt(quantityDisplay.textContent, 10);
                 const totalPrice = productData.price * quantity;
                 priceDisplay.textContent = totalPrice.toFixed(2);
             };
-    
+
             const minusButton = document.querySelector('.minus');
             const plusButton = document.querySelector('.plus');
             const addToCartButton = document.querySelector('.add-to-cart');
-    
+
             // Remove previous event listeners
             minusButton.replaceWith(minusButton.cloneNode(true));
             plusButton.replaceWith(plusButton.cloneNode(true));
             addToCartButton.replaceWith(addToCartButton.cloneNode(true));
-    
+
             // Re-select the buttons after replacing
             const newMinusButton = document.querySelector('.minus');
             const newPlusButton = document.querySelector('.plus');
             const newAddToCartButton = document.querySelector('.add-to-cart');
-    
+
+            // Reset quantity to 1
+            quantityDisplay.textContent = 1;
+
             newMinusButton.addEventListener('click', () => {
                 let quantity = parseInt(quantityDisplay.textContent, 10);
                 if (quantity > 1) {
@@ -326,17 +238,20 @@ $(document).ready(() => {
                     updatePrice();
                 }
             });
-    
+
             newPlusButton.addEventListener('click', () => {
                 let quantity = parseInt(quantityDisplay.textContent, 10);
                 quantity++;
                 quantityDisplay.textContent = quantity;
                 updatePrice();
             });
-    
-            variationSelect.addEventListener('change', updatePrice);
+
+            variationSelect.addEventListener('change', () => {
+                quantityDisplay.textContent = 1; // Reset quantity to 1 when variation changes
+                updatePrice();
+            });
             updatePrice(); // Initial price update
-    
+
             newAddToCartButton.addEventListener('click', () => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
                 const quantity = parseInt(quantityDisplay.textContent, 10);
@@ -350,23 +265,27 @@ $(document).ready(() => {
                     imgSrc: productImgSrc
                 };
                 cart.push(order);
-                renderCartItems();
+                
                 console.log('Order added to cart:', order);
+                renderCartItems();
             });
-    
+
         } catch (error) {
             console.error('Error fetching variations:', error);
         }
-    
-        openModal(productDetailsModal);
-        closeModal(productListModal);
-    }; 
+
+        openModal(document.getElementById('product-details-modal'));
+        closeModal(document.getElementById('product-list-modal'));
+    };
 
     const renderCartItems = () => {
-        const cartItemsContainer = document.getElementById('cartitems');
+        const cartItemsContainer = document.getElementById('itemscart');
         cartItemsContainer.innerHTML = '';
-
+    
+        console.log('Rendering cart items:', cart);
+    
         cart.forEach(item => {
+            console.log('Rendering item:', item);
             const itemDetails = document.createElement('div');
             itemDetails.classList.add('itemdetails');
             itemDetails.innerHTML = `
@@ -374,19 +293,18 @@ $(document).ready(() => {
                     <img src="${item.imgSrc}" alt="${item.name}" class="itempic">
                     <span>${item.name}</span>
                 </div>
-                <span class="priceperitem">₱${item.price.toFixed(2)}</span>
+                <span class="priceperitem">₱${item.price}</span>
                 <span class="quantity">${item.quantity} pc</span>
-                <span class="totalprice">₱${(item.price * item.quantity).toFixed(2)}</span>
+                <span class="totalprice">₱${(item.price * item.quantity)}</span>
             `;
             cartItemsContainer.appendChild(itemDetails);
         });
     };
     
+    
     document.querySelector('.exit-product-details').addEventListener('click', () => {
         document.getElementById('product-details-modal').style.display = 'none';
     });
-    
-    
     
     productGallery.addEventListener('click', (event) => {
         const product = event.target.closest('.container');
@@ -403,6 +321,7 @@ $(document).ready(() => {
     const initialize = () => {
         loadPage(parseInt(pageNumber.textContent));
     };
+
     const uploadButton = document.getElementById('toggle-upload');
     const uploadContainer = document.querySelector('.upload-container');
     const lastUpdatedDate = document.getElementById('last-updated-date');
@@ -416,7 +335,7 @@ $(document).ready(() => {
         }
     });
 
-    //search
+    // Search
     $('#toggle-search').click(function() {
         $('#search-bar').toggle();
     });
@@ -433,13 +352,14 @@ $(document).ready(() => {
         });
         $('.pagination-container').hide();
     });
+
     $('#clear-search-button').click(function() {
         $('#search-input').val(''); 
         $('.orders-row').show(); 
         $('.pagination-container').show();
     });
     
-    //loader
+    // Loader
     const loader = document.getElementById('loader');
     const successMessage = document.getElementById('success-message');
 
@@ -478,9 +398,6 @@ $(document).ready(() => {
             loader.style.display = 'none';
         }
     });
-
-    
-
 
     initialize();
 });
