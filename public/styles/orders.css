@@ -247,6 +247,8 @@
 
 .itemdetails {
     margin-top: 15px;
+    display: flex;
+    flex-direction: row;
 }
 
 .itemdetails, .nameandpic {
@@ -257,7 +259,9 @@
 
 .nameandpic{
     gap: 15px;
+    max-width: 33%;
 }
+
 
 .payment {
     display: flex;

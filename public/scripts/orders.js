@@ -182,22 +182,22 @@ $(document).ready(() => {
         const productName = product.dataset.name;
         const productSku = product.dataset.sku;
         const productImgSrc = product.querySelector('.product-pic').src;
-
+    
         document.querySelector('.name').textContent = `${productName}`;
         document.querySelector('.sku').textContent = `SKU: ${productSku}`;
         document.querySelector('.img').src = productImgSrc;
-
+    
         try {
             const response = await fetch(`/api/product?sku=${productSku}`);
             if (!response.ok) {
                 throw new Error('Product not found');
             }
             const productData = await response.json();
-
+    
             const variationSelect = document.querySelector('.variations');
             const quantityDisplay = document.querySelector('.quantity');
             const priceDisplay = document.querySelector('.price-value');
-
+    
             variationSelect.innerHTML = '';
             productData.variations.forEach(variation => {
                 const option = document.createElement('option');
@@ -205,31 +205,35 @@ $(document).ready(() => {
                 option.textContent = variation.variation;
                 variationSelect.appendChild(option);
             });
-
+    
             const updatePrice = () => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
                 const quantity = parseInt(quantityDisplay.textContent, 10);
                 const totalPrice = productData.price * quantity;
                 priceDisplay.textContent = totalPrice.toFixed(2);
             };
-
+    
             const minusButton = document.querySelector('.minus');
             const plusButton = document.querySelector('.plus');
             const addToCartButton = document.querySelector('.add-to-cart');
-
+    
             // Remove previous event listeners
-            minusButton.replaceWith(minusButton.cloneNode(true));
-            plusButton.replaceWith(plusButton.cloneNode(true));
-            addToCartButton.replaceWith(addToCartButton.cloneNode(true));
-
+            const cloneMinusButton = minusButton.cloneNode(true);
+            const clonePlusButton = plusButton.cloneNode(true);
+            const cloneAddToCartButton = addToCartButton.cloneNode(true);
+    
+            minusButton.replaceWith(cloneMinusButton);
+            plusButton.replaceWith(clonePlusButton);
+            addToCartButton.replaceWith(cloneAddToCartButton);
+    
             // Re-select the buttons after replacing
             const newMinusButton = document.querySelector('.minus');
             const newPlusButton = document.querySelector('.plus');
             const newAddToCartButton = document.querySelector('.add-to-cart');
-
+    
             // Reset quantity to 1
             quantityDisplay.textContent = 1;
-
+    
             newMinusButton.addEventListener('click', () => {
                 let quantity = parseInt(quantityDisplay.textContent, 10);
                 if (quantity > 1) {
@@ -238,20 +242,20 @@ $(document).ready(() => {
                     updatePrice();
                 }
             });
-
+    
             newPlusButton.addEventListener('click', () => {
                 let quantity = parseInt(quantityDisplay.textContent, 10);
                 quantity++;
                 quantityDisplay.textContent = quantity;
                 updatePrice();
             });
-
+    
             variationSelect.addEventListener('change', () => {
                 quantityDisplay.textContent = 1; // Reset quantity to 1 when variation changes
                 updatePrice();
             });
             updatePrice(); // Initial price update
-
+    
             newAddToCartButton.addEventListener('click', () => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
                 const quantity = parseInt(quantityDisplay.textContent, 10);
@@ -265,21 +269,21 @@ $(document).ready(() => {
                     imgSrc: productImgSrc
                 };
                 cart.push(order);
-                
-                console.log('Order added to cart:', order);
                 renderCartItems();
+                console.log('Order added to cart:', order);
             });
-
+    
         } catch (error) {
             console.error('Error fetching variations:', error);
         }
-
+    
         openModal(document.getElementById('product-details-modal'));
         closeModal(document.getElementById('product-list-modal'));
     };
+    
 
     const renderCartItems = () => {
-        const cartItemsContainer = document.getElementById('itemscart');
+        const cartItemsContainer = document.getElementById('cartitems');
         cartItemsContainer.innerHTML = '';
     
         console.log('Rendering cart items:', cart);
@@ -293,9 +297,9 @@ $(document).ready(() => {
                     <img src="${item.imgSrc}" alt="${item.name}" class="itempic">
                     <span>${item.name}</span>
                 </div>
-                <span class="priceperitem">₱${item.price}</span>
+                <span class="priceperitem">₱${item.price.toFixed(2)}</span>
                 <span class="quantity">${item.quantity} pc</span>
-                <span class="totalprice">₱${(item.price * item.quantity)}</span>
+                <span class="totalprice">₱${(item.price * item.quantity).toFixed(2)}</span>
             `;
             cartItemsContainer.appendChild(itemDetails);
         });
