@@ -86,7 +86,7 @@
         </div>
                         
 
-        <div id ="add-order-modal"class="modal">
+        <div id ="add-order-modal" class="modal">
             <div class="modal-content">
                <div class="exit-button">
                     <img src="assets/back.png" alt="" class="exit">
@@ -96,7 +96,7 @@
                     <h1>ADD ORDER</h1>
                 </div>
 
-                <input type="dateCreated" class="order-dateCreated" placeholder="Order Date">
+                <input type="date" class="order-date" placeholder="Order Date">
                 
                 <select class="fulfillmentstatus">
                     <option>Fulfillment Status</option>
@@ -118,7 +118,8 @@
                 
                 <div class="items">
                     <h3>Items Ordered</h3>
-                    <div class = "itemdetails">
+                    <span class="plus-sign">+</span>
+                    <div class="itemdetails">
                         <div class="nameandpic">
                             <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
                             <span>"Self-Portrait" Tee</span>
@@ -137,6 +138,20 @@
                 </div>
                 <div class="submit">
                     <button class="submitbtn">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="product-list-modal" class="modal">
+            <div class="modal-content">
+                <div class="exit-button">
+                    <img src="assets/back.png" alt="" class="exit-product-list">
+                </div>
+                <div class="form-title">
+                    <h1>AVAILABLE PRODUCTS</h1>
+                </div>
+                <div class="gallery" id="product-gallery">
+                    
                 </div>
             </div>
         </div>

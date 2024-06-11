@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
-const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName } = require('../controllers/collectionControllers');
+const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct } = require('../controllers/productController');
 const { getOrders, getAnOrder } = require('../controllers/ordersController');
 
@@ -38,6 +38,7 @@ router.post('/api/collections/add', uploadCollectionPicture.single('collectionPi
 router.delete('/api/products/delete/:id', deleteProductById);
 router.post('/api/collections/checkName', checkCollectionName);
 router.post('/api/products/checkName', checkName);
+router.get('/api/getAbstrakInvento', handleAllProductsRequest);
 
 // products
 router.post('/api/products/check-name', checkName);

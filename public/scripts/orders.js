@@ -56,8 +56,6 @@ $(document).ready(() => {
     function openViewModal(orderNumber){
         fetchOrderDetails(orderNumber);
         $('.view-product-modal').show();
-        
-
     }
 
     const fetchOrderDetails = (orderNumber) => {
@@ -105,32 +103,81 @@ $(document).ready(() => {
         });
     };
 
-    
+    const addOrderModal = document.getElementById('add-order-modal');
+    const productListModal = document.getElementById('product-list-modal');
+    const productGallery = document.getElementById('product-gallery');
+    const addButton = document.querySelector('.grid-header-add-button');
+    const closeButton = document.querySelector('.exit');
+    const plusSign = document.querySelector('.plus-sign');
+    const productCloseButton = document.querySelector('.exit-product-list');
 
-    const setupAddModal = () => {
-        const modal = $('#add-order-modal');
-        const addButton = $('.grid-header-add-button');
-        const closeButton = $('.exit');
-
-        addButton.on('click', () => {
-            modal.css('display', 'flex');
-        });
-
-        closeButton.on('click', () => {
-            modal.css('display', 'none');
-        });
-
-        $(window).on('click', (event) => {
-            if ($(event.target).is(modal)) {
-                modal.css('display', 'none');
-            }
-        });
+    const openModal = (modal) => {
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
     };
+
+    const closeModal = (modal) => {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    };
+
+    addButton.addEventListener('click', () => openModal(addOrderModal));
+
+    closeButton.addEventListener('click', () => closeModal(addOrderModal));
+
+    plusSign.addEventListener('click', async () => {
+        closeModal(addOrderModal);
+        openModal(productListModal);
+
+        try {
+            const response = await fetch('api/getAbstrakInvento', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const products = await response.json();
+            productGallery.innerHTML = '';
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('container');
+                productDiv.dataset.id = product._id;
+                productDiv.dataset.name = product.name;
+                productDiv.dataset.price = product.price;
+                productDiv.dataset.sku = product.SKU;
+                productDiv.dataset.materials = product.material;
+                productDiv.dataset.picture = `/uploads/products/${product.picture}`;
+                
+                productDiv.innerHTML = `
+                    <div class="product-pic-container">
+                        <div class="product-actual-photo-container">
+                            <img src="/uploads/products/${product.picture}" alt="" class="product-pic">
+                        </div>
+                    </div>
+                    <div class="product-name">
+                        <p class="product-name-text">${product.name}</p>
+                        <p class="product-stock ${product.totalStock > 0 ? 'high-stock' : 'no-stock'}">${product.totalStock} in stock</p>            
+                    </div>
+                `;
+                productGallery.appendChild(productDiv);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    });
+
+    productCloseButton.addEventListener('click', () => {
+        closeModal(productListModal);
+        openModal(addOrderModal);
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === addOrderModal) closeModal(addOrderModal);
+        if (event.target === productListModal) closeModal(productListModal);
+    });
 
     const initialize = () => {
         loadPage(parseInt(pageNumber.text()));
         setupPagination();
-        setupAddModal();
     };
 
     initialize();
