@@ -1,5 +1,4 @@
 const OrderInfo = require('../models/OrderInfo');
-const Product = require('../models/Product');
 
 // const getOrders = async (req, res) => {
 //     try {
@@ -84,53 +83,19 @@ const getOrders = async (req, res) => {
     }
 };
 
-module.exports = { getOrders };
-
-
 async function getAnOrder(req, res) {
+    const orderId = req.params.id;
+    const orderIdStr = orderId.toString();
+    console.log(orderIdStr);
+
     try {
-        const id = req.params.id;
-        let order = await OrderInfo.find({ 'orderNo': id }).lean();
-        order = order[0];
-
-        // Replace quotes in item names
-        for (let item of order.items) {
-            item.name = item.name.replaceAll('"', '');
-        }
-
-        // Merge items with the same name
-        const mergedItems = [];
-        for (let item of order.items) {
-            const existingItem = mergedItems.find(i => i.name === item.name);
-            if (existingItem) {
-                existingItem.quantity += item.quantity;
-            } else {
-                mergedItems.push({ ...item });
-            }
-        }
-
-        // Fetch product prices and other details
-        for (let item of mergedItems) {
-            const product = await Product.findOne({ name: item.name });
-            if (product) {
-                item.price = product.price;
-                item.sku = product.SKU;
-                item.picture = product.picture;
-            } else {
-                item.price = 0; // or any default value you prefer
-                item.sku = '';
-                item.picture = '';
-            }
-        }
-
-        order.items = mergedItems;
-
+        const order = await OrderInfo.find({'orderNumber': orderId}).lean();
         console.log(order);
-        res.json(order); // Send the order back as a response
-    } catch (err) {
+    }   catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
     }
+
 }
 
 
