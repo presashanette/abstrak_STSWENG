@@ -89,7 +89,8 @@ async function getAnOrder(req, res) {
     console.log(orderIdStr);
 
     try {
-        const order = await OrderInfo.find({'orderNumber': orderId}).lean();
+        let order = await OrderInfo.find({'orderNumber': orderId}).lean();
+        order = order[0];
         console.log(order);
     }   catch (err) {
         console.error(err);
