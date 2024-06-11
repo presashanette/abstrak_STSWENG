@@ -1,17 +1,81 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
-const OrderInfoSchema = new mongoose.Schema({
-  orderNo: { type: String, required: true },
-  date: { type: Date, required: true },
-  totalOrderQuantity: { type: Number, required: true },
-  items: [{ 
-    name: String, 
-    quantity: Number 
-  }],
-  paymentStatus: { type: String, required: true },
-  paymentMethod: { type: String, required: true },
-  fulfillmentStatus: { type: String, required: true },
-  total: { type: Number, required: true }
+// const OrderInfoSchema = new mongoose.Schema({
+//   orderNo: { type: String, required: true },
+//   date: { type: Date, required: true },
+//   totalOrderQuantity: { type: Number, required: true },
+//   items: [{ 
+//     name: String, 
+//     quantity: Number 
+//   }],
+//   paymentStatus: { type: String, required: true },
+//   paymentMethod: { type: String, required: true },
+//   fulfillmentStatus: { type: String, required: true },
+//   total: { type: Number, required: true }
+// });
+
+// module.exports = mongoose.model('OrderInfo', OrderInfoSchema);
+
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+// Item schema
+const itemSchema = new Schema({
+  itemName: String,
+  variant: String,
+  sku: String,
+  quantity: Number,
+  quantityRefunded: Number,
+  price: Number,
+  weight: Number,
+  customText: String,
+  depositAmount: Number,
+  deliveryMethod: String,
+  deliveryTime: String,
 });
 
-module.exports = mongoose.model('OrderInfo', OrderInfoSchema);
+// Address schema
+const addressSchema = new Schema({
+  name: String,
+  phone: String,
+  companyName: String,
+  country: String,
+  state: String,
+  city: String,
+  address: String,
+  zip: String,
+});
+
+// Order schema
+const orderSchema = new Schema({
+  orderNumber: String,
+  dateCreated: Date,
+  time: String,
+  fulfillBy: String,
+  totalOrderQuantity: Number,
+  contactEmail: String,
+  noteFromCustomer: String,
+  additionalCheckoutInfo: String,
+  items: [itemSchema],
+  deliveryAddress: addressSchema,
+  billingAddress: addressSchema,
+  paymentStatus: String,
+  paymentMethod: String,
+  couponCode: String,
+  giftCardAmount: Number,
+  shippingRate: Number,
+  totalTax: Number,
+  total: Number,
+  currency: String,
+  refundedAmount: Number,
+  netAmount: Number,
+  additionalFees: Number,
+  fulfillmentStatus: String,
+  trackingNumber: String,
+  fulfillmentService: String,
+  shippingLabel: String,
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
+module.exports = Order;

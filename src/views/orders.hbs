@@ -29,8 +29,8 @@
                 <tbody id="orders-body">
                     {{#each initialOrders}}
                     <tr class="orders-row">
-                        <td>{{orderNo}}</td>
-                        <td>{{formatDate date}}</td>
+                        <td>{{orderNumber}}</td>
+                        <td>{{formatDate dateCreated}}</td>
                         <td>{{totalOrderQuantity}}</td>
                         <td>{{paymentMethod}}</td>
                         <td>{{fulfillmentStatus}}</td>
@@ -39,7 +39,7 @@
                         <td>
                             <ul>
                                 {{#each items}}
-                                <li>{{name}} - {{quantity}}</li>
+                                    <li>{{this.itemName}} - {{this.quantity}} ({{this.variant}})</li>
                                 {{/each}}
                             </ul>
                         </td>
@@ -68,7 +68,7 @@
                     <h1>ADD ORDER</h1>
                 </div>
 
-                <input type="date" class="order-date" placeholder="Order Date">
+                <input type="dateCreated" class="order-dateCreated" placeholder="Order Date">
                 
                 <select class="fulfillmentstatus">
                     <option>Fulfillment Status</option>
@@ -160,21 +160,21 @@
                     tbody.innerHTML = ''; 
 
                     orders.forEach(order => {
-                        const orderNo = order.orderNo || 'N/A';
-                        const date = order.date ? new Date(order.date).toLocaleDateString() : 'N/A';
+                        const orderNumber = order.orderNumber || 'N/A';
+                        const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
                         const totalOrderQuantity = order.totalOrderQuantity || 'N/A';
                         const paymentMethod = order.paymentMethod || 'N/A';
                         const fulfillmentStatus = order.fulfillmentStatus || 'N/A';
                         const paymentStatus = order.paymentStatus || 'N/A';
                         const total = order.total || 'N/A';
                         const items = order.items && Array.isArray(order.items)
-                            ? order.items.map(item => `<li>${item.name || 'N/A'} - ${item.quantity || 'N/A'}</li>`).join('')
+                            ? order.items.map(item => `<li>${item.itemName} - ${item.quantity} (${item.variant || 'No Variant'})</li>`).join('')
                             : '<li>N/A</li>';
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${orderNo}</td>
-                            <td>${date}</td>
+                            <td>${orderNumber}</td>
+                            <td>${dateCreated}</td>
                             <td>${totalOrderQuantity}</td>
                             <td>${paymentMethod}</td>
                             <td>${fulfillmentStatus}</td>
@@ -187,7 +187,7 @@
                         tbody.appendChild(tr);
                         tr.addEventListener('click', () => {
                             $.ajax({
-                                url: '/api/orders/' + orderNo,
+                                url: '/api/orders/' + orderNumber,
                                 type: 'GET',
                                 success: function(response) {
                                     console.log(response);
@@ -198,8 +198,8 @@
                             });
                         });
                         tr.style.cursor = 'pointer';
-
                     });
+
 
                     pageNumber.textContent = page;
                     prevButton.style.display = page <= 1 ? 'none' : 'inline-block';
