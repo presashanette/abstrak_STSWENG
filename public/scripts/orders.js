@@ -1,57 +1,88 @@
 $(document).ready(() => {
-    const prevButton = $('#prev-button');
-    const nextButton = $('#next-button');
-    const pageNumber = $('#page-number');
-    const totalPages = parseInt($('#total-pages').text());
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+    const pageNumber = document.getElementById('page-number');
+    let totalPages = parseInt(document.getElementById('total-pages').textContent);
 
     $('.view-product-modal').hide();
 
-    const fetchOrders = async (page) => {
-        const response = await fetch(`/orders?page=${page}`, {
-            headers: {
-                'Accept': 'application/json'
+    const loadPage = async (page) => {
+        const target = document.body;
+        try {
+            const response = await fetch(`/orders?page=${page}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+            const result = await response.json();
+            const { orders } = result;
+            const tbody = document.getElementById('orders-body');
+            tbody.innerHTML = '';
+            orders.forEach(order => {
+                const orderNumber = order.orderNumber || 'N/A';
+                const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
+                const totalOrderQuantity = order.totalOrderQuantity || 'N/A';
+                const paymentMethod = order.paymentMethod || 'N/A';
+                const fulfillmentStatus = order.fulfillmentStatus || 'N/A';
+                const paymentStatus = order.paymentStatus || 'N/A';
+                const total = order.total ? `₱${order.total}` : 'N/A';
+                const shippingRate = order.shippingRate || 'N/A';
+                const orderedFrom = order.orderedFrom || 'N/A';
+                const tr = document.createElement('tr');
+                tr.classList.add('orders-row');
+                tr.innerHTML = `
+                    <td>${orderNumber}</td>
+                    <td>${dateCreated}</td>
+                    <td>${totalOrderQuantity}</td>
+                    <td>${paymentMethod}</td>
+                    <td>${fulfillmentStatus}</td>
+                    <td>${paymentStatus}</td>
+                    <td>${total}</td>
+                    <td>${shippingRate}</td>
+                    <td>${orderedFrom}</td>
+                `;
+                tbody.appendChild(tr);
+
+                // Add event listener for click to open the modal
+                tr.addEventListener('click', () => openViewModal(orderNumber));
+                // Set the cursor to pointer
+                tr.style.cursor = 'pointer';
+            });
+            pageNumber.textContent = page;
+            if (page === 1) {
+                prevButton.style.display = 'none';
+            } else {
+                prevButton.style.display = 'inline';
+            }
+            if (page === totalPages) {
+                nextButton.style.display = 'none';
+            } else {
+                nextButton.style.display = 'inline';
+            }
+        } catch (error) {
+            console.error('Error loading page:', error);
         }
-        return await response.json();
     };
 
-    const updateTable = (orders) => {
-        const tbody = $('#orders-body');
-        tbody.empty();
+    nextButton.addEventListener('click', () => {
+        const currentPage = parseInt(pageNumber.textContent);
+        if (currentPage < totalPages) {
+            loadPage(currentPage + 1);
+        }
+    });
 
-        orders.forEach(order => {
-            const orderNumber = order.orderNumber || 'N/A';
-            const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
-            const totalOrderQuantity = order.totalOrderQuantity || 'N/A';
-            const paymentMethod = order.paymentMethod || 'N/A';
-            const fulfillmentStatus = order.fulfillmentStatus || 'N/A';
-            const paymentStatus = order.paymentStatus || 'N/A';
-            const total = order.total || 'N/A';
-            const items = order.items && Array.isArray(order.items)
-                ? order.items.map(item => `<li>${item.itemName} - ${item.quantity} (${item.variant || 'No Variant'})</li>`).join('')
-                : '<li>N/A</li>';
+    prevButton.addEventListener('click', () => {
+        const currentPage = parseInt(pageNumber.textContent);
+        if (currentPage > 1) {
+            loadPage(currentPage - 1);
+        }
+    });
 
-            const tr = $('<tr></tr>').html(`
-                <td>${orderNumber}</td>
-                <td>${dateCreated}</td>
-                <td>${totalOrderQuantity}</td>
-                <td>${paymentMethod}</td>
-                <td>${fulfillmentStatus}</td>
-                <td>${paymentStatus}</td>
-                <td>${total}</td>
-                <td>
-                    <ul>${items}</ul>
-                </td>
-            `);
-            tbody.append(tr);
-
-            tr.on('click', () => openViewModal(orderNumber));
-            tr.css('cursor', 'pointer');
-        });
-    };
+    // Initial load
+    loadPage(1);
 
     function openViewModal(orderNumber){
         fetchOrderDetails(orderNumber);
@@ -67,38 +98,6 @@ $(document).ready(() => {
             },
             error: function(error) {
                 console.error('Error fetching order:', error);
-            }
-        });
-    };
-
-    const updatePagination = (page) => {
-        pageNumber.text(page);
-        prevButton.css('display', page <= 1 ? 'none' : 'inline-block');
-        nextButton.css('display', page >= totalPages ? 'none' : 'inline-block');
-    };
-
-    const loadPage = async (page) => {
-        try {
-            const result = await fetchOrders(page);
-            updateTable(result.orders);
-            updatePagination(page);
-        } catch (error) {
-            console.error('Error fetching more orders:', error);
-        }
-    };
-
-    const setupPagination = () => {
-        nextButton.on('click', () => {
-            const currentPage = parseInt(pageNumber.text());
-            if (currentPage < totalPages) {
-                loadPage(currentPage + 1);
-            }
-        });
-
-        prevButton.on('click', () => {
-            const currentPage = parseInt(pageNumber.text());
-            if (currentPage > 1) {
-                loadPage(currentPage - 1);
             }
         });
     };
@@ -210,9 +209,29 @@ $(document).ready(() => {
     });
 
     const initialize = () => {
-        loadPage(parseInt(pageNumber.text()));
+        loadPage(parseInt(pageNumber.textContent));
         setupPagination();
     };
+
+    const uploadForm = document.getElementById('upload-form');
+    uploadForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(uploadForm);
+        try {
+            const response = await fetch('/upload-csv', {
+                method: 'POST',
+                body: formData
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+            console.log('CSV uploaded successfully:', result);
+            window.location.reload();
+        } catch (error) {
+            console.error('Error uploading CSV:', error);
+        }
+    });
 
     initialize();
 });

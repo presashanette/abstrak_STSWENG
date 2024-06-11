@@ -393,3 +393,32 @@ input[type="date"],
     flex: 1;
     padding: 0 20px;
 }
+
+/* CSV UPLOAD CSS */
+.upload-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.upload-container form {
+    display: inline-block;
+}
+
+.upload-container input[type="file"] {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.upload-container button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.upload-container button:hover {
+    background-color: #0056b3;
+}

@@ -24,12 +24,13 @@
                         <th>Fulfillment Status</th>
                         <th>Payment Status</th>
                         <th>Total</th>
-                        <th>Items</th>
+                        <th>Shipping Rate</th>
+                        <th>Ordered From</th>
                     </tr>
                 </thead>
                 <tbody id="orders-body">
                     {{#each initialOrders}}
-                    <tr class="orders-row">
+                        <tr class="orders-row">
                             <td>{{orderNumber}}</td>
                             <td>{{formatDate dateCreated}}</td>
                             <td>{{totalOrderQuantity}}</td>
@@ -37,16 +38,9 @@
                             <td>{{fulfillmentStatus}}</td>
                             <td>{{paymentStatus}}</td>
                             <td>{{total}}</td>
-                            <td>
-                                <ul>
-                                    {{#each items}}
-                                        <li>{{this.itemName}} - {{this.quantity}} ({{this.variant}})</li>
-                                    {{/each}}
-                                </ul>
-                            </td>
-                            
+                            <td>{{shippingRate}}</td>
+                            <td>{{orderedFrom}}</td>
                         </tr>
-                        
                     {{/each}}
                 </tbody>
             </table>
@@ -58,6 +52,12 @@
                     <span id="total-pages">{{totalPages}}</span>
                     <button id="next-button">Next</button>
                 </div>
+            </div>
+            <div class="upload-container">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <input type="file" id="csvFileInput" name="csvFile" accept=".csv">
+                    <button type="submit">Upload CSV</button>
+                </form>
             </div>
         </div>
 
