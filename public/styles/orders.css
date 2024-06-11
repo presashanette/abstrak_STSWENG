@@ -349,16 +349,22 @@ input[type="date"],
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
+    justify-content: center;
+    align-items: center;
 }
 
 .product-details-modal-content {
     background-color: white;
-    width: 80%;
-    max-width: 300px;
+    width: 90%;
+    max-width: 700px;
     margin: 50px auto;
     border-radius: 8px;
     padding: 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .exit-button {
@@ -374,25 +380,43 @@ input[type="date"],
 
 .product-info {
     display: flex;
-    justify-content: space-around;
     align-items: center;
+    gap: 20px;
 }
 
 .product-image {
-    flex: 1;
+    flex-shrink: 0;
+    width: 150px;
 }
 
 .product-image img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .product-description {
-    flex: 1;
-    padding: 0 20px;
+    flex-grow: 1;
+    text-align: left;
 }
+
+.product-description h1 {
+    font-size: 1.2em;
+    margin: 0;
+}
+
+.product-description p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+@media (min-width: 768px) {
+    .product-info {
+        gap: 40px;
+    }
+}
+
 
 /* CSV UPLOAD CSS */
 .upload-container {

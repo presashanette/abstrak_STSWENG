@@ -180,20 +180,17 @@ $(document).ready(() => {
         console.log(product);
 
         const productName = product.dataset.name;
-        const productPrice = product.dataset.price;
-        const productMaterials = product.dataset.materials;
         const productSku = product.dataset.sku;
         const productImgSrc = product.querySelector('.product-pic').src;
     
-        document.querySelector('.samplenamee').textContent = `Name: ${productName}`;
-        document.querySelector('.product-price').textContent = `Price: ${productPrice}`;
-        document.querySelector('.product-materials').textContent = `Materials: ${productMaterials}`;
-        document.querySelector('.product-sku').textContent = `SKU: ${productSku}`;
-        document.querySelector('.product-img').src = productImgSrc;
+        document.querySelector('.name').textContent = `${productName}`;
+        document.querySelector('.sku').textContent = `SKU: ${productSku}`;
+        document.querySelector('.img').src = productImgSrc;
     
         openModal(productDetailsModal);
         closeModal(productListModal);
     };
+    
     
     
     productGallery.addEventListener('click', (event) => {
@@ -210,7 +207,6 @@ $(document).ready(() => {
 
     const initialize = () => {
         loadPage(parseInt(pageNumber.textContent));
-        setupPagination();
     };
 
     const uploadForm = document.getElementById('upload-form');
