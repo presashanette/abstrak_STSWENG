@@ -19,7 +19,7 @@ const uploadCSV = multer({ storage: storageCSV });
 const getOrders = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 10;
+        const limit = 15;
         const skip = (page - 1) * limit;
         
         const totalOrders = await OrderInfo.countDocuments();
