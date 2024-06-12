@@ -13,7 +13,18 @@
         {{>navbar}}
         {{>gridheader}}
         <div class="catalogue">
-            {{!-- <h1>Order List</h1> --}}
+            <div class="search-container">
+                <div class="search-button-container">
+                     <button id="toggle-search" class="search-toggle-btn">
+                    <img src="/assets/search.png" alt="Search Icon" class="search-icon">
+                </button>
+                </div>
+                <div id="search-bar" class="search-bar" style="display: none;">
+                    <input type="text" id="search-input" placeholder="Search orders...">
+                    <button id="search-button">Search</button>
+                     <button id="clear-search-button">Clear</button>
+                </div>
+            </div>
             <table class="orders-table">
                 <thead>
                     <tr>
@@ -24,12 +35,13 @@
                         <th>Fulfillment Status</th>
                         <th>Payment Status</th>
                         <th>Total</th>
-                        <th>Items</th>
+                        <th>Shipping Rate</th>
+                        <th>Ordered From</th>
                     </tr>
                 </thead>
                 <tbody id="orders-body">
                     {{#each initialOrders}}
-                    <tr class="orders-row">
+                        <tr class="orders-row">
                             <td>{{orderNumber}}</td>
                             <td>{{formatDate dateCreated}}</td>
                             <td>{{totalOrderQuantity}}</td>
@@ -37,19 +49,41 @@
                             <td>{{fulfillmentStatus}}</td>
                             <td>{{paymentStatus}}</td>
                             <td>{{total}}</td>
-                            <td>
-                                <ul>
-                                    {{#each items}}
-                                        <li>{{this.itemName}} - {{this.quantity}} ({{this.variant}})</li>
-                                    {{/each}}
-                                </ul>
-                            </td>
-                            
+                            <td>{{shippingRate}}</td>
+                            <td>{{orderedFrom}}</td>
                         </tr>
-                        
                     {{/each}}
                 </tbody>
             </table>
+            <div class="upload-header">
+                <button id="toggle-upload" class="upload-toggle-btn">
+                    <img src="/assets/upload-file.svg" alt="Upload Icon" class="upload-icon">
+                </button>
+                <div class="last-updated">
+                    Last updated: <span id="last-updated-date">{{lastUpdatedDate}}</span>
+                </div>
+            </div>
+            <div class="upload-container" style="display: none;">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <label for="csvFileInput" class="custom-file-upload">
+                        Choose File
+                    </label>
+                    <input type="file" id="csvFileInput" name="csvFile" accept=".csv">
+                    <button type="submit" class="upload-button">Upload CSV</button>
+                </form>
+
+                <div class="loader" id="loader" style="display: none;">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="success-message" id="success-message" style="display: none;">
+                    File uploaded successfully!
+                </div>
+            </div>
             <div class="pagination-container">
                 <div class="pagination">
                     <button id="prev-button" style="display: none;">Previous</button>
@@ -58,6 +92,12 @@
                     <span id="total-pages">{{totalPages}}</span>
                     <button id="next-button">Next</button>
                 </div>
+            </div>
+            <div class="upload-container">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <input type="file" id="csvFileInput" name="csvFile" accept=".csv">
+                    <button type="submit">Upload CSV</button>
+                </form>
             </div>
         </div>
 
@@ -68,35 +108,30 @@
                 </div>
                 <h1>Order #8286</h1>
                 <p>Ordered on May 15, 2024 10:32 AM from Instagam</p>
-
-                <div class="items">
-                    <h3>Items Ordered</h3>
-                    <div class = "itemdetails">
+                    <div class="itemdetails">
                         <div class="nameandpic">
                             <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
                             <span>"Self-Portrait" Tee</span>
                         </div>
-                        <span>₱885.50</span>
-                        <span>1 pc</span>
-                        <span>Variation</span>
+                        <span class ="priceperitem">₱800.50</span>
+                        <span class="quantity">1 pc</span>
+                        <span class="totalprice">₱885.50</span>
                     </div>
-                </div>
-            
             </div>
         </div>
                         
 
-        <div id ="add-order-modal"class="modal">
+        <div id ="add-order-modal" class="modal">
             <div class="modal-content">
                <div class="exit-button">
-                    <img src="assets/back.png" alt="" class="exit">
+                    <img src="assets/back.png" alt="" class="exitordermodal">
                 </div>
                 
                 <div class="form-title">
                     <h1>ADD ORDER</h1>
                 </div>
 
-                <input type="dateCreated" class="order-dateCreated" placeholder="Order Date">
+                <input type="date" class="order-date" placeholder="Order Date">
                 
                 <select class="fulfillmentstatus">
                     <option>Fulfillment Status</option>
@@ -116,18 +151,14 @@
                     <option value="unpaid">Unpaid</option>
                 </select>
                 
-                <div class="items">
+                <div class="items" id = "items">
                     <h3>Items Ordered</h3>
-                    <div class = "itemdetails">
-                        <div class="nameandpic">
-                            <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
-                            <span>"Self-Portrait" Tee</span>
-                        </div>
-                        <span>₱885.50</span>
-                        <span>1 pc</span>
-                        <span>₱800.50</span>
+                    <span id="plus-sign" class="plus-sign">+</span>
+                    <div id="cartitems">
+                        
                     </div>
                 </div>
+
                 <div class="payment">
                     <h3>Payment</h3>
                     <div><span>Items</span> <span>₱800.50</span></div>
@@ -137,6 +168,50 @@
                 </div>
                 <div class="submit">
                     <button class="submitbtn">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="product-list-modal" class="modal">
+            <div class="modal-content">
+                <div class="exit-button">
+                    <img src="assets/back.png" alt="" class="exit-product-list">
+                </div>
+                <div class="form-title">
+                    <h1>AVAILABLE PRODUCTS</h1>
+                </div>
+                <div class="gallery" id="product-gallery">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div id="product-details-modal" class="modal">
+            <div class="modal-content product-details-modal-content">
+                <div class="exit-button">
+                    <img src="assets/back.png" alt="Exit" class="exit-product-details">
+                </div>
+                <div class="product-details">
+                    <div class="product-info">
+                        <div class="product-image">
+                            <img src="" alt="Product Image" class="img">
+                        </div>
+                        <div class="product-description">
+                            <h1 class="name"></h1>
+                            <p class="sku"></p>
+                        </div>
+                    </div>
+                    <div class="variation-controls">
+                        <label for="variation">Variation</label>
+                        <select id="variation" class="variations"></select>
+                        <div class="quantity-controls">
+                            <button class="minus">−</button>
+                            <span class="quantity">1</span>
+                            <button class="plus">+</button>
+                        </div>
+                        <div class="price">₱<span class="price-value">0.00</span></div>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
                 </div>
             </div>
         </div>

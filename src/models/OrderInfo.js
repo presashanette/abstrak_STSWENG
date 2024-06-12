@@ -30,21 +30,9 @@ const itemSchema = new Schema({
   weight: Number,
   customText: String,
   depositAmount: Number,
-  deliveryMethod: String,
   deliveryTime: String,
 });
 
-// Address schema
-const addressSchema = new Schema({
-  name: String,
-  phone: String,
-  companyName: String,
-  country: String,
-  state: String,
-  city: String,
-  address: String,
-  zip: String,
-});
 
 // Order schema
 const orderSchema = new Schema({
@@ -57,8 +45,6 @@ const orderSchema = new Schema({
   noteFromCustomer: String,
   additionalCheckoutInfo: String,
   items: [itemSchema],
-  deliveryAddress: addressSchema,
-  billingAddress: addressSchema,
   paymentStatus: String,
   paymentMethod: String,
   couponCode: String,
@@ -73,6 +59,8 @@ const orderSchema = new Schema({
   fulfillmentStatus: String,
   trackingNumber: String,
   fulfillmentService: String,
+  deliveryMethod: String,
+  orderedFrom: String,
   shippingLabel: String,
 });
 
