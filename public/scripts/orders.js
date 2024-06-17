@@ -418,29 +418,67 @@ $(document).ready(() => {
         $('#search-bar').toggle();
     });
 
-    $('#search-button').click(function() {
-        const searchText = $('#search-input').val().toLowerCase();
-        $('.orders-row').each(function() {
-            const rowText = $(this).text().toLowerCase();
-            if (rowText.includes(searchText)) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-        $('.pagination-container').hide();
-    });
+    // $('#search-button').click(function() {
+    //     const searchText = $('#search-input').val().toLowerCase();
+    //     $('.orders-row').each(function() {
+    //         const rowText = $(this).text().toLowerCase();
+    //         if (rowText.includes(searchText)) {
+    //             $(this).show();
+    //         } else {
+    //             $(this).hide();
+    //         }
+    //     });
+    //     $('.pagination-container').hide();
+    // });
 
-    $('#clear-search-button').click(function() {
-        $('#search-input').val(''); 
-        $('.orders-row').show(); 
-        $('.pagination-container').show();
+    // $('#clear-search-button').click(function() {
+    //     $('#search-input').val(''); 
+    //     $('.orders-row').show(); 
+    //     $('.pagination-container').show();
+    // });
+    $('#search-button').click(function() {
+    const searchText = $('#search-input').val().toLowerCase();
+    $('.orders-row').each(function() {
+        const rowText = $(this).text().toLowerCase();
+        const itemsText = $(this).data('items') ? $(this).data('items').toLowerCase() : '';
+        if (rowText.includes(searchText) || itemsText.includes(searchText)) {
+            highlightText($(this), searchText);
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
     });
+    $('.pagination-container').hide();
+});
+
+$('#clear-search-button').click(function() {
+    $('#search-input').val(''); 
+    $('.orders-row').show(); 
+    $('.pagination-container').show();
+    removeHighlights();
+});
+
+    
+    const highlightText = (element, text) => {
+        const innerHTML = element.html();
+        const index = innerHTML.toLowerCase().indexOf(text.toLowerCase());
+        if (index >= 0) {
+            element.html(innerHTML.substring(0, index) + "<span class='highlight'>" + innerHTML.substring(index, index + text.length) + "</span>" + innerHTML.substring(index + text.length));
+        }
+    };
+    
+    const removeHighlights = () => {
+        $('.highlight').each(function() {
+            const parent = $(this).parent();
+            $(this).replaceWith($(this).text());
+            parent.html(parent.html()); 
+        });
+    };
+    
     
     // Loader
     const loader = document.getElementById('loader');
     const successMessage = document.getElementById('success-message');
-
     uploadForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const formData = new FormData(uploadForm);
