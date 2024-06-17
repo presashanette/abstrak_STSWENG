@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
-const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
+const { fetchProductData, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder } = require('../controllers/ordersController');
 
 
@@ -44,14 +44,16 @@ router.get('/api/getAbstrakInvento', handleAllProductsRequest);
 router.post('/api/products/check-name', checkName);
 router.post('/api/products/check-sku', checkSKU);
 router.get('/api/product', getVariation);
+router.get('/products/:id', fetchProductData);
 router.get('/products/:id', fetchSizeStockCost);
 router.post('/api/products/update/:id', uploadProductPicture.single('picture'), updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
 
+
 // orders
 router.get('/orders', getOrders);
 router.get('/api/orders/:id', getAnOrder);
-router.post('/orders/add', addOrder);
+router.post('/api/orders/add', addOrder);
 router.post('/upload-csv', uploadCSV.single('csvFile'), uploadCSVFile);
 
 
