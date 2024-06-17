@@ -220,11 +220,9 @@
 
 }
 .modal-content .paymentmethod {
-    margin-top: 10px;
     grid-area: paymentmethod;
 }
 .modal-content .paymentstatus {
-    margin-top: 10px;
     grid-area: paymentstatus;
 }
 .modal-content .submit {

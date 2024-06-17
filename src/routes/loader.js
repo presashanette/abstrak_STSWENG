@@ -68,7 +68,7 @@ async function processCsvData(csvFilePath) {
               fulfillmentStatus: row['Fulfillment status'],
               trackingNumber: row['Tracking number'],
               fulfillmentService: row['Fulfillment service'],
-            deliveryMethod: row['Delivery method'],
+              deliveryMethod: row['Delivery method'],
               shippingLabel: row['Shipping label'],
               orderedFrom: 'WIX website',
             };

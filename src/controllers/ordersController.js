@@ -61,6 +61,33 @@ const getOrders = async (req, res) => {
     }
 };
 
+async function addOrder(req, res) {
+    const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate } = req.body;
+
+    const newOrder = new OrderInfo({
+        orderNo,
+        date,
+        totalOrderQuantity,
+        paymentMethod,
+        paymentStatus,
+        items,
+        paymentMethod,
+        fulfillmentStatus,
+        orderedFrom,
+        shippingRate
+    });
+
+    try{
+        await newOrder.save();
+        console.log(newOrder);
+        res.send({ success: true, message: 'Order added successfully' });
+        
+    } catch (err) {
+        console.log("error in add order: " + err)
+    }
+    
+};
+
 
 const uploadCSVFile = async (req, res) => {
     if (!req.file) {
@@ -94,4 +121,4 @@ async function getAnOrder(req, res) {
 
 }
 
-module.exports = { getOrders, getAnOrder, uploadCSVFile, uploadCSV };
+module.exports = { getOrders, getAnOrder, uploadCSVFile, uploadCSV, addOrder };

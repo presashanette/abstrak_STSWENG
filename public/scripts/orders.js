@@ -260,6 +260,7 @@ $(document).ready(() => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
                 const quantity = parseInt(quantityDisplay.textContent, 10);
                 const order = {
+                    id: productData._id,
                     name: productName,
                     sku: productSku,
                     variation: selectedVariation.variation,
@@ -309,6 +310,79 @@ $(document).ready(() => {
     document.querySelector('.exit-product-details').addEventListener('click', () => {
         document.getElementById('product-details-modal').style.display = 'none';
     });
+
+    document.querySelector('.submitbtn').addEventListener('click', () => {
+        const orderedFrom = document.querySelector('.orderedfrom').value;
+        const shippingFee = parseFloat(document.querySelector('.shipping-fee').value);
+        const orderDate = document.querySelector('.order-date').value;
+        const fulfillmentStatus = document.querySelector('.fulfillmentstatus').value;
+        const paymentMethod = document.querySelector('.paymentmethod').value;
+        const paymentStatus = document.querySelector('.paymentstatus').value;
+
+        if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus || isNaN(shippingFee) || cart.length === 0) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Please complete all fields.'
+          });
+          return; 
+        }
+
+        else if (shippingFee < 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops!',
+              text: 'Shipping fee should be ₱0.00 or higher.'
+            });
+            return; 
+        }
+
+        // Call your saveOrder function here, passing the collected data
+        saveOrder(
+          orderedFrom,
+          shippingFee,
+          orderDate,
+          fulfillmentStatus,
+          paymentMethod,
+          paymentStatus,
+         );
+      });
+
+    const saveOrder = (orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {
+        var formData = new FormData();
+        formData.append("orderNo", 125);
+        formData.append("date", orderDate);
+
+        const totalOrderQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
+        formData.append("totalOrderQuantity", totalOrderQuantity);
+        formData.append("items", JSON.stringify(getCartItemsForOrder()));
+        formData.append("paymentStatus", paymentStatus);
+        formData.append("paymentMethod", paymentMethod);
+        formData.append("fulfillmentStatus", fulfillmentStatus);
+        formData.append("orderedFrom", orderedFrom);
+        formData.append("shippingRate", shippingFee);
+
+        $.ajax({
+            url: '/api/orders/add',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                
+            }
+        });
+    }
+
+    const getCartItemsForOrder = () => {
+        return cart.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          variant: item.variation, 
+          SKU: item.sku,
+          _id: item.id 
+        }));
+    }
     
     productGallery.addEventListener('click', (event) => {
         const product = event.target.closest('.container');
