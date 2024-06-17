@@ -131,14 +131,14 @@
                 <div class="form-title">
                     <h1>ADD ORDER</h1>
                 </div>
+
+                <input type="number" class="order-num" placeholder="Order Number">
                 
                 <select class="orderedfrom">
                     <option>Ordered From</option>
                     <option value="In-person">In-person</option>
                     <option value="In-person">Private Message</option>
                 </select>
-
-                <input type="number" class="shipping-fee" placeholder="Shipping Fee">
 
                 <input type="date" class="order-date" placeholder="Order Date">
 
@@ -160,6 +160,8 @@
                     <option value="Paid">Paid</option>
                     <option value="Unpaid">Unpaid</option>
                 </select>
+                
+                <input type="number" class="shipping-fee" placeholder="Shipping Fee">
                 
                 <div class="items" id = "items">
                     <h3>Items Ordered</h3>
@@ -215,7 +217,7 @@
                         <select id="variation" class="variations"></select>
                         <div class="quantity-controls">
                             <button class="minus">−</button>
-                            <span class="quantity">1</span>
+                            <span class="cartquantity">1</span>
                             <button class="plus">+</button>
                         </div>
                         <div class="price">₱<span class="price-value">0.00</span></div>

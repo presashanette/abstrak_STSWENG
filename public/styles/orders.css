@@ -163,9 +163,10 @@
     gap: 25px;
     grid-template-areas:
         "header header"
+        "order-num ordered-from"
         "order-date fulfillmentstatus"
-        "ordered-from shipping-fee"
         "paymentmethod paymentstatus"
+        "shipping-fee shipping-fee"
         "items items"
         "payment payment"
         "submit submit";
@@ -199,11 +200,9 @@
     grid-area: header;
 }
 .modal-content .order-date {
-    margin-top: 10px;
     grid-area: order-date;
 }
 .modal-content .fulfillmentstatus {
-    margin-top: 10px;
     grid-area: fulfillmentstatus;
 }
 .modal-content .items {

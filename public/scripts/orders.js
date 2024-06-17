@@ -195,7 +195,7 @@ $(document).ready(() => {
             const productData = await response.json();
     
             const variationSelect = document.querySelector('.variations');
-            const quantityDisplay = document.querySelector('.quantity');
+            let quantityDisplay = document.querySelector('.quantity');
             const priceDisplay = document.querySelector('.price-value');
     
             variationSelect.innerHTML = '';
@@ -208,7 +208,7 @@ $(document).ready(() => {
     
             const updatePrice = () => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
-                const quantity = parseInt(quantityDisplay.textContent, 10);
+                const quantity = parseInt(document.querySelector('.cartquantity').textContent, 10);
                 const totalPrice = productData.price * quantity;
                 priceDisplay.textContent = totalPrice.toFixed(2);
             };
@@ -232,21 +232,21 @@ $(document).ready(() => {
             const newAddToCartButton = document.querySelector('.add-to-cart');
     
             // Reset quantity to 1
-            quantityDisplay.textContent = 1;
+            document.querySelector('.cartquantity').textContent = 1;
     
             newMinusButton.addEventListener('click', () => {
-                let quantity = parseInt(quantityDisplay.textContent, 10);
+                let quantity = parseInt(document.querySelector('.cartquantity').textContent, 10);
                 if (quantity > 1) {
                     quantity--;
-                    quantityDisplay.textContent = quantity;
+                    document.querySelector('.cartquantity').textContent = quantity;
                     updatePrice();
                 }
             });
     
             newPlusButton.addEventListener('click', () => {
-                let quantity = parseInt(quantityDisplay.textContent, 10);
+                let quantity = parseInt(document.querySelector('.cartquantity').textContent, 10);
                 quantity++;
-                quantityDisplay.textContent = quantity;
+                document.querySelector('.cartquantity').textContent = quantity;
                 updatePrice();
             });
     
@@ -258,20 +258,31 @@ $(document).ready(() => {
     
             newAddToCartButton.addEventListener('click', () => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
-                const quantity = parseInt(quantityDisplay.textContent, 10);
-                const order = {
-                    id: productData._id,
-                    name: productName,
-                    sku: productSku,
-                    variation: selectedVariation.variation,
-                    quantity: quantity,
-                    price: productData.price,
-                    total: productData.price * quantity,
-                    imgSrc: productImgSrc
-                };
-                cart.push(order);
-                renderCartItems();
-                console.log('Order added to cart:', order);
+                const quantity = parseInt(document.querySelector('.cartquantity').textContent, 10);
+
+                const existingItem = cart.find(item => item.name === productName && item.variation === selectedVariation.variation);
+
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                    existingItem.total += productData.price * quantity;
+                    renderCartItems();
+                } else {
+                    // Item does not exist, add new item to cart
+                    const order = {
+                        id: productData._id,
+                        name: productName,
+                        sku: productSku,
+                        variation: selectedVariation.variation,
+                        quantity: quantity,
+                        price: productData.price,
+                        total: productData.price * quantity,
+                        imgSrc: productImgSrc
+                    };
+                    cart.push(order);
+                    renderCartItems();
+                    console.log('Order added to cart:', order);
+                }
+
             });
     
         } catch (error) {
@@ -341,13 +352,14 @@ $(document).ready(() => {
 
     document.querySelector('.submitbtn').addEventListener('click', () => {
         const orderedFrom = document.querySelector('.orderedfrom').value;
+        const orderNo = document.querySelector('.order-num').value;
         const shippingFee = parseFloat(document.querySelector('.shipping-fee').value);
         const orderDate = document.querySelector('.order-date').value;
         const fulfillmentStatus = document.querySelector('.fulfillmentstatus').value;
         const paymentMethod = document.querySelector('.paymentmethod').value;
         const paymentStatus = document.querySelector('.paymentstatus').value;
 
-        if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus) {
+        if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus || !orderNo) {
           Swal.fire({
             icon: 'error',
             title: 'Oops!',
@@ -368,6 +380,7 @@ $(document).ready(() => {
 
         // Call your saveOrder function here, passing the collected data
         saveOrder(
+            orderNo,
           orderedFrom,
           shippingFee,
           orderDate,
@@ -377,9 +390,9 @@ $(document).ready(() => {
          );
       });
 
-      const saveOrder = async (orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {
+      const saveOrder = async (orderNo, orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {
         const orderData = {
-            orderNo: "125",
+            orderNo: orderNo,
             date: orderDate,
             totalOrderQuantity: cart.reduce((acc, item) => acc + item.quantity, 0),
             totalPrice: cart.reduce((acc, item) => acc + item.total, 0) + shippingFee,
