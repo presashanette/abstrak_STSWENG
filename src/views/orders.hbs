@@ -131,11 +131,21 @@
                     <h1>ADD ORDER</h1>
                 </div>
 
-                <input type="date" class="order-date" placeholder="Order Date">
+                <input type="number" class="order-number" placeholder="Order Number">
                 
+                <select class="orderedfrom">
+                    <option>Ordered From</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="In-person">In-person</option>
+                </select>
+
+                <input type="date" class="order-date" placeholder="Order Date">
+
                 <select class="fulfillmentstatus">
                     <option>Fulfillment Status</option>
                     <option value="fulfilled">Fulfilled</option>
+                    <option value="unfulfilled">Unfulfilled</option>
                     <option value="canceled">Canceled</option>
                 </select>
 

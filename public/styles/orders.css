@@ -163,6 +163,7 @@
     gap: 25px;
     grid-template-areas:
         "header header"
+        "order-number orderedfrom"
         "order-date fulfillmentstatus"
         "paymentmethod paymentstatus"
         "items items"
@@ -275,8 +276,8 @@ select, input[type="date"] {
     font-family: "DM Sans";
 }
 
-input[type="date"],
-.fulfillmentstatus, .paymentmethod, .paymentstatus {
+input[type="date"], input[type="number"],
+.fulfillmentstatus, .paymentmethod, .paymentstatus, .orderedfrom {
     border: 1px solid transparent; 
     outline: none; 
     background-color: #f3f3f3;
