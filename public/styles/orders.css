@@ -163,8 +163,8 @@
     gap: 25px;
     grid-template-areas:
         "header header"
-        "order-number orderedfrom"
         "order-date fulfillmentstatus"
+        "ordered-from shipping-fee"
         "paymentmethod paymentstatus"
         "items items"
         "payment payment"
@@ -272,7 +272,7 @@
     display: flex;
     justify-content: space-between;
 }
-select, input[type="date"] {
+select, input[type="date"], input[type="number"] {
     font-family: "DM Sans";
 }
 
