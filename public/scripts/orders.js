@@ -260,6 +260,7 @@ $(document).ready(() => {
                 const selectedVariation = productData.variations.find(variation => variation.variation === variationSelect.value);
                 const quantity = parseInt(quantityDisplay.textContent, 10);
                 const order = {
+                    id: productData._id,
                     name: productName,
                     sku: productSku,
                     variation: selectedVariation.variation,
@@ -309,6 +310,91 @@ $(document).ready(() => {
     document.querySelector('.exit-product-details').addEventListener('click', () => {
         document.getElementById('product-details-modal').style.display = 'none';
     });
+
+    document.querySelector('.submitbtn').addEventListener('click', () => {
+        const orderedFrom = document.querySelector('.orderedfrom').value;
+        const shippingFee = parseFloat(document.querySelector('.shipping-fee').value);
+        const orderDate = document.querySelector('.order-date').value;
+        const fulfillmentStatus = document.querySelector('.fulfillmentstatus').value;
+        const paymentMethod = document.querySelector('.paymentmethod').value;
+        const paymentStatus = document.querySelector('.paymentstatus').value;
+
+        if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus || isNaN(shippingFee) || cart.length === 0) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Please complete all fields.'
+          });
+          return; 
+        }
+
+        else if (shippingFee < 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops!',
+              text: 'Shipping fee should be ₱0.00 or higher.'
+            });
+            return; 
+        }
+
+        // Call your saveOrder function here, passing the collected data
+        saveOrder(
+          orderedFrom,
+          shippingFee,
+          orderDate,
+          fulfillmentStatus,
+          paymentMethod,
+          paymentStatus,
+         );
+      });
+
+      const saveOrder = async (orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {
+        const orderData = {
+            orderNo: "125",
+            date: orderDate,
+            totalOrderQuantity: cart.reduce((acc, item) => acc + item.quantity, 0),
+            totalPrice: cart.reduce((acc, item) => acc + item.total, 0) + shippingFee,
+            items: getCartItemsForOrder(),
+            paymentStatus: paymentStatus,
+            paymentMethod: paymentMethod,
+            fulfillmentStatus: fulfillmentStatus,
+            orderedFrom: orderedFrom,
+            shippingRate: shippingFee
+        };
+    
+        try {
+            const response = await fetch('/orders/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to save order');
+            }
+    
+            const data = await response.json();
+            console.log("Order saved successfully:", data);
+            window.location.reload(); // Example: reload the page after successful save
+        } catch (error) {
+            console.error("Error saving order:", error);
+            // Optionally handle error case, e.g., show an alert or message
+        }
+    };
+        
+
+    const getCartItemsForOrder = () => {
+        return cart.map(item => ({
+          itemName: item.name,
+          quantity: item.quantity,
+          variant: item.variation, 
+          SKU: item.sku,
+          _id: item.id,
+          price: item.price
+        }));
+    }
     
     productGallery.addEventListener('click', (event) => {
         const product = event.target.closest('.container');
@@ -344,29 +430,67 @@ $(document).ready(() => {
         $('#search-bar').toggle();
     });
 
-    $('#search-button').click(function() {
-        const searchText = $('#search-input').val().toLowerCase();
-        $('.orders-row').each(function() {
-            const rowText = $(this).text().toLowerCase();
-            if (rowText.includes(searchText)) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-        $('.pagination-container').hide();
-    });
+    // $('#search-button').click(function() {
+    //     const searchText = $('#search-input').val().toLowerCase();
+    //     $('.orders-row').each(function() {
+    //         const rowText = $(this).text().toLowerCase();
+    //         if (rowText.includes(searchText)) {
+    //             $(this).show();
+    //         } else {
+    //             $(this).hide();
+    //         }
+    //     });
+    //     $('.pagination-container').hide();
+    // });
 
-    $('#clear-search-button').click(function() {
-        $('#search-input').val(''); 
-        $('.orders-row').show(); 
-        $('.pagination-container').show();
+    // $('#clear-search-button').click(function() {
+    //     $('#search-input').val(''); 
+    //     $('.orders-row').show(); 
+    //     $('.pagination-container').show();
+    // });
+    $('#search-button').click(function() {
+    const searchText = $('#search-input').val().toLowerCase();
+    $('.orders-row').each(function() {
+        const rowText = $(this).text().toLowerCase();
+        const itemsText = $(this).data('items') ? $(this).data('items').toLowerCase() : '';
+        if (rowText.includes(searchText) || itemsText.includes(searchText)) {
+            highlightText($(this), searchText);
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
     });
+    $('.pagination-container').hide();
+});
+
+$('#clear-search-button').click(function() {
+    $('#search-input').val(''); 
+    $('.orders-row').show(); 
+    $('.pagination-container').show();
+    removeHighlights();
+});
+
+    
+    const highlightText = (element, text) => {
+        const innerHTML = element.html();
+        const index = innerHTML.toLowerCase().indexOf(text.toLowerCase());
+        if (index >= 0) {
+            element.html(innerHTML.substring(0, index) + "<span class='highlight'>" + innerHTML.substring(index, index + text.length) + "</span>" + innerHTML.substring(index + text.length));
+        }
+    };
+    
+    const removeHighlights = () => {
+        $('.highlight').each(function() {
+            const parent = $(this).parent();
+            $(this).replaceWith($(this).text());
+            parent.html(parent.html()); 
+        });
+    };
+    
     
     // Loader
     const loader = document.getElementById('loader');
     const successMessage = document.getElementById('success-message');
-
     uploadForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const formData = new FormData(uploadForm);

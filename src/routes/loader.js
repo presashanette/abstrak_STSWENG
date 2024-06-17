@@ -28,83 +28,80 @@ async function loadProducts() {
 }
 
 async function processCsvData(csvFilePath) {
-    try {
+  try {
       // Clear data
       await OrderInfo.deleteMany({});
-      // await Sales.deleteMany({});
-      console.log('Existing orders and sales data cleared');
-  
+      console.log('Existing orderInfos data cleared');
+
       const orders = {};
-  
-      // OrderInfo
+
       fs.createReadStream(csvFilePath)
-        .pipe(csv({
-          mapHeaders: ({ header }) => header.trim()
-        }))
-        .on('data', (row) => {
-          const orderNumber = row['Order number'];
-          if (!orders[orderNumber]) {
-            orders[orderNumber] = {
-              orderNumber,
-              dateCreated: new Date(row['Date created']),
-              time: row['Time'],
-              fulfillBy: row['Fulfill by'],
-              totalOrderQuantity: parseInt(row['Total order quantity'], 10),
-              contactEmail: row['Contact email'],
-              noteFromCustomer: row['Note from customer'],
-              additionalCheckoutInfo: row['Additional checkout info'],
-              items: [],
-              paymentStatus: row['Payment status'],
-              paymentMethod: row['Payment method'],
-              couponCode: row['Coupon code'],
-              giftCardAmount: parseFloat(row['Gift card amount']) || 0,
-              shippingRate: parseFloat(row['Shipping rate']),
-              totalTax: parseFloat(row['Total tax']),
-              total: parseFloat(row['Total']),
-              currency: row['Currency'],
-              refundedAmount: parseFloat(row['Refunded amount']) || 0,
-              netAmount: parseFloat(row['Net amount']),
-              additionalFees: parseFloat(row['Additional fees']) || 0,
-              fulfillmentStatus: row['Fulfillment status'],
-              trackingNumber: row['Tracking number'],
-              fulfillmentService: row['Fulfillment service'],
-            deliveryMethod: row['Delivery method'],
-              shippingLabel: row['Shipping label'],
-              orderedFrom: 'WIX website',
-            };
-          }
-  
-          orders[orderNumber].items.push({
-            itemName: row['Item'],
-            variant: row['Variant'],
-            sku: row['SKU'],
-            quantity: parseInt(row['Qty'], 10),
-            quantityRefunded: parseInt(row['Quantity refunded'], 10),
-            price: parseFloat(row['Price']),
-            weight: parseFloat(row['Weight']),
-            customText: row['Custom text'],
-            depositAmount: parseFloat(row['Deposit amount']) || 0,
-            deliveryTime: row['Delivery time'],
+          .pipe(csv({
+              mapHeaders: ({ header }) => header.trim()
+          }))
+          .on('data', (row) => {
+              const orderNumber = row['Order number'];
+              if (!orders[orderNumber]) {
+                  orders[orderNumber] = {
+                      orderNumber,
+                      dateCreated: new Date(row['Date created']),
+                      time: row['Time'],
+                      fulfillBy: row['Fulfill by'],
+                      totalOrderQuantity: parseInt(row['Total order quantity'], 10),
+                      // contactEmail: row['Contact email'],
+                      items: [],
+                      paymentStatus: row['Payment status'],
+                      paymentMethod: row['Payment method'],
+                      couponCode: row['Coupon code'],
+                      giftCardAmount: parseFloat(row['Gift card amount']) || 0,
+                      shippingRate: parseFloat(row['Shipping rate']),
+                      totalTax: parseFloat(row['Total tax']),
+                      total: parseFloat(row['Total']),
+                      currency: row['Currency'],
+                      refundedAmount: parseFloat(row['Refunded amount']) || 0,
+                      netAmount: parseFloat(row['Net amount']),
+                      additionalFees: parseFloat(row['Additional fees']) || 0,
+                      fulfillmentStatus: row['Fulfillment status'],
+                      trackingNumber: row['Tracking number'],
+                      fulfillmentService: row['Fulfillment service'],
+                      deliveryMethod: row['Delivery method'],
+                      shippingLabel: row['Shipping label'],
+                      orderedFrom: 'WIX website',
+                  };
+              }
+
+              orders[orderNumber].items.push({
+                  itemName: row['Item'],
+                  variant: row['Variant'],
+                  sku: row['SKU'],
+                  quantity: parseInt(row['Qty'], 10),
+                  quantityRefunded: parseInt(row['Quantity refunded'], 10),
+                  price: parseFloat(row['Price']),
+                  weight: parseFloat(row['Weight']),
+                  customText: row['Custom text'],
+                  depositAmount: parseFloat(row['Deposit amount']) || 0,
+                  deliveryTime: row['Delivery time'],
+              });
+          })
+          .on('end', async () => {
+              console.log('Order CSV file successfully processed');
+              for (const orderData of Object.values(orders)) {
+                  const order = new OrderInfo(orderData);
+                  await order.save().then(() => {
+                      console.log(`Order ${orderData.orderNumber} saved`);
+                  }).catch((err) => {
+                      console.error('Error saving order:', err);
+                  });
+              }
+          })
+          .on('error', (error) => {
+              console.error('Error reading the Order CSV file:', error);
           });
-        })
-        .on('end', async () => {
-          console.log('Order CSV file successfully processed');
-          for (const orderData of Object.values(orders)) {
-            const order = new OrderInfo(orderData);
-            await order.save().then(() => {
-              // console.log(`Order ${orderData.orderNumber} saved`);
-            }).catch((err) => {
-              console.error('Error saving order:', err);
-            });
-          }
-        })
-        .on('error', (error) => {
-          console.error('Error reading the Order CSV file:', error);
-        });
-  
-    } catch (error) {
+
+  } catch (error) {
       console.error('Error processing CSV data:', error);
-    }
   }
+}
+
 
 module.exports = { loadCollections, loadProducts, processCsvData };

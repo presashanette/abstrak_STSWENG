@@ -4,7 +4,7 @@ const multer = require('multer');
 const Product = require('../models/Product');
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
-const { uploadCSV, getOrders, getAnOrder, uploadCSVFile } = require('../controllers/ordersController');
+const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder } = require('../controllers/ordersController');
 
 
 
@@ -51,6 +51,7 @@ router.post('/api/products/add', uploadProductPicture.single('picture'), addProd
 // orders
 router.get('/orders', getOrders);
 router.get('/api/orders/:id', getAnOrder);
+router.post('/orders/add', addOrder);
 router.post('/upload-csv', uploadCSV.single('csvFile'), uploadCSVFile);
 
 
