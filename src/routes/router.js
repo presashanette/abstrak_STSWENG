@@ -51,7 +51,7 @@ router.post('/api/products/add', uploadProductPicture.single('picture'), addProd
 // orders
 router.get('/orders', getOrders);
 router.get('/api/orders/:id', getAnOrder);
-router.post('/api/orders/add', addOrder);
+router.post('/orders/add', addOrder);
 router.post('/upload-csv', uploadCSV.single('csvFile'), uploadCSVFile);
 
 

@@ -62,20 +62,25 @@ const getOrders = async (req, res) => {
 };
 
 async function addOrder(req, res) {
-    const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate } = req.body;
+    const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate, totalPrice } = req.body;
+
+    console.log("sample")
+    console.log(req.body);
 
     const newOrder = new OrderInfo({
-        orderNo,
-        date,
-        totalOrderQuantity,
-        paymentMethod,
-        paymentStatus,
-        items,
-        paymentMethod,
-        fulfillmentStatus,
-        orderedFrom,
-        shippingRate
+        orderNumber: orderNo,
+        dateCreated: date,
+        totalOrderQuantity: totalOrderQuantity,
+        items: items,
+        paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
+        shippingRate: shippingRate,
+        total: totalPrice,
+        fulfillmentStatus: fulfillmentStatus,
+        orderedFrom: orderedFrom
     });
+
+    console.log(newOrder);
 
     try{
         await newOrder.save();
@@ -121,4 +126,4 @@ async function getAnOrder(req, res) {
 
 }
 
-module.exports = { getOrders, getAnOrder, uploadCSVFile, uploadCSV, addOrder };
+module.exports = { getOrders, getAnOrder, uploadCSVFile, addOrder, uploadCSV };

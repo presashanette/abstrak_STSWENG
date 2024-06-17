@@ -348,39 +348,51 @@ $(document).ready(() => {
          );
       });
 
-    const saveOrder = (orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {
-        var formData = new FormData();
-        formData.append("orderNo", 125);
-        formData.append("date", orderDate);
-
-        const totalOrderQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
-        formData.append("totalOrderQuantity", totalOrderQuantity);
-        formData.append("items", JSON.stringify(getCartItemsForOrder()));
-        formData.append("paymentStatus", paymentStatus);
-        formData.append("paymentMethod", paymentMethod);
-        formData.append("fulfillmentStatus", fulfillmentStatus);
-        formData.append("orderedFrom", orderedFrom);
-        formData.append("shippingRate", shippingFee);
-
-        $.ajax({
-            url: '/api/orders/add',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(data){
-                
+      const saveOrder = async (orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {
+        const orderData = {
+            orderNo: "125",
+            date: orderDate,
+            totalOrderQuantity: cart.reduce((acc, item) => acc + item.quantity, 0),
+            totalPrice: cart.reduce((acc, item) => acc + item.total, 0) + shippingFee,
+            items: getCartItemsForOrder(),
+            paymentStatus: paymentStatus,
+            paymentMethod: paymentMethod,
+            fulfillmentStatus: fulfillmentStatus,
+            orderedFrom: orderedFrom,
+            shippingRate: shippingFee
+        };
+    
+        try {
+            const response = await fetch('/orders/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to save order');
             }
-        });
-    }
+    
+            const data = await response.json();
+            console.log("Order saved successfully:", data);
+            window.location.reload(); // Example: reload the page after successful save
+        } catch (error) {
+            console.error("Error saving order:", error);
+            // Optionally handle error case, e.g., show an alert or message
+        }
+    };
+        
 
     const getCartItemsForOrder = () => {
         return cart.map(item => ({
-          name: item.name,
+          itemName: item.name,
           quantity: item.quantity,
           variant: item.variation, 
           SKU: item.sku,
-          _id: item.id 
+          _id: item.id,
+          price: item.price
         }));
     }
     
