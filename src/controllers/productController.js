@@ -7,7 +7,6 @@ async function fetchProductData(req, res) {
     try {
         const productId = req.params.id;
 
-        // Fetch product data
         const product = await Product.findById(productId).lean();
         if (!product) {
             console.log("Product not found");
@@ -15,11 +14,9 @@ async function fetchProductData(req, res) {
         }
         console.log("Fetched Product:", JSON.stringify(product, null, 2));
 
-        // Clean product name
         const cleanedProductName = product.name.replace(/"/g, '').toLowerCase();
         console.log("Cleaned Product Name:", cleanedProductName);
 
-        // Aggregate orders that include the product name
         const orderAggregations = await OrderInfo.aggregate([
             { $unwind: '$items' },
             { $project: {
@@ -45,39 +42,28 @@ async function fetchProductData(req, res) {
             }}
         ]);
 
-        // Debugging: Log aggregated order data
         console.log("Order Aggregations:", JSON.stringify(orderAggregations, null, 2));
 
-        // Create a map to store the sold number per variation
         const soldPerVariation = {};
 
-        // Map the aggregated results to the product variations
         const variationMap = orderAggregations.reduce((map, agg) => {
-            // Remove "Size:" prefix if present
-            const variantKey = agg.variant.toLowerCase().replace(/^size:/, '').trim();
+            const variantKey = agg.variant.toLowerCase().replace(/^(size:|variation:)/, '').trim();
             map[variantKey] = agg;
             return map;
         }, {});
 
-        // Debugging: Log variation map
         console.log("Variation Map:", JSON.stringify(variationMap, null, 2));
 
-        // Add totalSold, totalRefunded, and netSold to each variation in the product
         product.variations.forEach(variation => {
             const variationKey = variation.variation.trim().toLowerCase();
             const agg = variationMap[variationKey] || { totalSold: 0, totalRefunded: 0, netSold: 0 };
             variation.totalSold = agg.totalSold;
             variation.totalRefunded = agg.totalRefunded;
             variation.netSold = agg.netSold;
-
-            // Store the sold number in the soldPerVariation map
             soldPerVariation[variation.variation] = agg.totalSold;
-
-            // Debugging: Log each variation's sold data
             console.log(`Variation: ${variation.variation}, Total Sold: ${variation.totalSold}`);
         });
 
-        // Debugging: Log the soldPerVariation map
         console.log("Sold Per Variation:", JSON.stringify(soldPerVariation, null, 2));
 
         res.json(product);
