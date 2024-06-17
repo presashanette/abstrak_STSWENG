@@ -230,7 +230,7 @@
     text-align: center;
 }
 
-.submitbtn{
+.submitbtn, .add-to-cart{
     background-color: #d9d9d9;
     color: black;
     padding: 15px;
@@ -239,7 +239,7 @@
     font-family: "DM Sans";
 }
 
-.submitbtn:hover {
+.submitbtn:hover, .add-to-cart:hover {
     background-color: black;
     color: white;
 }
@@ -418,6 +418,52 @@ input[type="date"], input[type="number"],
     .product-info {
         gap: 40px;
     }
+}
+
+.variation-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    background-color: #f3f3f3;
+    padding: 15px;
+    gap: 10px; /* Add some space between the items */
+}
+
+.variation-controls label,
+.variation-controls select,
+.variation-controls .quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.variation-controls label {
+    min-width: 70px;
+}
+
+.variations {
+    font-size: 16px;
+    background-color: #f3f3f3;
+    border: none;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Add some space between quantity controls */
+}
+
+.minus, .plus {
+    border: none;
+    background-color: #f3f3f3;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.minus:hover, .plus:hover {
+    color: #d9d9d9;
 }
 
 /* CSV UPLOAD CSS */
