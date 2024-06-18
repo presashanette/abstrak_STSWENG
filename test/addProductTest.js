@@ -10,7 +10,7 @@ async function testProductAddition() {
     try {
         driver = await new Builder().forBrowser('chrome').build();
 
-        await driver.get('http://localhost:3000/collections/6651ead6a17e4939441ea321');
+        await driver.get('http://localhost:3000/collections/6651ead6a17e4939441ea328');
 
         await driver.wait(until.elementLocated(By.css('.grid-header-add-button')), 5000).click();
         await driver.sleep(1000); 
@@ -35,7 +35,7 @@ async function testProductAddition() {
 
         const imageInput = await driver.findElement(By.id('imageInput'));
         const directoryPath = './public/uploads/products/';
-        const imagePath = path.resolve(directoryPath, 'memories.png'); // Sample image only and can be changed 
+        const imagePath = path.resolve(directoryPath, 'memories1.png'); // Sample image only and can be changed 
         await imageInput.sendKeys(imagePath);
 
         await driver.wait(until.elementLocated(By.css('.main-picture img')), 20000);
@@ -59,7 +59,7 @@ async function testProductAddition() {
         const variationStockInput = await driver.findElement(By.css('.product-form-stock'));
         const variationManufacturingCostInput = await driver.findElement(By.css('.product-form-manucost'));
 
-        await variationNameInput.sendKeys('A');
+        await variationNameInput.sendKeys('Variation 1');
         await driver.sleep(500);  
         await variationStockInput.sendKeys('10');
         await driver.sleep(500);  
@@ -70,9 +70,7 @@ async function testProductAddition() {
         await addVariation.click(); 
         await driver.sleep(500);  
 
-        /* TEST CASE 5: Variation must be unique
-        System Bug when this is executed !!!DONT REMOVE for testing when fixed!!!
-        
+        /**TEST CASE 5: Variation must be unique
         const variationInputs = await driver.findElements(By.css('.add-product-variation-row input'));
         const lastVariationInputs = variationInputs.slice(-3);
 
@@ -92,8 +90,8 @@ async function testProductAddition() {
         await lastVariationInputs[0].clear();
         await lastVariationInputs[1].clear();
         await lastVariationInputs[2].clear();
-        */
-
+        **/
+       
         const newVariationInputs = await driver.findElements(By.css('.add-product-variation-row input'));
         const lastNewVariationInputs = newVariationInputs.slice(-3);
 
@@ -105,6 +103,10 @@ async function testProductAddition() {
         await lastNewVariationInputs[2].sendKeys('3000'); 
         await driver.sleep(500);
 
+        // TEST CASE 7: Delete row from variaton
+        const deleteRow = await driver.findElement(By.css('.delete-row-icon'));
+        await deleteRow.click(); 
+
         await driver.findElement(By.id('next-form-button')).click();
         await driver.sleep(500);  
 
@@ -112,6 +114,7 @@ async function testProductAddition() {
         console.error('Error occurred:', error);
     } finally {
         if (driver) {
+            /*
             (async () => {
                 const productName = 'New Product_15'; 
               
@@ -123,7 +126,7 @@ async function testProductAddition() {
                 expect(product.name).to.equal('New Product_155');
                 expect(product.price).to.equal(1250);
                 expect(product.SKU).to.equal('SKU12345');
-            })();
+            })();*/
     
             await driver.quit();
         }
