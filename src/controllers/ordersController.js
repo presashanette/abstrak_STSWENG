@@ -6,7 +6,6 @@ const path = require('path');
 
 let lastUpdatedDate = 'Never';
 
-
 const storageCSV = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, '../models/data/'));
@@ -31,19 +30,13 @@ const getOrders = async (req, res) => {
         const initialOrders = page === 1 ? orders : [];
         const nextPage = page < totalPages ? page + 1 : null;
 
-        // console.log(`Request page: ${page}`);
-        // console.log(`Total pages: ${totalPages}`);
-        // console.log(initialOrders);  
-
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            // console.log('Sending JSON response');
             res.json({
                 orders,
                 currentPage: page,
                 totalPages
             });
         } else {
-            console.log('Rendering orders page');
             res.render('orders', {
                 orders: JSON.stringify(orders),
                 initialOrders,
@@ -64,9 +57,6 @@ const getOrders = async (req, res) => {
 async function addOrder(req, res) {
     const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate, totalPrice } = req.body;
 
-    console.log("sample")
-    console.log(req.body);
-
     const newOrder = new OrderInfo({
         orderNumber: orderNo,
         dateCreated: date,
@@ -80,18 +70,31 @@ async function addOrder(req, res) {
         orderedFrom: orderedFrom
     });
 
-    console.log(newOrder);
-
-    try{
+    try {
         await newOrder.save();
-        console.log(newOrder);
+
+        // Deduct inventory for each product in the order
+        for (const item of items) {
+            console.log(`Updating inventory for SKU: ${item.SKU}, Variation: ${item.variant}, Quantity: ${item.quantity}`);
+            const product = await Product.findOneAndUpdate(
+                { SKU: item.SKU, "variations.variation": item.variant },
+                { $inc: { "variations.$.stocks": -item.quantity } },
+                { new: true }
+            );
+
+            if (!product) {
+                console.error(`Product with SKU: ${item.SKU} and Variation: ${item.variation} not found`);
+            } else {
+                console.log(`Updated product inventory: ${product}`);
+            }
+        }
+
         res.send({ success: true, message: 'Order added successfully' });
-        
     } catch (err) {
-        console.log("error in add order: " + err)
+        console.error("Error in add order: " + err);
+        res.status(500).send('Server Error');
     }
-    
-};
+}
 
 
 const uploadCSVFile = async (req, res) => {
@@ -108,8 +111,6 @@ const uploadCSVFile = async (req, res) => {
     }
 };
 
-
-
 async function getAnOrder(req, res) {
     const orderId = req.params.id;
     const orderIdStr = orderId.toString();
@@ -119,11 +120,10 @@ async function getAnOrder(req, res) {
         let order = await OrderInfo.find({'orderNumber': orderId}).lean();
         order = order[0];
         console.log(order);
-    }   catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
     }
-
 }
 
 module.exports = { getOrders, getAnOrder, uploadCSVFile, addOrder, uploadCSV };
