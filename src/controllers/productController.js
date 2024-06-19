@@ -73,6 +73,250 @@ async function fetchProductData(req, res) {
     }
 }
 
+async function fetchProductMetrics(req, res) {
+    try {
+        const productId = req.params.id;
+        console.log("Product ID:", productId);
+
+        const product = await Product.findById(productId).lean();
+        if (!product) {
+            console.log("Product not found");
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        console.log("Fetched Product:", JSON.stringify(product, null, 2));
+
+        const cleanedProductName = product.name.replace(/"/g, '').toLowerCase();
+        console.log("Cleaned Product Name:", cleanedProductName);
+
+        const orderAggregations = await OrderInfo.aggregate([
+            { $unwind: '$items' },
+            { $project: {
+                cleanedItemName: { $toLower: { $replaceAll: { input: '$items.itemName', find: '"', replacement: '' } } },
+                itemName: '$items.itemName',
+                variant: '$items.variant',
+                quantity: '$items.quantity',
+                quantityRefunded: '$items.quantityRefunded'
+            }},
+            { $match: { cleanedItemName: cleanedProductName }},
+            { $group: {
+                _id: '$variant',
+                totalSold: { $sum: '$quantity' },
+                totalRefunded: { $sum: '$quantityRefunded' },
+                netSold: { $sum: { $subtract: ['$quantity', '$quantityRefunded'] }}
+            }},
+            { $project: {
+                _id: 0,
+                variant: '$_id',
+                totalSold: 1,
+                totalRefunded: 1,
+                netSold: 1
+            }}
+        ]);
+
+        console.log("Order Aggregations:", JSON.stringify(orderAggregations, null, 2));
+
+        const soldPerVariation = {};
+
+        const variationMap = orderAggregations.reduce((map, agg) => {
+            const variantKey = agg.variant.toLowerCase().replace(/^(size:|variation:)/, '').trim();
+            map[variantKey] = agg;
+            return map;
+        }, {});
+
+        console.log("Variation Map:", JSON.stringify(variationMap, null, 2));
+
+        product.variations.forEach(variation => {
+            const variationKey = variation.variation.trim().toLowerCase();
+            const agg = variationMap[variationKey] || { totalSold: 0, totalRefunded: 0, netSold: 0 };
+            variation.totalSold = agg.totalSold;
+            variation.totalRefunded = agg.totalRefunded;
+            variation.netSold = agg.netSold;
+            soldPerVariation[variation.variation] = agg.totalSold;
+            console.log(`Variation: ${variation.variation}, Total Sold: ${variation.totalSold}, Total Refunded: ${variation.totalRefunded}, Net Sold: ${variation.netSold}`);
+        });
+
+        const metrics = calculateMetrics(product, soldPerVariation);
+        console.log("Product Metrics:", JSON.stringify(metrics, null, 2));
+
+        res.json({ product, metrics });
+    } catch (error) {
+        console.error('Error fetching product data:', error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+function calculateMetrics(product, soldPerVariation) {
+    const costPrice = calculateAverageManufacturingCost(product.variations);
+    const initialInventory = calculateInitialInventory(product.variations);
+    const sellingPrice = product.price || 0; // Updated this line to avoid syntax error
+    const totalSold = Object.values(soldPerVariation).reduce((sum, sold) => sum + sold, 0);
+    const totalSalesAmount = totalSold * sellingPrice;
+    const totalCost = initialInventory * costPrice;
+    const grossProfit = (sellingPrice - costPrice) * totalSold;
+    const returnRate = calculateRateOfReturn(initialInventory, totalSalesAmount, totalCost);
+    const profitMargin = (grossProfit / totalSalesAmount) * 100;
+
+    return {
+        totalSold,
+        totalSalesAmount: totalSalesAmount || 0,
+        sellingPrice,
+        costPrice: costPrice || 0,
+        totalCost: totalCost || 0,
+        grossProfit: grossProfit || 0,
+        returnRate: returnRate || 0,
+        profitMargin: profitMargin || 0,
+        initialInventory
+    };
+}
+
+function calculateAverageManufacturingCost(variations) {
+    let totalCost = 0;
+    let count = 0;
+
+    variations.forEach(variation => {
+        console.log(`Variation: ${JSON.stringify(variation, null, 2)}`);
+        if (variation.manufacturingCost !== undefined) {
+            totalCost += variation.manufacturingCost;
+            count++;
+        }
+    });
+
+    console.log(`Total Manufacturing Cost: ${totalCost}, Count: ${count}`);
+
+    if (count === 0) return 0;
+    return totalCost / count;
+}
+
+function calculateInitialInventory(variations) {
+    let totalInitialInventory = 0;
+
+    variations.forEach(variation => {
+        const initialStock = variation.stocks || 0;
+        const totalSold = variation.totalSold || 0;
+
+        const initialInventory = initialStock + totalSold;
+        totalInitialInventory += initialInventory;
+
+        console.log(`Variation: ${variation.variation}, Initial Inventory: ${initialInventory}`);
+    });
+
+    console.log(`Total Initial Inventory: ${totalInitialInventory}`);
+
+    return totalInitialInventory;
+}
+
+function calculateRateOfReturn(initialInventory, totalSalesAmount, totalCost) {
+    const initialInvestment = initialInventory * totalCost;
+    const netGain = totalSalesAmount - initialInvestment;
+    if (initialInvestment === 0) return 0;
+    return (netGain / initialInvestment) * 100;
+}
+
+async function fetchProductGraphs(req, res) {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findById(productId).lean();
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const cleanedProductName = product.name.replace(/"/g, '').toLowerCase();
+        console.log('cleanedProductName:', cleanedProductName);
+
+        const orderAggregations = await OrderInfo.aggregate([
+            { $unwind: '$items' },
+            { $project: {
+                cleanedItemName: { $toLower: { $replaceAll: { input: '$items.itemName', find: '"', replacement: '' } } },
+                itemName: '$items.itemName',
+                variant: '$items.variant',
+                quantity: '$items.quantity',
+                quantityRefunded: '$items.quantityRefunded',
+                sellingPrice: '$items.price',
+                costPrice: '$items.costPrice',
+                dateCreated: '$dateCreated'
+            }},
+            { $match: { cleanedItemName: cleanedProductName }},
+            { $group: {
+                _id: { variant: '$variant', dateCreated: { $dateToString: { format: "%Y-%m", date: "$dateCreated" } } },
+                totalSold: { $sum: '$quantity' },
+                totalRefunded: { $sum: '$quantityRefunded' },
+                netSold: { $sum: { $subtract: ['$quantity', '$quantityRefunded'] }},
+                sellingPrice: { $first: '$sellingPrice' }, // Updated this line
+                costPrice: { $first: '$costPrice' }, // Updated this line
+                dateCreated: { $first: '$dateCreated' }
+            }},
+            { $project: {
+                _id: 0,
+                variant: '$_id.variant',
+                totalSold: 1,
+                totalRefunded: 1,
+                netSold: 1,
+                sellingPrice: 1, // Added this line
+                costPrice: 1, // Added this line
+                dateCreated: 1
+            }},
+            { $sort: { dateCreated: 1 } } // Sort by date for trend analysis
+        ]);
+
+        console.log('orderAggregations:', orderAggregations);
+
+        const soldPerVariation = {};
+        const variationMap = orderAggregations.reduce((map, agg) => {
+            const variantKey = agg.variant.toLowerCase().replace(/^(size:|variation:)/, '').trim();
+            map[variantKey] = agg;
+            return map;
+        }, {});
+
+        console.log('variationMap:', variationMap);
+
+        product.variations.forEach(variation => {
+            const variationKey = variation.variation.trim().toLowerCase();
+            const agg = variationMap[variationKey] || { totalSold: 0, totalRefunded: 0, netSold: 0, dateCreated: [], sellingPrice: 0, costPrice: 0 };
+            variation.totalSold = agg.totalSold;
+            variation.totalRefunded = agg.totalRefunded;
+            variation.netSold = agg.netSold;
+            soldPerVariation[variation.variation] = agg.totalSold;
+        });
+
+        console.log('product variations after processing:', product.variations);
+        console.log('soldPerVariation:', soldPerVariation);
+
+        const metrics = calculateMetrics(product, soldPerVariation);
+        console.log('metrics:', metrics);
+
+        const trendData = calculateTrendData(orderAggregations, metrics.sellingPrice, metrics.costPrice);
+        console.log('trendData:', trendData);
+
+        res.json({ product, metrics, trendData });
+    } catch (error) {
+        console.error('Error fetching product data:', error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+function calculateTrendData(orderAggregations, sellingPrice, costPrice) {
+    // Calculate sales over time by date
+    const salesOverTime = orderAggregations.map(agg => ({
+        date: agg.dateCreated,
+        sales: agg.totalSold
+    }));
+
+    // Calculate profit over time by month
+    const profitOverTime = orderAggregations.reduce((acc, agg) => {
+        const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`;
+        if (!acc[monthYear]) {
+            acc[monthYear] = { date: new Date(agg.dateCreated.getFullYear(), agg.dateCreated.getMonth()), profit: 0 };
+        }
+        acc[monthYear].profit += (agg.totalSold * sellingPrice) - (agg.totalSold * costPrice);
+        return acc;
+    }, {});
+
+    // Convert profitOverTime object to array
+    const profitOverTimeArray = Object.values(profitOverTime);
+
+    return { salesOverTime, profitOverTime: profitOverTimeArray };
+}
+
 async function getVariation(req, res) {
     try {
         const sku = req.query.sku;
@@ -263,6 +507,8 @@ async function checkSKU(req, res) {
 
 module.exports = {
     fetchProductData,
+    fetchProductMetrics,
+    fetchProductGraphs,
     deleteProductById,
     checkName,
     checkSKU,

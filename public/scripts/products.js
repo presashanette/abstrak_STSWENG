@@ -56,6 +56,7 @@ $(document).ready(function() {
 
     // Delete row in form
     $('.delete-row-icon').each(deleteRow);
+
     function fetchViewProductDetails(productId) {
         $.ajax({
             url: `/products/${productId}`,
@@ -80,6 +81,102 @@ $(document).ready(function() {
         });
     }
 
+    function fetchViewProductMetrics(productId) {
+        $.ajax({
+            url: `/products/metrics/${productId}`,
+            method: 'GET',
+            success: function(response) {
+                var product = response.product;
+                var metrics = response.metrics;
+
+                $('#dynamic-product-name').text(product.name);
+                $('#product-name').text(product.name);
+                $('#product-price').text(product.sellingPrice);
+                $('#product-sku').text(product.sku);
+                $('#product-material').text(product.material);
+
+                var metricsHtml = `
+                    <div class="metrics-row">
+                        <div class="bubble"><p>SOLD: <span class="sold-detail">${metrics.totalSold}</span></p></div>
+                        <div class="bubble"><p>TOTAL SALES AMOUNT: <span class="sales-amount-detail">${metrics.totalSalesAmount}</span></p></div>
+                        <div class="bubble"><p>COST PRICE: <span class="cost-price-detail">${metrics.costPrice}</span></p></div>
+                        <div class="bubble"><p>TOTAL COST: <span class="total-cost-detail">${metrics.totalCost}</span></p></div>
+                        <div class="bubble"><p>GROSS PROFIT: <span class="gross-profit-detail">${metrics.grossProfit}</span></p></div>
+                        <div class="bubble"><p>RETURN RATE: <span class="return-rate-detail">${metrics.returnRate.toFixed(2)}%</span></p></div>
+                    </div>
+                `;
+
+                $(".product-metrics").html(metricsHtml);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product data:", error);
+            }
+        });
+    }
+
+    function fetchProductGraphs(productId) {
+        $.ajax({
+            url: `/product-graphs/${productId}`,
+            method: 'GET',
+            success: function(response) {
+                var product = response.product;
+                var metrics = response.metrics;
+                var trendData = response.trendData;
+    
+                var salesOverTime = trendData.salesOverTime.map(data => data.sales);
+                var profitOverTime = trendData.profitOverTime.map(data => data.profit);
+                var salesDates = trendData.salesOverTime.map(data => new Date(data.date).toLocaleDateString());
+                var profitDates = trendData.profitOverTime.map(data => new Date(data.date).toLocaleDateString());
+    
+                var salesChartCtx = document.getElementById('salesChart').getContext('2d');
+                var profitChartCtx = document.getElementById('profitChart').getContext('2d');
+    
+                new Chart(salesChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: salesDates,
+                        datasets: [{
+                            label: 'Sales Over Time',
+                            data: salesOverTime,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Sales' } }
+                        }
+                    }
+                });
+    
+                new Chart(profitChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: profitDates,
+                        datasets: [{
+                            label: 'Profit Over Time',
+                            data: profitOverTime,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Month' } },
+                            y: { title: { display: true, text: 'Profit' } }
+                        }
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product graphs:", error);
+            }
+        });
+    }
+    
     // Function to show product details
     function viewProduct(){
         var container = $(this).closest('.container');
@@ -97,8 +194,9 @@ $(document).ready(function() {
         $("#product-sku").text(productSKU);
         $("#product-material").text(productMaterials);
         $(".product-img").attr("src", productPicture);
-
-        // Fetch and display variations
+        
+        fetchViewProductMetrics(productId);
+        fetchProductGraphs(productId);
         fetchViewProductDetails(productId);
 
         // Show the modal and default to the first section
@@ -108,7 +206,7 @@ $(document).ready(function() {
 
     // Bind the click event for viewing product details
     $(".product-pic").click(viewProduct);
-
+    $(".close-product-card").click(closeCard);
     // Close product card function
     function closeCard() {
         $(".product-card-modal").fadeOut();
