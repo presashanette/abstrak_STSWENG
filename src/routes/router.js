@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
-const { fetchProductData, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
+const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
 
 
@@ -46,6 +46,8 @@ router.post('/api/products/check-sku', checkSKU);
 router.get('/api/product', getVariation);
 router.get('/products/:id', fetchProductData);
 router.get('/products/:id', fetchSizeStockCost);
+router.get('/products/metrics/:id', fetchProductMetrics);
+router.get('/product-graphs/:id', fetchProductGraphs);
 router.post('/api/products/update/:id', uploadProductPicture.single('picture'), updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
 
