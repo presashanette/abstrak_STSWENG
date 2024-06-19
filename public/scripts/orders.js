@@ -282,6 +282,7 @@ $(document).ready(() => {
                     renderCartItems();
                     console.log('Order added to cart:', order);
                 }
+                
 
             });
     
@@ -350,7 +351,7 @@ $(document).ready(() => {
         document.getElementById('product-details-modal').style.display = 'none';
     });
 
-    document.querySelector('.submitbtn').addEventListener('click', () => {
+    document.querySelector('.submitbtn').addEventListener('click', async () => {
         const orderedFrom = document.querySelector('.orderedfrom').value;
         const orderNo = document.querySelector('.order-num').value;
         const shippingFee = parseFloat(document.querySelector('.shipping-fee').value);
@@ -359,6 +360,7 @@ $(document).ready(() => {
         const paymentMethod = document.querySelector('.paymentmethod').value;
         const paymentStatus = document.querySelector('.paymentstatus').value;
 
+
         if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus || !orderNo) {
           Swal.fire({
             icon: 'error',
@@ -366,6 +368,26 @@ $(document).ready(() => {
             text: 'Please complete all fields.'
           });
           return; 
+        }
+
+        else if (shippingFee < 0)
+        {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Shipping fee cannot be negative.'
+                });
+                return;
+        }
+
+        else if (orderNo < 0)
+        {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Enter a valid order number.'
+                });
+                return;
         }
 
         else if(cart.length === 0)
@@ -377,17 +399,38 @@ $(document).ready(() => {
                   });
                   return; 
             }
-
-        // Call your saveOrder function here, passing the collected data
-        saveOrder(
-            orderNo,
-          orderedFrom,
-          shippingFee,
-          orderDate,
-          fulfillmentStatus,
-          paymentMethod,
-          paymentStatus,
-         );
+            console.log('Order number:', orderNo);
+        
+        try {
+            const response = await fetch(`/orders/checkOrderNo?orderNo=${orderNo}`);
+            const data = await response.json();
+    
+            if (!data.success) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Order number already exists.'
+                });
+            } else {
+                // Call your saveOrder function here, passing the collected data
+                saveOrder(
+                    orderNo,
+                    orderedFrom,
+                    shippingFee,
+                    orderDate,
+                    fulfillmentStatus,
+                    paymentMethod,
+                    paymentStatus,
+                );
+            }
+        } catch (err) {
+            console.error('Error checking order number:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'An error occurred while checking the order number.'
+            });
+        }
       });
 
       const saveOrder = async (orderNo, orderedFrom, shippingFee, orderDate, fulfillmentStatus, paymentMethod, paymentStatus) => {

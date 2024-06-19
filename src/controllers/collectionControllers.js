@@ -86,7 +86,7 @@ async function handleAllProductsRequest(req, res) {
                
                 let products = collection.pieces.filter(product => {
                     product.totalStock = product.variations.reduce((a, b) => a + b.stocks, 0);
-                    return product.totalStock > 1;
+                    return product.totalStock > 0;
                 });
                 
                 allProducts = allProducts.concat(products);
