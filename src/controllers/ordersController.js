@@ -126,4 +126,20 @@ async function getAnOrder(req, res) {
     }
 }
 
-module.exports = { getOrders, getAnOrder, uploadCSVFile, addOrder, uploadCSV };
+async function checkOrderNo(req, res) {
+    const orderNo = req.query.orderNo;
+    try {
+        const existingOrder = await OrderInfo.findOne({ orderNumber: orderNo });
+        if (existingOrder) {
+            res.json({ success: false, message: 'Order Number is already taken.' });
+            console.log("Order Number is already taken.");
+        } else {
+            res.json({ success: true, message: 'Order Number is available.' });
+        }
+    } catch (err) {
+        console.error('Error checking order number:', err);
+        res.status(500).json({ success: false, message: 'Server error while checking order number.' });
+    }
+}
+
+module.exports = { getOrders, getAnOrder, uploadCSVFile, addOrder, uploadCSV, checkOrderNo };
