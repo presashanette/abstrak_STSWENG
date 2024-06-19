@@ -40,8 +40,8 @@ const assert = require('assert');
         await delay(1000);
 
         const materialInput = await driver.findElement(By.id('material-input'));
-        await materialInput.sendKeys('Cotton');
-        await materialInput.sendKeys(Key.ENTER); 
+        const removeMaterial = await driver.findElement(By.css('.remove-material'));
+        await removeMaterial.click();
         await delay(1000);
         await materialInput.sendKeys('Wool');
         await materialInput.sendKeys(Key.ENTER); 
@@ -51,59 +51,36 @@ const assert = require('assert');
         await nextButton.click();
         await delay(1000);
 
-        // 2nd page (a) edit forms
-        const variationInput = await driver.wait(until.elementLocated(By.id('variation')), 10000);
-        await variationInput.clear();
-        await variationInput.sendKeys('One Size');
-        await delay(1000);
-
-        const stockInput = await driver.findElement(By.id('.stock'));
-        await stockInput.clear();
-        await stockInput.sendKeys('50');
-        await delay(1000);
-
-        const costInput = await driver.findElement(By.id('.manucost'));
-        await costInput.clear();
-        await costInput.sendKeys('200');
-        await delay(1000);
-
-        const addVariationButton = await driver.findElement(By.css('.add-row-button'));
-        await addVariationButton.click();
-        await delay(1000);
-
         //note about the product variations id
         //2nd page (b) add variations, currently having problems with the code needs debugging pa
         //manually tested, no bugs
 
-        // const newVariationInput = await driver.findElement(By.id('.product-form-variation'));
-        // await newVariationInput.clear();
-        // await newVariationInput.sendKeys('M');
-        // await delay(1000);
+        const deleteRow = await driver.findElement(By.css('.delete-row-icon'));
+        await deleteRow.click(); 
+        await driver.sleep(500);  
 
-        // const newStockInput = await driver.findElement(By.css('.product-form-stock'));
-        // await newStockInput.clear();
-        // await newStockInput.sendKeys('30');
-        // await delay(1000);
+        const deleteAnotherRow = await driver.findElement(By.css('.delete-row-icon'));
+        await deleteAnotherRow.click(); 
+        await driver.sleep(500);  
 
-        // const newCostInput = await driver.findElement(By.css('.product-form-manucost'));
-        // await newCostInput.clear();
-        // await newCostInput.sendKeys('100');
-        // await delay(1000);
+        const variationNameInput = await driver.findElement(By.css('.product-form-variation'));
+         await variationNameInput.clear();
+         await variationNameInput.sendKeys('One Size');
+         await driver.sleep(500);  
 
-        // const backButton = await driver.findElement(By.id('back-form-button'));
-        // await backButton.click();
-        // await delay(1000);
+        const newStockInput = await driver.findElement(By.css('.product-form-stock'));
+        await newStockInput.clear();
+        await newStockInput.sendKeys('30');
+        await driver.sleep(500);  
 
-        // await nameInput.clear();
-        // await nameInput.sendKeys('Letter Services Trucker Capz');
-        // await delay(1000);
+        const newCostInput = await driver.findElement(By.css('.product-form-manucost'));
+        await newCostInput.clear();
+        await newCostInput.sendKeys('100');
+        await driver.sleep(500);  
 
-        // await nextButton.click();
-        // await delay(1000);
 
-        // const submitButton = await driver.findElement(By.css('.submit-button'));
-        // await submitButton.click();
-        // await delay(1000);
+        await driver.findElement(By.id('next-form-button')).click();
+        await driver.sleep(500);  
 
         // verifier
         console.log('product edit form test passed');
