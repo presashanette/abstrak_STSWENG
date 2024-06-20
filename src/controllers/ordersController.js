@@ -1,11 +1,8 @@
 const OrderInfo = require('../models/OrderInfo');
 const Product = require('../models/Product');
-<<<<<<< HEAD
-=======
 const multer = require('multer');
 const { processCsvData } = require('../routes/loader');
 const path = require('path');
->>>>>>> d8bc817f9b9789cf955d1456da84176578627fba
 
 let lastUpdatedDate = 'Never';
 
@@ -122,7 +119,6 @@ async function getAnOrder(req, res) {
     try {
         let order = await OrderInfo.find({'orderNumber': orderId}).lean();
         order = order[0];
-<<<<<<< HEAD
         // console.log(order);
         // res.send(order);
         for (let item of order.items) {
@@ -140,10 +136,6 @@ async function getAnOrder(req, res) {
 
 
     }   catch (err) {
-=======
-        console.log(order);
-    } catch (err) {
->>>>>>> d8bc817f9b9789cf955d1456da84176578627fba
         console.error(err);
         res.status(500).send('Server Error');
     }
