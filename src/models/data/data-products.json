@@ -93,7 +93,7 @@
     "name": "Hand-Drawn Tee",
     "picture": "hand_drawn_tee.png",
     "price": 745,
-    "SKU": "TEE006",
+    "SKU": "AMK0123001",
     "material": ["Cotton"],
     "variations": [
       {
@@ -119,7 +119,7 @@
     "name": "Self-Portrait Tee",
     "picture": "self_portrait_tee.png",
     "price": 795,
-    "SKU": "TEE004",
+    "SKU": "AMK0123002",
     "material": ["Cotton"],
     "variations": [
       {

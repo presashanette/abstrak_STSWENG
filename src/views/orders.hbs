@@ -6,7 +6,11 @@
     <title>Orders</title>
     <link rel="stylesheet" href="/styles/orders.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
     <script src="/scripts/orders.js"></script>
+
 </head>
 <body>
     <div class="main">
@@ -66,22 +70,13 @@
                 <div class="exit-button">
                     <img src="assets/back.png" alt="" class="exit">
                 </div>
-                <h1>Order #8286</h1>
-                <p>Ordered on May 15, 2024 10:32 AM from Instagam</p>
+                <h1>Order #<span id="order-number"></span></h1>
+                <p>Ordered on <span id="date"></span> <span id="time"></span> from Instagam</p>
 
                 <div class="items">
                     <h3>Items Ordered</h3>
-                    <div class = "itemdetails">
-                        <div class="nameandpic">
-                            <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
-                            <span>"Self-Portrait" Tee</span>
-                        </div>
-                        <span>₱885.50</span>
-                        <span>1 pc</span>
-                        <span>Variation</span>
-                    </div>
-                </div>
-            
+
+                   
             </div>
         </div>
                         
@@ -142,6 +137,10 @@
         </div>
 
     </div>
+    <script>
+        $('.view-product-modal').hide();
+        
+    </script>
 
 </body>
 </html>

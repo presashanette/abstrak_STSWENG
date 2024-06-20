@@ -6,7 +6,6 @@
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,11 +15,23 @@
 
 .view-product-content {
     background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
+    padding: 2.5%;
     border: 1px solid #888;
     width: 60%;
+    max-height: 90%;
+    overflow-y: auto;
 
+}
+
+.items {
+    margin-top: 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* height: 300px; */
+    /* overflow-y: scroll; */
+    /* max-height: 300px; */
+    /* border: 1px solid black; */
 }
 
 .exit-button img {
@@ -28,4 +39,8 @@
     float: right;
     width: 20px;
     height: 20px;
+}
+
+.itemdetails {
+    overflow-y: auto;
 }

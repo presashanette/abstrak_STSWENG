@@ -1,4 +1,5 @@
 const OrderInfo = require('../models/OrderInfo');
+const Product = require('../models/Product');
 
 // const getOrders = async (req, res) => {
 //     try {
@@ -91,7 +92,22 @@ async function getAnOrder(req, res) {
     try {
         let order = await OrderInfo.find({'orderNumber': orderId}).lean();
         order = order[0];
-        console.log(order);
+        // console.log(order);
+        // res.send(order);
+        for (let item of order.items) {
+
+            item.itemName = item.itemName.replaceAll('"', '');
+            let product = await Product.findOne({"SKU": item.sku});
+            // console.log(product);
+            if(product !== null){
+                item.picture = product.picture;
+            }
+        }
+
+        // console.log(order);
+        res.send(order);
+
+
     }   catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

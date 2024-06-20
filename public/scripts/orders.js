@@ -1,10 +1,10 @@
+
 $(document).ready(() => {
     const prevButton = $('#prev-button');
     const nextButton = $('#next-button');
     const pageNumber = $('#page-number');
     const totalPages = parseInt($('#total-pages').text());
 
-    $('.view-product-modal').hide();
 
     const fetchOrders = async (page) => {
         const response = await fetch(`/orders?page=${page}`, {
@@ -56,7 +56,9 @@ $(document).ready(() => {
     function openViewModal(orderNumber){
         fetchOrderDetails(orderNumber);
         $('.view-product-modal').show();
-        
+        $('.exit').click(function(){
+            $('.view-product-modal').hide();
+        });
 
     }
 
@@ -66,12 +68,36 @@ $(document).ready(() => {
             type: 'GET',
             success: function(response) {
                 console.log(response);
+    
+                $('#order-number').text(response.orderNumber);
+                $('#date').text(moment(response.dateCreated).format('MMMM D, YYYY'));
+                $('#time').text(response.time);
+    
+                // Clear existing items
+                $('.items').empty();
+    
+                // Append new items
+                response.items.forEach(item => {
+                    const itemDetails = `
+                        <div class="itemdetails">
+                            <div class="nameandpic">
+                                <img src="/uploads/products/${item.picture}" alt="$item.itemName}" class='itempic'>
+                                <p>${item.itemName}</p>
+                            </div>
+                            <span class="price">${item.price}</span>
+                            <span class="quantity">${item.quantity}</span>
+                            <span class="variation">${item.variant}</span>
+                        </div>
+                    `;
+                    $('.items').append(itemDetails);
+                });
             },
             error: function(error) {
                 console.error('Error fetching order:', error);
             }
         });
     };
+    
 
     const updatePagination = (page) => {
         pageNumber.text(page);
