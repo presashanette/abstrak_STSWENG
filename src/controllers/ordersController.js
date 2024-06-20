@@ -131,7 +131,7 @@ async function getAnOrder(req, res) {
             }
         }
 
-        // console.log(order);
+        console.log(order);
         res.send(order);
 
 

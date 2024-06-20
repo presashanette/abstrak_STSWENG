@@ -24,14 +24,41 @@
 }
 
 .items {
-    margin-top: 5%;
+    margin-top: 2%;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-bottom: 3%;
+    width: 90%;
+    margin-left: 2%;
+    /* padding: 2%; */
     /* height: 300px; */
     /* overflow-y: scroll; */
     /* max-height: 300px; */
     /* border: 1px solid black; */
+}
+
+.view-product-modal .payment {
+    padding: 25px;
+    background: #f3f3f3;
+    grid-area: payment;
+    margin-top: 10px;
+}
+
+.order-calculation {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    gap: 0.5rem;
+    /* color: #777; */
+}
+
+#order-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #000;
 }
 
 .exit-button img {

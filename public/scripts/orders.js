@@ -87,9 +87,23 @@ $(document).ready(() => {
     function openViewModal(orderNumber){
         fetchOrderDetails(orderNumber);
         $('.view-product-modal').show();
-        
-
     }
+
+    $('.exit-view-product-modal').click(function(){
+        $('.view-product-modal').hide();
+
+        // clear the modal
+        $('#order-number').text('');
+        $('#date').text('');
+        $('#time').text('');
+        $("#order-source").text('');
+        $("#order-total").text('');
+        $("#order-itemtotal").text('');
+        $("#order-shipping").text('');
+        $('.items').empty();
+
+    });
+
 
     const fetchOrderDetails = (orderNumber) => {
         $.ajax({
@@ -101,7 +115,11 @@ $(document).ready(() => {
                 $('#order-number').text(response.orderNumber);
                 $('#date').text(moment(response.dateCreated).format('MMMM D, YYYY'));
                 $('#time').text(response.time);
-    
+                $("#order-source").text(response.orderedFrom);
+                $("#order-total").text(response.total);
+                $("#order-itemtotal").text(response.total - response.shippingRate);
+                $("#order-shipping").text(response.shippingRate);
+
                 // Clear existing items
                 $('.items').empty();
     

@@ -107,10 +107,11 @@
         <div class="view-product-modal">
             <div class="view-product-content">
                 <div class="exit-button">
-                    <img src="assets/back.png" alt="" class="exit">
+                    <img src="assets/back.png" alt="" class="exit-view-product-modal">
                 </div>
-                <h1>Order #8286</h1>
-                <p>Ordered on May 15, 2024 10:32 AM from Instagam</p>
+                <h1>Order #<span id="order-number">8286</span></h1>
+                <p>Ordered <span id="date">October 2, 2004</span> <span id="time">2:00 PM</span> from <span id="order-source">Instagram</span></p>
+                <div class="items">
                     <div class="itemdetails">
                         <div class="nameandpic">
                             <img src="uploads/products/self_portrait_tee.png" alt="" class="itempic">
@@ -120,6 +121,16 @@
                         <span class="quantity">1 pc</span>
                         <span class="totalprice">₱885.50</span>
                     </div>
+                </div>
+                
+                <div class="payment">
+                    <h3>Payment</h3>
+                    <div class="order-calculation">
+                        <div><span>Items</span> <span id="order-itemtotal">₱0.00</span></div>
+                        <div><span>Shipping</span> <span id="order-shipping">₱0.00</span></div>
+                        <div><span>Total</span> <span id="order-total">₱0.00</span></div>
+                    </div>
+                </div>
             </div>
         </div>
                         
