@@ -298,6 +298,8 @@ input[type="date"], input[type="number"],
 
 .items {
     position: relative;
+    width: 100%;
+    margin-left: 0%;
 }
 
 .plus-sign {
