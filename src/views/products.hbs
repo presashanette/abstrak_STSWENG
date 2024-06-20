@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Product Details</title>
     <link rel="stylesheet" href="/styles/products.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/scripts/general.js"></script>
     <script src="/scripts/product-helpers.js"></script>
     <script src="/scripts/products.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="main" data-id="{{collectionId}}">
+    <div class="main">
         {{>navbar}}
         {{>gridheader}}
         <div class="catalogue">
@@ -37,7 +38,44 @@
         </div>
     </div>    
 
-    <div class="add-product-modal">
+    <div class="product-card-modal" style="display: none;">
+        <div class="product-card">
+            <div class="product-card-header">
+                <h2 class="product-name" id="dynamic-product-name">PRODUCT NAME</h2>
+                <span class="close-product-card" onclick="closeCard()">x</span>
+            </div>
+            <div class="product-card-content">
+                <div class="product-card-section active" id="section-1">
+                    <div class="product-left">
+                        <div class="product-img-container">
+                            <img src="" alt="Product Image" class="product-img">
+                        </div>
+                        <div class="product-info">
+                            <p>Name: <span class="product-detail" id="product-name"></span></p>
+                            <p>Price: <span class="product-detail" id="product-price"></span></p>
+                            <p>SKU: <span class="product-detail" id="product-sku"></span></p>
+                            <p>Material: <span class="product-detail" id="product-material"></span></p>
+                        </div>
+                    </div>
+                    <div class="product-right">
+                        <div class="product-metrics"></div>
+                        <div class="product-graph">
+                            <canvas id="salesChart"></canvas>
+                            <canvas id="profitChart"></canvas>
+                        </div>
+                    </div>
+                    <button class="next-section" onclick="showSection(2)">Next (1/2)</button>
+                </div>
+                <div class="product-card-section" id="section-2">
+                    <div class="product-variations"></div>
+                    <div class="product-sales"></div>
+                    <button class="previous-section" onclick="showSection(1)">Back (2/2)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <div class="add-product-modal">
         <div class="add-product-form">
             <h1 class="add-product-title">Add Product</h1>
             <div class="add-product-form-left">
@@ -80,12 +118,11 @@
         $('.add-product-modal').hide();
 
         $(".edit-product-modal").hide();
-
+        $(".product-card-modal").hide();
         
         $(".form-2").hide();
 
         $("#back-form-button").hide();
-
 
     </script>
 </body>

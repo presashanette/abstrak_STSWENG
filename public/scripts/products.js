@@ -1,34 +1,30 @@
-
-$(document).ready(function(){
-
-
-    // pop up 
+$(document).ready(function() {
+    // Pop up 
     $(".three-dots-product-option").click(popupClick);
 
     $(document).click(closePopup);
 
-    // add product form
+    // Add product form
     $('.grid-header-add-button').on('click', function() {
         clearForm();
         $('.add-product-modal').fadeIn();
     });
 
-    $(".main-picture").click(function(event){
+    $(".main-picture").click(function(event) {
         $("#imageInput").click();
     });
 
-
     $('.exit-form').on('click', function() {
-        // clear form
+        // Clear form
         clearForm();
-
         $('.add-product-modal').fadeOut();
-
     });
-    
+
     $("#imageInput").change(displayUploadedImage);
 
-    $("#imageInput").click(function(event){ event.stopPropagation();    });
+    $("#imageInput").click(function(event) {
+        event.stopPropagation();
+    });
 
     $('#material-input').keydown(listenToTagEntry);
 
@@ -46,24 +42,189 @@ $(document).ready(function(){
 
     $(".product-form-stock").on('keyup', validateStockInput);
 
-    $(document).on('input', '.product-form-stock', validateStockInput); // bind the dynamically added stuff
-
-
+    $(document).on('input', '.product-form-stock', validateStockInput); // Bind the dynamically added stuff
 
     $(".product-form-manucost").on('keyup', validatePriceInput);
 
-    $(document).on('input', '.product-form-manucost', validatePriceInput); // bind the dynamically added stuff
-    
-    // edit product form
+    $(document).on('input', '.product-form-manucost', validatePriceInput); // Bind the dynamically added stuff
+
+    // Edit product form
     $(".edit-product").click(editProduct);
 
-
-
-    // delete product
+    // Delete product
     $(".delete-product").click(deleteProduct);
 
-    // delete row in form
+    // Delete row in form
     $('.delete-row-icon').each(deleteRow);
-    
 
+    function fetchViewProductDetails(productId) {
+        $.ajax({
+            url: `/products/${productId}`,
+            method: 'GET',
+            success: function(response) {
+                var variationsHtml = '';
+                response.variations.forEach(function(variation) {
+                    variationsHtml += `
+                        <div class="variation-row">
+                            <div class="bubble"><p>VARIATION: <span class="variation-detail">${variation.variation}</span></p></div>
+                            <div class="bubble"><p>STOCK: <span class="stock-detail">${variation.stocks}</span></p></div>
+                            <div class="bubble"><p>SOLD: <span class="sold-detail">${variation.totalSold || 0}</span></p></div>
+                            <div class="bubble"><p>MANUFACTURING COST: <span class="manucost-detail">${variation.manufacturingCost}</span></p></div>
+                        </div>
+                    `;
+                });
+                $(".product-variations").html(variationsHtml);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product data:", error);
+            }
+        });
+    }
+
+    function fetchViewProductMetrics(productId) {
+        $.ajax({
+            url: `/products/metrics/${productId}`,
+            method: 'GET',
+            success: function(response) {
+                var product = response.product;
+                var metrics = response.metrics;
+
+                $('#dynamic-product-name').text(product.name);
+                $('#product-name').text(product.name);
+                $('#product-price').text(product.sellingPrice);
+                $('#product-sku').text(product.sku);
+                $('#product-material').text(product.material);
+
+                var metricsHtml = `
+                    <div class="metrics-row">
+                        <div class="bubble"><p>SOLD: <span class="sold-detail">${metrics.totalSold}</span></p></div>
+                        <div class="bubble"><p>TOTAL SALES AMOUNT: <span class="sales-amount-detail">${metrics.totalSalesAmount}</span></p></div>
+                        <div class="bubble"><p>COST PRICE: <span class="cost-price-detail">${metrics.costPrice}</span></p></div>
+                        <div class="bubble"><p>TOTAL COST: <span class="total-cost-detail">${metrics.totalCost}</span></p></div>
+                        <div class="bubble"><p>GROSS PROFIT: <span class="gross-profit-detail">${metrics.grossProfit}</span></p></div>
+                        <div class="bubble"><p>RETURN RATE: <span class="return-rate-detail">${metrics.returnRate.toFixed(2)}%</span></p></div>
+                    </div>
+                `;
+
+                $(".product-metrics").html(metricsHtml);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product data:", error);
+            }
+        });
+    }
+
+    function fetchProductGraphs(productId) {
+        $.ajax({
+            url: `/product-graphs/${productId}`,
+            method: 'GET',
+            success: function(response) {
+                var product = response.product;
+                var metrics = response.metrics;
+                var trendData = response.trendData;
+    
+                var salesOverTime = trendData.salesOverTime.map(data => data.sales);
+                var profitOverTime = trendData.profitOverTime.map(data => data.profit);
+                var salesDates = trendData.salesOverTime.map(data => new Date(data.date).toLocaleDateString());
+                var profitDates = trendData.profitOverTime.map(data => new Date(data.date).toLocaleDateString());
+    
+                var salesChartCtx = document.getElementById('salesChart').getContext('2d');
+                var profitChartCtx = document.getElementById('profitChart').getContext('2d');
+    
+                new Chart(salesChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: salesDates,
+                        datasets: [{
+                            label: 'Sales Over Time',
+                            data: salesOverTime,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Sales' } }
+                        }
+                    }
+                });
+    
+                new Chart(profitChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: profitDates,
+                        datasets: [{
+                            label: 'Profit Over Time',
+                            data: profitOverTime,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Month' } },
+                            y: { title: { display: true, text: 'Profit' } }
+                        }
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product graphs:", error);
+            }
+        });
+    }
+    
+    // Function to show product details
+    function viewProduct(){
+        var container = $(this).closest('.container');
+        var productId = container.data('id');
+        var productName = container.data('name');
+        var productPrice = container.data('price');
+        var productSKU = container.data('sku');
+        var productMaterials = container.data('materials');
+        var productPicture = container.data('picture');
+
+        // Set product details in the modal
+        $("#dynamic-product-name").text(productName);
+        $("#product-name").text(productName);
+        $("#product-price").text(productPrice);
+        $("#product-sku").text(productSKU);
+        $("#product-material").text(productMaterials);
+        $(".product-img").attr("src", productPicture);
+        
+        fetchViewProductMetrics(productId);
+        fetchProductGraphs(productId);
+        fetchViewProductDetails(productId);
+
+        // Show the modal and default to the first section
+        $(".product-card-modal").fadeIn();
+        showSection(1);
+    }
+
+    // Bind the click event for viewing product details
+    $(".product-pic").click(viewProduct);
+    $(".close-product-card").click(closeCard);
+    // Close product card function
+    function closeCard() {
+        $(".product-card-modal").fadeOut();
+    }
+
+    // Show specific section of the product card
+    function showSection(sectionNumber) {
+        $(".product-card-section").removeClass("active");
+        $("#section-" + sectionNumber).addClass("active");
+    }
+
+    // Next and Back button functionality
+    $(".next-section").click(function() {
+        showSection(2);
+    });
+    $(".previous-section").click(function() {
+        showSection(1);
+    });
+    
+    
 });

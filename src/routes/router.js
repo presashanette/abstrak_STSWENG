@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
-const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName } = require('../controllers/collectionControllers');
-const { deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct } = require('../controllers/productController');
-const { getOrders, getAnOrder } = require('../controllers/ordersController');
+const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
+const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
+const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
 
 
 
@@ -38,17 +38,26 @@ router.post('/api/collections/add', uploadCollectionPicture.single('collectionPi
 router.delete('/api/products/delete/:id', deleteProductById);
 router.post('/api/collections/checkName', checkCollectionName);
 router.post('/api/products/checkName', checkName);
+router.get('/api/getAbstrakInvento', handleAllProductsRequest);
 
 // products
 router.post('/api/products/check-name', checkName);
 router.post('/api/products/check-sku', checkSKU);
+router.get('/api/product', getVariation);
+router.get('/products/:id', fetchProductData);
 router.get('/products/:id', fetchSizeStockCost);
+router.get('/products/metrics/:id', fetchProductMetrics);
+router.get('/product-graphs/:id', fetchProductGraphs);
 router.post('/api/products/update/:id', uploadProductPicture.single('picture'), updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
+
 
 // orders
 router.get('/orders', getOrders);
 router.get('/api/orders/:id', getAnOrder);
+router.post('/orders/add', addOrder);
+router.post('/upload-csv', uploadCSV.single('csvFile'), uploadCSVFile);
+router.get('/orders/checkOrderNo', checkOrderNo);
 
 
 // testing

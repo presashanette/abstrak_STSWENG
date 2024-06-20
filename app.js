@@ -22,12 +22,12 @@ async function connectToDB (){
     }
 
 }
-
+const productsJson = "src/models/data/Orders.csv";
 
 async function initializeLoad(){
     await loadCollections();
     await loadProducts();
-    await processCsvData();
+    await processCsvData(productsJson);
 }
 
 function initializeHandlebars() {
