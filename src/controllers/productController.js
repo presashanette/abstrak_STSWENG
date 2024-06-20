@@ -148,13 +148,14 @@ async function fetchProductMetrics(req, res) {
 function calculateMetrics(product, soldPerVariation) {
     const costPrice = calculateAverageManufacturingCost(product.variations);
     const initialInventory = calculateInitialInventory(product.variations);
-    const sellingPrice = product.price || 0; // Updated this line to avoid syntax error
+    const sellingPrice = product.price || 0;
     const totalSold = Object.values(soldPerVariation).reduce((sum, sold) => sum + sold, 0);
     const totalSalesAmount = totalSold * sellingPrice;
     const totalCost = initialInventory * costPrice;
     const grossProfit = (sellingPrice - costPrice) * totalSold;
-    const returnRate = calculateRateOfReturn(initialInventory, totalSalesAmount, totalCost);
+    const returnRate = calculateRateOfReturn(initialInventory, totalSalesAmount, costPrice);
     const profitMargin = (grossProfit / totalSalesAmount) * 100;
+    const remainingInventory = initialInventory - totalSold;
 
     return {
         totalSold,
@@ -165,9 +166,11 @@ function calculateMetrics(product, soldPerVariation) {
         grossProfit: grossProfit || 0,
         returnRate: returnRate || 0,
         profitMargin: profitMargin || 0,
-        initialInventory
+        initialInventory,
+        remainingInventory
     };
 }
+
 
 function calculateAverageManufacturingCost(variations) {
     let totalCost = 0;
@@ -205,10 +208,18 @@ function calculateInitialInventory(variations) {
     return totalInitialInventory;
 }
 
-function calculateRateOfReturn(initialInventory, totalSalesAmount, totalCost) {
-    const initialInvestment = initialInventory * totalCost;
+function calculateRateOfReturn(initialInventory, totalSalesAmount, costPrice) {
+    // Ensure no negative values are allowed
+    if (initialInventory < 0 || totalSalesAmount < 0 || costPrice < 0) {
+        throw new Error("Negative values are not allowed.");
+    }
+
+    const initialInvestment = initialInventory * costPrice;
     const netGain = totalSalesAmount - initialInvestment;
+
+    // Handle division by zero
     if (initialInvestment === 0) return 0;
+
     return (netGain / initialInvestment) * 100;
 }
 

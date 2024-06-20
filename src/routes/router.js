@@ -47,6 +47,7 @@ router.get('/api/product', getVariation);
 router.get('/products/:id', fetchProductData);
 router.get('/products/:id', fetchSizeStockCost);
 router.get('/products/metrics/:id', fetchProductMetrics);
+router.get('/products/info/:id', fetchProductMetrics);
 router.get('/product-graphs/:id', fetchProductGraphs);
 router.post('/api/products/update/:id', uploadProductPicture.single('picture'), updateProduct);
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
