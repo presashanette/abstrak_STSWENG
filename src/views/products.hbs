@@ -38,42 +38,53 @@
         </div>
     </div>    
 
-    <div class="product-card-modal" style="display: none;">
-        <div class="product-card">
-            <div class="product-card-header">
-                <h2 class="product-name" id="dynamic-product-name">PRODUCT NAME</h2>
-                <span class="close-product-card" onclick="closeCard()">x</span>
-            </div>
-            <div class="product-card-content">
-                <div class="product-card-section active" id="section-1">
-                    <div class="product-left">
-                        <div class="product-img-container">
-                            <img src="" alt="Product Image" class="product-img">
-                        </div>
-                        <div class="product-info">
-                            <p>Name: <span class="product-detail" id="product-name"></span></p>
-                            <p>Price: <span class="product-detail" id="product-price"></span></p>
-                            <p>SKU: <span class="product-detail" id="product-sku"></span></p>
-                            <p>Material: <span class="product-detail" id="product-material"></span></p>
-                        </div>
+<div class="product-card-modal" style="display: none;">
+    <div class="product-card">
+        <div class="product-card-header">
+            <h2 class="product-name" id="dynamic-product-name">PRODUCT NAME</h2>
+            <span class="close-product-card" onclick="closeCard()">x</span>
+        </div>
+        <div class="product-card-content">
+            <div class="product-card-section active" id="section-1">
+                <div class="product-left">
+                    <div class="product-img-container">
+                        <img src="" alt="Product Image" class="product-img">
                     </div>
-                    <div class="product-right">
-                        <div class="product-metrics"></div>
-                        <div class="product-graph">
+                    <div class="product-info">
+                        <p>Name: <span class="product-detail" id="product-name"></span></p>
+                        <p>Price: <span class="product-detail" id="product-price"></span></p>
+                        <p>SKU: <span class="product-detail" id="product-sku"></span></p>
+                        <p>Material: <span class="product-detail" id="product-material"></span></p>
+                        <p>Remaining Stock: <span class="product-detail" id="product-stock"></span></p>
+                    </div>
+                </div>
+                <div class="product-right">
+                    <div class="product-metrics"></div>
+                    <div class="product-graph-container">
+                        <div class="chart-container">
                             <canvas id="salesChart"></canvas>
+                        </div>
+                        <div class="chart-container">
                             <canvas id="profitChart"></canvas>
                         </div>
                     </div>
-                    <button class="next-section" onclick="showSection(2)">Next (1/2)</button>
-                </div>
-                <div class="product-card-section" id="section-2">
-                    <div class="product-variations"></div>
-                    <div class="product-sales"></div>
-                    <button class="previous-section" onclick="showSection(1)">Back (2/2)</button>
                 </div>
             </div>
+            <div class="product-card-section" id="section-2">
+                <div class="product-variations"></div>
+                <div class="product-sales"></div>
+            </div>
+        </div>
+        <div class="product-card-footer">
+            <button class="previous-section" style="display: none;">Back (2/2)</button>
+            <button class="next-section">Next (1/2)</button>
         </div>
     </div>
+</div>
+
+
+
+
     
         <div class="add-product-modal">
         <div class="add-product-form">

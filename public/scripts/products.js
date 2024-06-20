@@ -88,24 +88,28 @@ $(document).ready(function() {
             success: function(response) {
                 var product = response.product;
                 var metrics = response.metrics;
-
+    
                 $('#dynamic-product-name').text(product.name);
                 $('#product-name').text(product.name);
                 $('#product-price').text(product.sellingPrice);
                 $('#product-sku').text(product.sku);
                 $('#product-material').text(product.material);
-
+    
                 var metricsHtml = `
                     <div class="metrics-row">
                         <div class="bubble"><p>SOLD: <span class="sold-detail">${metrics.totalSold}</span></p></div>
                         <div class="bubble"><p>TOTAL SALES AMOUNT: <span class="sales-amount-detail">${metrics.totalSalesAmount}</span></p></div>
+                    </div>
+                    <div class="metrics-row">
                         <div class="bubble"><p>COST PRICE: <span class="cost-price-detail">${metrics.costPrice}</span></p></div>
                         <div class="bubble"><p>TOTAL COST: <span class="total-cost-detail">${metrics.totalCost}</span></p></div>
+                    </div>
+                    <div class="metrics-row">
                         <div class="bubble"><p>GROSS PROFIT: <span class="gross-profit-detail">${metrics.grossProfit}</span></p></div>
                         <div class="bubble"><p>RETURN RATE: <span class="return-rate-detail">${metrics.returnRate.toFixed(2)}%</span></p></div>
                     </div>
                 `;
-
+    
                 $(".product-metrics").html(metricsHtml);
             },
             error: function(xhr, status, error) {
@@ -113,7 +117,7 @@ $(document).ready(function() {
             }
         });
     }
-
+    
     function fetchProductGraphs(productId) {
         $.ajax({
             url: `/product-graphs/${productId}`,
@@ -122,15 +126,15 @@ $(document).ready(function() {
                 var product = response.product;
                 var metrics = response.metrics;
                 var trendData = response.trendData;
-    
+
                 var salesOverTime = trendData.salesOverTime.map(data => data.sales);
                 var profitOverTime = trendData.profitOverTime.map(data => data.profit);
                 var salesDates = trendData.salesOverTime.map(data => new Date(data.date).toLocaleDateString());
                 var profitDates = trendData.profitOverTime.map(data => new Date(data.date).toLocaleDateString());
-    
+
                 var salesChartCtx = document.getElementById('salesChart').getContext('2d');
                 var profitChartCtx = document.getElementById('profitChart').getContext('2d');
-    
+
                 new Chart(salesChartCtx, {
                     type: 'line',
                     data: {
@@ -150,7 +154,7 @@ $(document).ready(function() {
                         }
                     }
                 });
-    
+
                 new Chart(profitChartCtx, {
                     type: 'line',
                     data: {
@@ -177,6 +181,45 @@ $(document).ready(function() {
         });
     }
     
+    function fetchViewProductInfo(productId) {
+        $.ajax({
+            url: `/products/info/${productId}`,
+            method: 'GET',
+            success: function(response) {
+                var product = response.product;
+                var metrics = response.metrics;
+    
+                $('#dynamic-product-name').text(product.name);
+                $('#product-name').text(product.name);
+                $('#product-price').text(product.sellingPrice);
+                $('#product-sku').text(product.sku);
+                $('#product-material').html(product.material.map(material => `<span class="material-tag">${material}</span>`).join(' '));
+                
+                // Assuming there's a placeholder for the product image
+                var productInfoHtml = `
+                <p class="stock-indicator ${metrics.remainingInventory > 0 ? 'in-stock' : 'out-of-stock'}">
+                    ${metrics.remainingInventory > 0 ? `${metrics.remainingInventory} in stock` : 'Out of stock'}
+                </p>
+                <p class="product-detail-container">Name: <span class="product-detail">${product.name}</span></p>
+                <p class="product-detail-container">Price: <span class="product-detail">${product.price}</span></p>
+                <p class="product-detail-container">SKU: <span class="product-detail">${product.SKU}</span></p>
+                <p class="product-detail-container">Material: 
+                    <span class="product-detail">
+                        ${product.material.map(material => `<span class="material-tag">${material}</span>`).join(' ')}
+                    </span>
+                </p>
+            `;
+        
+            
+    
+                $(".product-info").html(productInfoHtml);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product info:", error);
+            }
+        });
+    }
+    
     // Function to show product details
     function viewProduct(){
         var container = $(this).closest('.container');
@@ -194,7 +237,7 @@ $(document).ready(function() {
         $("#product-sku").text(productSKU);
         $("#product-material").text(productMaterials);
         $(".product-img").attr("src", productPicture);
-        
+        fetchViewProductInfo(productId);
         fetchViewProductMetrics(productId);
         fetchProductGraphs(productId);
         fetchViewProductDetails(productId);
@@ -212,11 +255,24 @@ $(document).ready(function() {
         $(".product-card-modal").fadeOut();
     }
 
-    // Show specific section of the product card
-    function showSection(sectionNumber) {
-        $(".product-card-section").removeClass("active");
-        $("#section-" + sectionNumber).addClass("active");
+// Show specific section of the product card
+function showSection(sectionNumber) {
+    $(".product-card-section").removeClass("active");
+    $("#section-" + sectionNumber).addClass("active");
+
+    // Hide/show buttons based on section
+    if (sectionNumber === 1) {
+        $(".next-section").show();
+        $(".previous-section").hide();
+    } else if (sectionNumber === 2) {
+        $(".next-section").hide();
+        $(".previous-section").show();
     }
+}
+
+// Initialize buttons visibility on load
+$(document).ready(function() {
+    showSection(1); // Show the first section initially
 
     // Next and Back button functionality
     $(".next-section").click(function() {
@@ -225,6 +281,8 @@ $(document).ready(function() {
     $(".previous-section").click(function() {
         showSection(1);
     });
+});
+
     
-    
+
 });
