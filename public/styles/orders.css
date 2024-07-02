@@ -229,7 +229,7 @@
     text-align: center;
 }
 
-.submitbtn, .add-to-cart{
+.submitbtn, .add-to-cart, .filter-sort-done{
     background-color: #d9d9d9;
     color: black;
     padding: 15px;
@@ -238,7 +238,7 @@
     font-family: "DM Sans";
 }
 
-.submitbtn:hover, .add-to-cart:hover {
+.submitbtn:hover, .add-to-cart:hover, .filter-sort-done:hover {
     background-color: black;
     color: white;
 }
@@ -274,7 +274,7 @@ select, input[type="date"], input[type="number"] {
 }
 
 input[type="date"], input[type="number"],
-.fulfillmentstatus, .paymentmethod, .paymentstatus, .orderedfrom {
+.fulfillmentstatus, .paymentmethod, .paymentstatus, .orderedfrom, .paymentstatusfilter,  .orderfromfilter, .fulfillmentfilter, .sorting {
     border: 1px solid transparent; 
     outline: none; 
     background-color: #f3f3f3;
@@ -567,7 +567,6 @@ input[type="date"], input[type="number"],
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding-right: 35%;
 }
 
 .search-toggle-btn {
@@ -649,4 +648,51 @@ input[type="date"], input[type="number"],
 /* search */
  .highlight {
     background-color: yellow;
+}
+
+.filter-sort{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.filtersort-icon {
+    width: 20px;
+    height: 20px;
+    
+}
+
+.filter-sort-text {
+    font-weight: 700;
+}
+
+.filter-sort-modal {
+    display: none;
+}
+
+.filter-sort-modal {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    z-index: 1000;
+}
+
+.filter-sort-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-sort-content h2 {
+    margin: 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.filter-sort-content select, .filter-sort-content button {
+    padding: 15px;
+    margin-top: 10px;
 }

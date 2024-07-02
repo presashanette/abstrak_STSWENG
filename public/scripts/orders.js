@@ -599,6 +599,8 @@ $('#clear-search-button').click(function() {
     removeHighlights();
 });
 
+
+
     
     const highlightText = (element, text) => {
         const innerHTML = element.html();
@@ -655,6 +657,29 @@ $('#clear-search-button').click(function() {
             loader.style.display = 'none';
         }
     });
+
+    $('.filter-sort').on('click', function() {
+        const offset = $(this).offset();
+        const height = $(this).outerHeight();
+        
+        $('#filter-sort-modal').css({
+            top: offset.top + height + 10 + 'px', // 10px for some spacing
+            left: offset.left - 50 + 'px',
+            display: 'block'
+        });
+    });
+
+    $('#filter-sort-done').on('click', function() {
+        $('#filter-sort-modal').hide();
+    });
+
+    // Optional: Hide the modal if clicked outside of it
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('.filter-sort, #filter-sort-modal').length) {
+            $('#filter-sort-modal').hide();
+        }
+    });
+    
 
     initialize();
 });

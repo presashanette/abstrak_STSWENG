@@ -27,6 +27,46 @@
                     <button id="search-button">Search</button>
                      <button id="clear-search-button">Clear</button>
                 </div>
+
+                <!--add the filter and sort here-->
+                <div class="filter-sort">
+                    <img src="/assets/setting.png" alt="Filter/Sort Icon" class="filtersort-icon">
+                    <span class="filter-sort-text">FILTER AND SORT</span>
+                </div>
+
+                <div id="filter-sort-modal" class="filter-sort-modal">
+                    <div class="filter-sort-content">
+                        <h2>FILTER AND SORT</h2>
+                        <select class="sorting">
+                            <option value="">Sort</option>
+                            <option value="ordernumascending">Order Number (ascending)</option>
+                            <option value="ordernumdescending">Order Number (descending)</option>
+
+                             <option value="orderdatelatest">Latest - earliest orders</option>
+                            <option value="orderdateearliest">Earliest - latest orders</option>
+                        </select>
+                        <select class="fulfillmentfilter">
+                            <option value="">Fulfillment Status</option>
+                            <option value="fulfilled">Fulfilled</option>
+                            <option value="unfulfilled">Unfulfilled</option>
+                        </select>
+                        <select class="orderfromfilter">
+                            <option value="">Ordered From</option>
+                            <option value="wix">Wix Website</option>
+                            <option value="message">Private Message</option>
+                            <option value="in-person">In-person</option>
+
+                        </select>
+                        <select class="paymentstatusfilter">
+                            <option value="">Payment Status</option>
+                            <option value="paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
+
+                        </select>
+                        <button id="filter-sort-done" class="filter-sort-done">Done</button>
+                    </div>
+                </div>
+
             </div>
             <table class="orders-table">
                 <thead>
