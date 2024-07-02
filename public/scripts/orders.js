@@ -581,7 +581,7 @@ $(document).ready(() => {
     const searchText = $('#search-input').val().toLowerCase();
     $('.orders-row').each(function() {
         const rowText = $(this).text().toLowerCase();
-        const itemsText = $(this).data('items') ? $(this).data('items').toLowerCase() : '';
+        const itemsText = $(this).data('itemslist') ? $(this).data('itemslist').toLowerCase() : '';
         if (rowText.includes(searchText) || itemsText.includes(searchText)) {
             highlightText($(this), searchText);
             $(this).show();

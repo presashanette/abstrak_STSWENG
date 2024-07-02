@@ -205,7 +205,7 @@
 .modal-content .fulfillmentstatus {
     grid-area: fulfillmentstatus;
 }
-.modal-content .items {
+.modal-content .itemslist {
     background: #f3f3f3;
     padding: 25px;
     grid-area: items;
@@ -296,7 +296,7 @@ input[type="date"], input[type="number"],
 }
 
 
-.items {
+.itemslist {
     position: relative;
     width: 100%;
     margin-left: 0%;
