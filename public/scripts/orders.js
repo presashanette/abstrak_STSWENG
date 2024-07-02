@@ -679,6 +679,80 @@ $('#clear-search-button').click(function() {
             $('#filter-sort-modal').hide();
         }
     });
+
+    $('#filter-sort-done').on('click', function() {
+        const sort = $('.sorting').val();
+        const fulfillmentStatus = $('.fulfillmentfilter').val();
+        const orderedFrom = $('.orderfromfilter').val();
+        const paymentStatus = $('.paymentstatusfilter').val();
+
+        $('#filter-sort-modal').hide();
+
+        const query = $.param({ sort, fulfillmentStatus, orderedFrom, paymentStatus });
+        filterResult(1, query);  // Pass query parameters to loadPage function
+    });
+
+    const filterResult = async (page, query = '') => {
+        try {
+            const response = await fetch(`/orders?page=${page}&${query}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+            const { orders } = result;
+            const tbody = document.getElementById('orders-body');
+            tbody.innerHTML = '';
+            orders.forEach(order => {
+                const orderNumber = order.orderNumber || 'N/A';
+                const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
+                const totalOrderQuantity = order.totalOrderQuantity || 'N/A';
+                const paymentMethod = order.paymentMethod || 'N/A';
+                const fulfillmentStatus = order.fulfillmentStatus || 'N/A';
+                const paymentStatus = order.paymentStatus || 'N/A';
+                const total = order.total ? `₱${order.total}` : 'N/A';
+                const shippingRate = order.shippingRate || 'N/A';
+                const orderedFrom = order.orderedFrom || 'N/A';
+                const tr = document.createElement('tr');
+                tr.classList.add('orders-row');
+                tr.innerHTML = `
+                    <td>${orderNumber}</td>
+                    <td>${dateCreated}</td>
+                    <td>${totalOrderQuantity}</td>
+                    <td>${paymentMethod}</td>
+                    <td>${fulfillmentStatus}</td>
+                    <td>${paymentStatus}</td>
+                    <td>${total}</td>
+                    <td>${shippingRate}</td>
+                    <td>${orderedFrom}</td>
+                `;
+                tbody.appendChild(tr);
+
+                // Add event listener for click to open the modal
+                tr.addEventListener('click', () => openViewModal(orderNumber));
+                // Set the cursor to pointer
+                tr.style.cursor = 'pointer';
+            });
+            pageNumber.textContent = page;
+            if (page === 1) {
+                prevButton.style.display = 'none';
+            } else {
+                prevButton.style.display = 'inline';
+            }
+            if (page === totalPages) {
+                nextButton.style.display = 'none';
+            } else {
+                nextButton.style.display = 'inline';
+            }
+        } catch (error) {
+            console.error('Error loading page:', error);
+        }
+    };
+
+    
     
 
     initialize();

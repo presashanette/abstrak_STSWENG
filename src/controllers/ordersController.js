@@ -22,11 +22,37 @@ const getOrders = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 15;
         const skip = (page - 1) * limit;
-        
-        const totalOrders = await OrderInfo.countDocuments();
+
+        const { sort, fulfillmentStatus, orderedFrom, paymentStatus } = req.query;
+
+        let filter = {};
+        if (fulfillmentStatus) {
+            filter.fulfillmentStatus = fulfillmentStatus;
+        }
+        if (orderedFrom) {
+            filter.orderedFrom = orderedFrom;
+        }
+        if (paymentStatus) {
+            filter.paymentStatus = paymentStatus;
+        }
+
+        let sortOrder = {};
+        if (sort) {
+            if (sort === 'ordernumascending') {
+                sortOrder.orderNumber = 1;
+            } else if (sort === 'ordernumdescending') {
+                sortOrder.orderNumber = -1;
+            } else if (sort === 'orderdatelatest') {
+                sortOrder.dateCreated = -1;
+            } else if (sort === 'orderdateearliest') {
+                sortOrder.dateCreated = 1;
+            }
+        }
+
+        const totalOrders = await OrderInfo.countDocuments(filter);
         const totalPages = Math.ceil(totalOrders / limit);
 
-        const orders = await OrderInfo.find().skip(skip).limit(limit).lean();
+        const orders = await OrderInfo.find(filter).sort(sortOrder).skip(skip).limit(limit).lean();
         const initialOrders = page === 1 ? orders : [];
         const nextPage = page < totalPages ? page + 1 : null;
 
