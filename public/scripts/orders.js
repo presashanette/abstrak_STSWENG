@@ -4,7 +4,18 @@ $(document).ready(() => {
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
     const pageNumber = document.getElementById('page-number');
-    let totalPages = parseInt(document.getElementById('total-pages').textContent);
+    let totalPagesPagination = parseInt(document.getElementById('total-pages').textContent);
+
+    let currentFilters = {
+        sort: '',
+        fulfillmentStatus: '',
+        orderedFrom: '',
+        paymentStatus: ''
+    };
+
+    const isFiltersApplied = (filters) => {
+        return filters.sort || filters.fulfillmentStatus || filters.orderedFrom || filters.paymentStatus;
+    };
 
 
     const loadPage = async (page) => {
@@ -57,7 +68,7 @@ $(document).ready(() => {
             } else {
                 prevButton.style.display = 'inline';
             }
-            if (page === totalPages) {
+            if (page === totalPagesPagination) {
                 nextButton.style.display = 'none';
             } else {
                 nextButton.style.display = 'inline';
@@ -69,15 +80,23 @@ $(document).ready(() => {
 
     nextButton.addEventListener('click', () => {
         const currentPage = parseInt(pageNumber.textContent);
-        if (currentPage < totalPages) {
-            loadPage(currentPage + 1);
+        if (currentPage < totalPagesPagination) {
+            if (isFiltersApplied(currentFilters)) {
+                filterResult(currentPage + 1);
+            } else {
+                loadPage(currentPage + 1);
+            }
         }
     });
 
     prevButton.addEventListener('click', () => {
         const currentPage = parseInt(pageNumber.textContent);
         if (currentPage > 1) {
-            loadPage(currentPage - 1);
+            if (isFiltersApplied(currentFilters)) {
+                filterResult(currentPage - 1);
+            } else {
+                loadPage(currentPage - 1);
+            }
         }
     });
 
@@ -686,15 +705,17 @@ $('#clear-search-button').click(function() {
         const orderedFrom = $('.orderfromfilter').val();
         const paymentStatus = $('.paymentstatusfilter').val();
 
+        currentFilters = { sort, fulfillmentStatus, orderedFrom, paymentStatus };
+
         $('#filter-sort-modal').hide();
 
-        const query = $.param({ sort, fulfillmentStatus, orderedFrom, paymentStatus });
-        filterResult(1, query);  // Pass query parameters to loadPage function
+        filterResult(1);  // Pass query parameters to loadPage function
     });
 
-    const filterResult = async (page, query = '') => {
+    const filterResult = async (page) => {
+        const query = $.param({ ...currentFilters, page });
         try {
-            const response = await fetch(`/orders?page=${page}&${query}`, {
+            const response = await fetch(`/orders?${query}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -703,9 +724,10 @@ $('#clear-search-button').click(function() {
                 throw new Error('Network response was not ok');
             }
             const result = await response.json();
-            const { orders } = result;
+            const { orders, totalPages } = result;
             const tbody = document.getElementById('orders-body');
             tbody.innerHTML = '';
+            document.getElementById('total-pages').textContent = totalPages;
             orders.forEach(order => {
                 const orderNumber = order.orderNumber || 'N/A';
                 const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
@@ -737,15 +759,20 @@ $('#clear-search-button').click(function() {
                 tr.style.cursor = 'pointer';
             });
             pageNumber.textContent = page;
-            if (page === 1) {
+            if (totalPages <= 1) {
                 prevButton.style.display = 'none';
-            } else {
-                prevButton.style.display = 'inline';
-            }
-            if (page === totalPages) {
                 nextButton.style.display = 'none';
             } else {
-                nextButton.style.display = 'inline';
+                if (page === 1) {
+                    prevButton.style.display = 'none';
+                } else {
+                    prevButton.style.display = 'inline';
+                }
+                if (page === totalPages) {
+                    nextButton.style.display = 'none';
+                } else {
+                    nextButton.style.display = 'inline';
+                }
             }
         } catch (error) {
             console.error('Error loading page:', error);

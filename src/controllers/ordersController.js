@@ -25,6 +25,7 @@ const getOrders = async (req, res) => {
 
         const { sort, fulfillmentStatus, orderedFrom, paymentStatus } = req.query;
 
+        // Build filter object
         let filter = {};
         if (fulfillmentStatus) {
             filter.fulfillmentStatus = fulfillmentStatus;
@@ -36,6 +37,9 @@ const getOrders = async (req, res) => {
             filter.paymentStatus = paymentStatus;
         }
 
+        console.log('Filter:', filter);
+
+        // Build sort object
         let sortOrder = {};
         if (sort) {
             if (sort === 'ordernumascending') {
@@ -49,18 +53,26 @@ const getOrders = async (req, res) => {
             }
         }
 
-        const totalOrders = await OrderInfo.countDocuments(filter);
+        const countResult = await OrderInfo.aggregate([
+            { $match: filter },
+            { $count: "totalOrders" }
+        ]);
+
+        const totalOrders = countResult[0] ? countResult[0].totalOrders : 0;
         const totalPages = Math.ceil(totalOrders / limit);
 
         const orders = await OrderInfo.find(filter).sort(sortOrder).skip(skip).limit(limit).lean();
+        console.log('Orders:', orders);
         const initialOrders = page === 1 ? orders : [];
         const nextPage = page < totalPages ? page + 1 : null;
+
+        console.log('Total Pages:', totalPages);
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             res.json({
                 orders,
                 currentPage: page,
-                totalPages
+                totalPages // Ensure totalPages is included in the response
             });
         } else {
             res.render('orders', {
