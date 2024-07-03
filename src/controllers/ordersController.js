@@ -23,7 +23,7 @@ const getOrders = async (req, res) => {
         const limit = 15;
         const skip = (page - 1) * limit;
 
-        const { sort, fulfillmentStatus, orderedFrom, paymentStatus } = req.query;
+        const { sort, fulfillmentStatus, orderedFrom, paymentStatus, startDate, endDate } = req.query;
 
         // Build filter object
         let filter = {};
@@ -35,6 +35,17 @@ const getOrders = async (req, res) => {
         }
         if (paymentStatus) {
             filter.paymentStatus = paymentStatus;
+        }
+        if (startDate) {
+            filter.dateCreated = {
+                $gte: new Date(startDate).setHours(0, 0, 0, 0)  // Start of the day
+            };
+        }
+        if (endDate) {
+            filter.dateCreated = {
+                ...filter.dateCreated,
+                $lte: new Date(endDate).setHours(23, 59, 59, 999)  // End of the day
+            };
         }
 
         console.log('Filter:', filter);

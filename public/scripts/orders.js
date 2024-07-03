@@ -10,11 +10,13 @@ $(document).ready(() => {
         sort: '',
         fulfillmentStatus: '',
         orderedFrom: '',
-        paymentStatus: ''
+        paymentStatus: '',
+        startDate: '',
+        endDate: ''
     };
-
+    
     const isFiltersApplied = (filters) => {
-        return filters.sort || filters.fulfillmentStatus || filters.orderedFrom || filters.paymentStatus;
+        return filters.sort || filters.fulfillmentStatus || filters.orderedFrom || filters.paymentStatus || filters.startDate || filters.endDate;
     };
 
 
@@ -683,7 +685,7 @@ $('#clear-search-button').click(function() {
         
         $('#filter-sort-modal').css({
             top: offset.top + height + 10 + 'px', // 10px for some spacing
-            left: offset.left - 50 + 'px',
+            left: offset.left - 120 + 'px',
             display: 'block'
         });
     });
@@ -699,18 +701,46 @@ $('#clear-search-button').click(function() {
         }
     });
 
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+
+    startDateInput.addEventListener('change', function() {
+        const startDate = new Date(startDateInput.value);
+        if (startDate) {
+            const minEndDate = new Date(startDate);
+            minEndDate.setDate(minEndDate.getDate() + 1); // Ensuring the end date is after the start date
+            const minEndDateString = minEndDate.toISOString().split('T')[0];
+            endDateInput.min = minEndDateString;
+        }
+    });
+
+    endDateInput.addEventListener('focus', function() {
+        const startDate = startDateInput.value;
+        if (!startDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Please add a start date first.'
+              });
+            startDateInput.focus();
+        }
+    });
+
     $('#filter-sort-done').on('click', function() {
         const sort = $('.sorting').val();
         const fulfillmentStatus = $('.fulfillmentfilter').val();
         const orderedFrom = $('.orderfromfilter').val();
         const paymentStatus = $('.paymentstatusfilter').val();
-
-        currentFilters = { sort, fulfillmentStatus, orderedFrom, paymentStatus };
-
+        const startDate = $('#start-date').val();
+        const endDate = $('#end-date').val();
+    
+        currentFilters = { sort, fulfillmentStatus, orderedFrom, paymentStatus, startDate, endDate };
+    
         $('#filter-sort-modal').hide();
-
-        filterResult(1);  // Pass query parameters to loadPage function
+    
+        filterResult(1); 
     });
+    
 
     const filterResult = async (page) => {
         const query = $.param({ ...currentFilters, page });
@@ -752,7 +782,7 @@ $('#clear-search-button').click(function() {
                     <td>${orderedFrom}</td>
                 `;
                 tbody.appendChild(tr);
-
+    
                 // Add event listener for click to open the modal
                 tr.addEventListener('click', () => openViewModal(orderNumber));
                 // Set the cursor to pointer
