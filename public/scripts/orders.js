@@ -4,7 +4,20 @@ $(document).ready(() => {
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
     const pageNumber = document.getElementById('page-number');
-    let totalPages = parseInt(document.getElementById('total-pages').textContent);
+    let totalPagesPagination = parseInt(document.getElementById('total-pages').textContent);
+
+    let currentFilters = {
+        sort: '',
+        fulfillmentStatus: '',
+        orderedFrom: '',
+        paymentStatus: '',
+        startDate: '',
+        endDate: ''
+    };
+    
+    const isFiltersApplied = (filters) => {
+        return filters.sort || filters.fulfillmentStatus || filters.orderedFrom || filters.paymentStatus || filters.startDate || filters.endDate;
+    };
 
 
     const loadPage = async (page) => {
@@ -57,7 +70,7 @@ $(document).ready(() => {
             } else {
                 prevButton.style.display = 'inline';
             }
-            if (page === totalPages) {
+            if (page === totalPagesPagination) {
                 nextButton.style.display = 'none';
             } else {
                 nextButton.style.display = 'inline';
@@ -69,15 +82,23 @@ $(document).ready(() => {
 
     nextButton.addEventListener('click', () => {
         const currentPage = parseInt(pageNumber.textContent);
-        if (currentPage < totalPages) {
-            loadPage(currentPage + 1);
+        if (currentPage < totalPagesPagination) {
+            if (isFiltersApplied(currentFilters)) {
+                filterResult(currentPage + 1);
+            } else {
+                loadPage(currentPage + 1);
+            }
         }
     });
 
     prevButton.addEventListener('click', () => {
         const currentPage = parseInt(pageNumber.textContent);
         if (currentPage > 1) {
-            loadPage(currentPage - 1);
+            if (isFiltersApplied(currentFilters)) {
+                filterResult(currentPage - 1);
+            } else {
+                loadPage(currentPage - 1);
+            }
         }
     });
 
@@ -581,7 +602,7 @@ $(document).ready(() => {
     const searchText = $('#search-input').val().toLowerCase();
     $('.orders-row').each(function() {
         const rowText = $(this).text().toLowerCase();
-        const itemsText = $(this).data('items') ? $(this).data('items').toLowerCase() : '';
+        const itemsText = $(this).data('itemslist') ? $(this).data('itemslist').toLowerCase() : '';
         if (rowText.includes(searchText) || itemsText.includes(searchText)) {
             highlightText($(this), searchText);
             $(this).show();
@@ -664,7 +685,7 @@ $('#clear-search-button').click(function() {
         
         $('#filter-sort-modal').css({
             top: offset.top + height + 10 + 'px', // 10px for some spacing
-            left: offset.left - 50 + 'px',
+            left: offset.left - 120 + 'px',
             display: 'block'
         });
     });
@@ -680,21 +701,51 @@ $('#clear-search-button').click(function() {
         }
     });
 
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+
+    startDateInput.addEventListener('change', function() {
+        const startDate = new Date(startDateInput.value);
+        if (startDate) {
+            const minEndDate = new Date(startDate);
+            minEndDate.setDate(minEndDate.getDate() + 1); // Ensuring the end date is after the start date
+            const minEndDateString = minEndDate.toISOString().split('T')[0];
+            endDateInput.min = minEndDateString;
+        }
+    });
+
+    endDateInput.addEventListener('focus', function() {
+        const startDate = startDateInput.value;
+        if (!startDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Please add a start date first.'
+              });
+            startDateInput.focus();
+        }
+    });
+
     $('#filter-sort-done').on('click', function() {
         const sort = $('.sorting').val();
         const fulfillmentStatus = $('.fulfillmentfilter').val();
         const orderedFrom = $('.orderfromfilter').val();
         const paymentStatus = $('.paymentstatusfilter').val();
-
+        const startDate = $('#start-date').val();
+        const endDate = $('#end-date').val();
+    
+        currentFilters = { sort, fulfillmentStatus, orderedFrom, paymentStatus, startDate, endDate };
+    
         $('#filter-sort-modal').hide();
-
-        const query = $.param({ sort, fulfillmentStatus, orderedFrom, paymentStatus });
-        filterResult(1, query);  // Pass query parameters to loadPage function
+    
+        filterResult(1); 
     });
+    
 
-    const filterResult = async (page, query = '') => {
+    const filterResult = async (page) => {
+        const query = $.param({ ...currentFilters, page });
         try {
-            const response = await fetch(`/orders?page=${page}&${query}`, {
+            const response = await fetch(`/orders?${query}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -703,9 +754,10 @@ $('#clear-search-button').click(function() {
                 throw new Error('Network response was not ok');
             }
             const result = await response.json();
-            const { orders } = result;
+            const { orders, totalPages } = result;
             const tbody = document.getElementById('orders-body');
             tbody.innerHTML = '';
+            document.getElementById('total-pages').textContent = totalPages;
             orders.forEach(order => {
                 const orderNumber = order.orderNumber || 'N/A';
                 const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
@@ -730,22 +782,27 @@ $('#clear-search-button').click(function() {
                     <td>${orderedFrom}</td>
                 `;
                 tbody.appendChild(tr);
-
+    
                 // Add event listener for click to open the modal
                 tr.addEventListener('click', () => openViewModal(orderNumber));
                 // Set the cursor to pointer
                 tr.style.cursor = 'pointer';
             });
             pageNumber.textContent = page;
-            if (page === 1) {
+            if (totalPages <= 1) {
                 prevButton.style.display = 'none';
-            } else {
-                prevButton.style.display = 'inline';
-            }
-            if (page === totalPages) {
                 nextButton.style.display = 'none';
             } else {
-                nextButton.style.display = 'inline';
+                if (page === 1) {
+                    prevButton.style.display = 'none';
+                } else {
+                    prevButton.style.display = 'inline';
+                }
+                if (page === totalPages) {
+                    nextButton.style.display = 'none';
+                } else {
+                    nextButton.style.display = 'inline';
+                }
             }
         } catch (error) {
             console.error('Error loading page:', error);

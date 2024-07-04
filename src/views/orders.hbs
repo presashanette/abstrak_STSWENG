@@ -37,35 +37,46 @@
                 <div id="filter-sort-modal" class="filter-sort-modal">
                     <div class="filter-sort-content">
                         <h2>FILTER AND SORT</h2>
-                        <select class="sorting">
+                        
+                        <label for="start-date" class="date-label">Start Date</label>
+                        <label for="end-date" class="date-label">End Date</label>
+                        
+                        <input type="date" id="start-date" class="startdatefilter">
+                        <input type="date" id="end-date" class="enddatefilter">
+                        
+                        <select id="sorting" class="sorting">
                             <option value="">Sort</option>
                             <option value="ordernumascending">Order Number (ascending)</option>
                             <option value="ordernumdescending">Order Number (descending)</option>
-
-                             <option value="orderdatelatest">Latest - earliest orders</option>
+                            <option value="orderdatelatest">Latest - earliest orders</option>
                             <option value="orderdateearliest">Earliest - latest orders</option>
                         </select>
-                        <select class="fulfillmentfilter">
+                        
+                        <select id="fulfillmentfilter" class="fulfillmentfilter">
                             <option value="">Fulfillment Status</option>
                             <option value="Fulfilled">Fulfilled</option>
                             <option value="Unfulfilled">Unfulfilled</option>
                         </select>
-                        <select class="orderfromfilter">
+                        
+                        <select id="orderfromfilter" class="orderfromfilter">
                             <option value="">Ordered From</option>
                             <option value="WIX website">Wix Website</option>
                             <option value="Private Message">Private Message</option>
                             <option value="In-person">In-person</option>
-
                         </select>
-                        <select class="paymentstatusfilter">
+                        
+                        <select id="paymentstatusfilter" class="paymentstatusfilter">
                             <option value="">Payment Status</option>
                             <option value="Paid">Paid</option>
                             <option value="Unpaid">Unpaid</option>
-
                         </select>
+                        
                         <button id="filter-sort-done" class="filter-sort-done">Done</button>
                     </div>
                 </div>
+
+
+
 
             </div>
             <table class="orders-table">
@@ -216,7 +227,7 @@
                 
                 <input type="number" class="shipping-fee" placeholder="Shipping Fee">
                 
-                <div class="items" id = "items">
+                <div class="itemslist" id = "itemslist">
                     <h3>Items Ordered</h3>
                     <span id="plus-sign" class="plus-sign">+</span>
                     <div id="cartitems">
