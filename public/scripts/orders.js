@@ -740,6 +740,15 @@ $('#clear-search-button').click(function() {
     
         filterResult(1); 
     });
+
+    $('#filter-sort-clear').click(function() {
+        $('#start-date').val('');
+        $('#end-date').val('');
+        $('#sorting').prop('selectedIndex', 0);
+        $('#fulfillmentfilter').prop('selectedIndex', 0);
+        $('#orderfromfilter').prop('selectedIndex', 0);
+        $('#paymentstatusfilter').prop('selectedIndex', 0);
+    });
     
 
     const filterResult = async (page) => {

@@ -238,9 +238,18 @@
     font-family: "DM Sans";
 }
 
-.submitbtn:hover, .add-to-cart:hover, .filter-sort-done:hover {
+.submitbtn:hover, .add-to-cart:hover, .filter-sort-done:hover, .filter-sort-clear:hover {
     background-color: black;
     color: white;
+}
+
+.filter-sort-clear{
+    background-color: #d9d9d9;
+    color: black;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    font-family: "DM Sans";
 }
 
 .itemdetails {
@@ -649,7 +658,6 @@ input[type="date"], input[type="number"],
  .highlight {
     background-color: yellow;
 }
-
 .filter-sort{
     display: flex;
     justify-content: space-between;
@@ -661,21 +669,12 @@ input[type="date"], input[type="number"],
 .filtersort-icon {
     width: 20px;
     height: 20px;
-    
 }
 
 .filter-sort-text {
     font-weight: 700;
 }
 
-.filter-sort-modal {
-    display: none;
-    position: absolute;
-    background-color: white;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    z-index: 1000;
-}
 .filter-sort-modal {
     display: none;
     position: absolute;
@@ -741,9 +740,13 @@ input[type="date"], input[type="number"],
     grid-area: paymentstatus;
 }
 
-#filter-sort-done {
+.button-group {
+    display: flex;
+    justify-content: space-between;
     grid-area: button;
-    padding: 10px;
-    width: 100%;
 }
 
+#filter-sort-clear, #filter-sort-done {
+    padding: 10px;
+    width: 48%;
+}
