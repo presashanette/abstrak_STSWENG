@@ -23,8 +23,9 @@ const getOrders = async (req, res) => {
         const limit = 15;
         const skip = (page - 1) * limit;
 
-        const { sort, fulfillmentStatus, orderedFrom, paymentStatus } = req.query;
+        const { sort, fulfillmentStatus, orderedFrom, paymentStatus, startDate, endDate } = req.query;
 
+        // Build filter object
         let filter = {};
         if (fulfillmentStatus) {
             filter.fulfillmentStatus = fulfillmentStatus;
@@ -35,7 +36,21 @@ const getOrders = async (req, res) => {
         if (paymentStatus) {
             filter.paymentStatus = paymentStatus;
         }
+        if (startDate) {
+            filter.dateCreated = {
+                $gte: new Date(startDate).setHours(0, 0, 0, 0)  // Start of the day
+            };
+        }
+        if (endDate) {
+            filter.dateCreated = {
+                ...filter.dateCreated,
+                $lte: new Date(endDate).setHours(23, 59, 59, 999)  // End of the day
+            };
+        }
 
+        console.log('Filter:', filter);
+
+        // Build sort object
         let sortOrder = {};
         if (sort) {
             if (sort === 'ordernumascending') {
@@ -49,18 +64,26 @@ const getOrders = async (req, res) => {
             }
         }
 
-        const totalOrders = await OrderInfo.countDocuments(filter);
+        const countResult = await OrderInfo.aggregate([
+            { $match: filter },
+            { $count: "totalOrders" }
+        ]);
+
+        const totalOrders = countResult[0] ? countResult[0].totalOrders : 0;
         const totalPages = Math.ceil(totalOrders / limit);
 
         const orders = await OrderInfo.find(filter).sort(sortOrder).skip(skip).limit(limit).lean();
+        console.log('Orders:', orders);
         const initialOrders = page === 1 ? orders : [];
         const nextPage = page < totalPages ? page + 1 : null;
+
+        console.log('Total Pages:', totalPages);
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             res.json({
                 orders,
                 currentPage: page,
-                totalPages
+                totalPages // Ensure totalPages is included in the response
             });
         } else {
             res.render('orders', {

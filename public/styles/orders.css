@@ -205,7 +205,7 @@
 .modal-content .fulfillmentstatus {
     grid-area: fulfillmentstatus;
 }
-.modal-content .items {
+.modal-content .itemslist {
     background: #f3f3f3;
     padding: 25px;
     grid-area: items;
@@ -238,9 +238,18 @@
     font-family: "DM Sans";
 }
 
-.submitbtn:hover, .add-to-cart:hover, .filter-sort-done:hover {
+.submitbtn:hover, .add-to-cart:hover, .filter-sort-done:hover, .filter-sort-clear:hover {
     background-color: black;
     color: white;
+}
+
+.filter-sort-clear{
+    background-color: #d9d9d9;
+    color: black;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    font-family: "DM Sans";
 }
 
 .itemdetails {
@@ -296,7 +305,7 @@ input[type="date"], input[type="number"],
 }
 
 
-.items {
+.itemslist {
     position: relative;
     width: 100%;
     margin-left: 0%;
@@ -649,7 +658,6 @@ input[type="date"], input[type="number"],
  .highlight {
     background-color: yellow;
 }
-
 .filter-sort{
     display: flex;
     justify-content: space-between;
@@ -661,7 +669,6 @@ input[type="date"], input[type="number"],
 .filtersort-icon {
     width: 20px;
     height: 20px;
-    
 }
 
 .filter-sort-text {
@@ -670,9 +677,6 @@ input[type="date"], input[type="number"],
 
 .filter-sort-modal {
     display: none;
-}
-
-.filter-sort-modal {
     position: absolute;
     background-color: white;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
@@ -681,18 +685,68 @@ input[type="date"], input[type="number"],
 }
 
 .filter-sort-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "label-start label-end"
+        "start-date end-date"
+        "sorting fulfillment"
+        "orderfrom paymentstatus"
+        "button button";
+    gap: 20px;
 }
 
 .filter-sort-content h2 {
     margin: 0;
     font-size: 18px;
     text-align: center;
+    grid-area: header;
 }
 
-.filter-sort-content select, .filter-sort-content button {
-    padding: 15px;
-    margin-top: 10px;
+.filter-sort-content label {
+    padding: 10px 0;
+    margin: 0;
+}
+
+.filter-sort-content .date-label {
+    grid-area: label-start, label-end;
+    font-size: 14px;
+}
+
+#start-date {
+    margin-top: -25px;
+    grid-area: start-date;
+}
+
+#end-date {
+    margin-top: -25px;
+    grid-area: end-date;
+}
+
+#sorting {
+    width: 140px;
+    grid-area: sorting;
+}
+
+#fulfillmentfilter {
+    grid-area: fulfillment;
+}
+
+#orderfromfilter {
+    grid-area: orderfrom;
+}
+
+#paymentstatusfilter {
+    grid-area: paymentstatus;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    grid-area: button;
+}
+
+#filter-sort-clear, #filter-sort-done {
+    padding: 10px;
+    width: 48%;
 }
