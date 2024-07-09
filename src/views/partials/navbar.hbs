@@ -15,12 +15,48 @@
 
 </div>
 
-{{!-- 
+
 <div class="side-bar-backdrop">
     <div class="side-bar">
+        <p class="exit">x</p>
         <div class="profile">
-            <img src="" alt="" srcset="">
+            <p class="profile-name">Taylor Swift</p>
+        </div>
+        <div class="profile-menu">
+            <ul>
+                <li class="profile-menu-option">
+                    <a href="/">
+                        <i class="fa-solid fa-shirt"></i>   Products
+                    </a>
+                </li>
+                <li class="profile-menu-option">
+                    <a href="">
+                        <i class="fa-solid fa-user"></i>    Users
+                    </a>
+                </li>
+                <li class="profile-menu-option">
+                    <a href="/orders">
+                        <i class="fa-solid fa-cart-shopping"></i>    Orders
+                    </a>
+                </li>
+                <li class="profile-menu-option"><i class="fa-solid fa-money-bill"></i>  Expenses</li>
+            </ul>
+        </div>
+        <div class="profile-logout">
+            <p class="profile-menu-option"><i class="fa-solid fa-right-from-bracket"></i>   Logout</p>
         </div>
 
     </div>
-</div> --}}
+</div>
+
+<script>
+    $(".menu-icon").click(function(){
+        $(".side-bar-backdrop").show();
+    });
+
+    $(".exit").click(function(){
+        $(".side-bar-backdrop").hide();
+    });
+
+    $(".side-bar-backdrop").hide();
+</script>

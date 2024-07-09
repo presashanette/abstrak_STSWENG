@@ -9,6 +9,12 @@
     padding: 1%;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+
+}
+
+.header-menu {
+   cursor: pointer;
+
 }
 
 .user-badge {
@@ -35,17 +41,19 @@
 .side-bar {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
     height: 100%;
     width: 20%;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
     padding: 1%;
     background-color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transform: translateX(-100%);
+    z-index: 9999;
+    animation: slideIn 0.5s forwards;
 }
 
 .side-bar-backdrop {
@@ -56,5 +64,73 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 0;
+    z-index: 99999;
+}
+
+.side-bar .exit {
+    margin-bottom: 50px;
+    margin-left: 270px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+
+.profile-name {
+    font-size: 45px;
+    margin-bottom: 50px;
+}
+
+.profile-menu {
+   font-size: 20px;
+}
+
+.profile-menu ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    list-style-type: none;
+}
+
+
+
+
+.profile-menu-option {
+    transition: transform 0.3s, color 0.3s;
+    cursor: pointer;
+}
+
+.profile-menu-option:hover {
+    transform: scale(1.1); 
+}
+
+.profile-menu-option a {
+    text-decoration: none;
+    color: black;
+}
+
+
+
+.profile-logout {
+    font-size: 20px;
+    margin-top: 50px;
+
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
