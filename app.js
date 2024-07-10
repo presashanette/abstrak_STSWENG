@@ -7,7 +7,7 @@ const express = require('express');
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
-const { loadCollections, loadProducts, processCsvData  } = require('./src/routes/loader.js');
+const { loadCollections, loadProducts, processCsvData, loadVouchers  } = require('./src/routes/loader.js');
 
 const app = express();
 
@@ -29,6 +29,7 @@ async function initializeLoad(){
     await loadCollections();
     await loadProducts();
     await processCsvData(productsJson);
+    await loadVouchers();
 }
 
 function initializeHandlebars() {

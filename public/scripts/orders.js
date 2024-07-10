@@ -888,7 +888,29 @@ $('#clear-search-button').click(function() {
         }
     };
 
-    
+    $('#voucher').on('input', function() {
+        const voucherCode = $(this).val();
+
+        if (voucherCode.length > 0) {
+            $.ajax({
+                url: '/api/search-voucher',
+                method: 'GET',
+                data: { code: voucherCode },
+                success: function(response) {
+                    $('#voucher').css('border-color', 'green');
+                },
+                error: function(xhr) {
+                    if (xhr.status === 404 || xhr.status === 400) {
+                        $('#voucher').css('border-color', 'red');
+                    } else {
+                        $('#voucher').css('border-color', 'yellow');
+                    }
+                }
+            });
+        } else {
+            $('#voucher').css('border-color', '');
+        }
+    });
     
 
     initialize();

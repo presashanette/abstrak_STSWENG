@@ -166,7 +166,7 @@
         "order-num ordered-from"
         "order-date fulfillmentstatus"
         "paymentmethod paymentstatus"
-        "shipping-fee shipping-fee"
+        "shipping-fee voucher"
         "items items"
         "payment payment"
         "submit submit";
@@ -278,12 +278,12 @@
     display: flex;
     justify-content: space-between;
 }
-select, input[type="date"], input[type="number"] {
+select, input[type="date"], input[type="number"], input[type="text"] {
     font-family: "DM Sans";
 }
 
 input[type="date"], input[type="number"],
-.fulfillmentstatus, .paymentmethod, .paymentstatus, .orderedfrom, .paymentstatusfilter,  .orderfromfilter, .fulfillmentfilter, .sorting {
+.fulfillmentstatus, .voucher, .paymentmethod, .paymentstatus, .orderedfrom, .paymentstatusfilter,  .orderfromfilter, .fulfillmentfilter, .sorting {
     border: 1px solid transparent; 
     outline: none; 
     background-color: #f3f3f3;

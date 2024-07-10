@@ -1,6 +1,7 @@
 const Collection = require('../models/AbstrakCol');
 const Product = require('../models/Product');
 const OrderInfo = require('../models/OrderInfo');
+const Voucher = require('../models/Voucher');
 // const Sales = require('../models/Sales');
 const fs = require('fs');
 const csv = require('csv-parser');
@@ -8,6 +9,7 @@ const multer = require('multer');
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
 const productsJson = "src/models/data/data-products.json";
+const voucherJson = "src/models/data/data-vouchers.json"; 
 
 function parseJson(pathToJson) {
   return JSON.parse(fs.readFileSync(pathToJson));
@@ -24,6 +26,14 @@ async function loadProducts() {
   const result = parseJson(productsJson);
   await Product.deleteMany({}).then(() => {
     Product.insertMany(result);
+  });
+}
+
+async function loadVouchers() {
+  const result = parseJson(voucherJson);
+  console.log('Voucher data:', result); // Log the parsed voucher data
+  await Voucher.deleteMany({}).then(() => {
+    Voucher.insertMany(result);
   });
 }
 
@@ -104,4 +114,4 @@ async function processCsvData(csvFilePath) {
 }
 
 
-module.exports = { loadCollections, loadProducts, processCsvData };
+module.exports = { loadCollections, loadProducts, processCsvData, loadVouchers };

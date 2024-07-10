@@ -1,0 +1,28 @@
+[
+    {
+      "code": "FREESHIP2024",
+      "discountAmount": 100,
+      "expirationDate": "2024-12-31T23:59:59.999Z"
+    },
+    {
+      "code": "DISCOUNT20",
+      "discountAmount": 20,
+      "expirationDate": "2024-11-30T23:59:59.999Z"
+    },
+    {
+      "code": "MAYSAVES50",
+      "discountAmount": 50,
+      "expirationDate": "2024-05-31T23:59:59.999Z"
+    },
+    {
+      "code": "HAPPYPRIDE",
+      "discountAmount": 100,
+      "expirationDate": "2024-06-30T23:59:59.999Z"
+    },
+    {
+      "code": "SUMMER25",
+      "discountAmount": 25,
+      "expirationDate": "2024-08-31T23:59:59.999Z"
+    }
+]
+  
