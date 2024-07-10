@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@handlebars/allow-prototype-access": "^1.0.5",
     "axios": "^1.7.2",
     "chai": "^4.2.0",
     "chart.js": "^3.5.1",

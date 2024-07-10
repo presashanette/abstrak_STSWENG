@@ -1,6 +1,7 @@
 // modules
 const _ = require('dotenv').config(); 
 const path = require('path');
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access');
 const exphbs = require('express-handlebars');
 const express = require('express');
 
@@ -31,6 +32,8 @@ async function initializeLoad(){
 }
 
 function initializeHandlebars() {
+    const { allowProtoMethodsByDefault, allowProtoPropertiesByDefault } = require('@handlebars/allow-prototype-access');
+    // const exphbs = require('express-handlebars');
     app.engine("hbs", exphbs.engine({
         extname: "hbs",
         defaultLayout: false,
@@ -51,6 +54,10 @@ function initializeHandlebars() {
             json: function(context) {
                 return JSON.stringify(context);
             }
+        },
+        runtimeOptions: {
+            allowProtoPropertiesByDefault: true,
+            allowProtoMethodsByDefault: true,
         }
     }));
     app.set("view engine", "hbs");
