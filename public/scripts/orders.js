@@ -866,6 +866,7 @@ $('#clear-search-button').click(function() {
                 // Set the cursor to pointer
                 tr.style.cursor = 'pointer';
             });
+            
             pageNumber.textContent = page;
             if (totalPages <= 1) {
                 prevButton.style.display = 'none';
