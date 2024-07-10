@@ -4,12 +4,26 @@ const path = require('path');
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access');
 const exphbs = require('express-handlebars');
 const express = require('express');
+const session = require('express-session');
+const MemoryStore = require('memorystore')(session);
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
-const { loadCollections, loadProducts, processCsvData, loadVouchers  } = require('./src/routes/loader.js');
+const { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers  } = require('./src/routes/loader.js');
 
 const app = express();
+
+function initializeSessionManagement(){
+    app.use(session({
+        cookie: { maxAge: 24 * 60 * 60 * 1000 },
+        store: new MemoryStore({
+          checkPeriod: 86400000 
+        }),
+        resave: false,
+        secret: 'keyboard cat',
+        saveUninitialized: true
+    }));
+}
 
 
 async function connectToDB (){
@@ -28,6 +42,7 @@ const productsJson = "src/models/data/Orders.csv";
 async function initializeLoad(){
     await loadCollections();
     await loadProducts();
+    await loadUsers();
     await processCsvData(productsJson);
     await loadVouchers();
 }
@@ -75,6 +90,7 @@ function initializeStaticFolders() {
 }
 
 async function main() {
+    initializeSessionManagement();
     initializeStaticFolders();
     initializeHandlebars();
 

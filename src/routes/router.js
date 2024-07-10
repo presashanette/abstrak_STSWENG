@@ -7,6 +7,9 @@ const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProduct
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
 const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
 const { getVouchers } = require('../controllers/vouchersController');
+const { login, logout } = require('../controllers/loginController');
+const { isAuthenticated } = require('../middleware/authMiddleware');
+
 
 
 
@@ -33,6 +36,16 @@ const storageProductPicture = multer.diskStorage({
 
 const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
+
+
+
+//user login
+router.get('/login', (req, res) => { res.render('login');});
+router.post('/login', login);
+router.get('/logout', logout);
+
+//middelware
+router.use(isAuthenticated);
 
 // collections page
 router.get(['/', '/collections'], handleCollectionPageRequest);
