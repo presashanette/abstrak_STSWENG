@@ -562,18 +562,87 @@ $(document).ready(() => {
         loadPage(parseInt(pageNumber.textContent));
     };
 
+
+
+    // upload popup -- sprint 3 revisions
     const uploadButton = document.getElementById('toggle-upload');
-    const uploadContainer = document.querySelector('.upload-container');
-    const lastUpdatedDate = document.getElementById('last-updated-date');
+    const uploadModal = document.getElementById('upload-modal');
+    const exitUploadButton = document.querySelector('.exit-upload-modal');
+    const csvFileInput = document.getElementById('csvFileInput');
+    const fileNameDisplay = document.getElementById('file-name');
+    const uploadArea = document.getElementById('upload-area');
     const uploadForm = document.getElementById('upload-form');
+    const loader = document.getElementById('loader');
+    const successMessage = document.getElementById('success-message');
 
     uploadButton.addEventListener('click', () => {
-        if (uploadContainer.style.display === 'none' || !uploadContainer.style.display) {
-            uploadContainer.style.display = 'block';
-        } else {
-            uploadContainer.style.display = 'none';
+        uploadModal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+    });
+
+    exitUploadButton.addEventListener('click', () => {
+        uploadModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    });
+
+    csvFileInput.addEventListener('change', (event) => {
+        const fileName = event.target.files[0].name;
+        fileNameDisplay.textContent = `File: ${fileName}`;
+    });
+
+    uploadArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        uploadArea.classList.add('dragging');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragging');
+    });
+
+    uploadArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        uploadArea.classList.remove('dragging');
+        const files = event.dataTransfer.files;
+        csvFileInput.files = files;
+        const fileName = files[0].name;
+        fileNameDisplay.textContent = `File: ${fileName}`;
+    });
+
+    uploadForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(uploadForm);
+
+        loader.style.display = 'flex';
+        console.log('Uploading file...');
+
+        try {
+            const response = await fetch('/upload-csv', {
+                method: 'POST',
+                body: formData
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+            console.log('CSV uploaded successfully:', result);
+
+            loader.style.display = 'none';
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                uploadModal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                location.reload();
+            }, 2000);
+        } catch (error) {
+            console.error('Error uploading CSV:', error);
+            loader.style.display = 'none';
         }
     });
+
+
+    
+
 
     // Search
     $('#toggle-search').click(function() {
@@ -641,43 +710,43 @@ $('#clear-search-button').click(function() {
     
     
     // Loader
-    const loader = document.getElementById('loader');
-    const successMessage = document.getElementById('success-message');
-    uploadForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(uploadForm);
+    // const loader = document.getElementById('loader');
+    // const successMessage = document.getElementById('success-message');
+    // uploadForm.addEventListener('submit', async (event) => {
+    //     event.preventDefault();
+    //     const formData = new FormData(uploadForm);
 
-        loader.style.display = 'flex';
-        console.log('Uploading file...'); 
+    //     loader.style.display = 'flex';
+    //     console.log('Uploading file...'); 
 
-        try {
-            const response = await fetch('/upload-csv', {
-                method: 'POST',
-                body: formData
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const result = await response.json();
-                console.log('CSV uploaded successfully:', result); 
+    //     try {
+    //         const response = await fetch('/upload-csv', {
+    //             method: 'POST',
+    //             body: formData
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error('Network response was not ok');
+    //         }
+    //         const contentType = response.headers.get("content-type");
+    //         if (contentType && contentType.includes("application/json")) {
+    //             const result = await response.json();
+    //             console.log('CSV uploaded successfully:', result); 
 
-                const currentDate = new Date().toLocaleDateString();
-                lastUpdatedDate.textContent = currentDate;
-                successMessage.style.display = 'block';
-                loader.style.display = 'none';
-                setTimeout(() => {
-                    window.location.href = '/orders';
-                }, 2000);
-            } else {
-                throw new Error("Unexpected response format");
-            }
-        } catch (error) {
-            console.error('Error uploading CSV:', error);
-            loader.style.display = 'none';
-        }
-    });
+    //             const currentDate = new Date().toLocaleDateString();
+    //             lastUpdatedDate.textContent = currentDate;
+    //             successMessage.style.display = 'block';
+    //             loader.style.display = 'none';
+    //             setTimeout(() => {
+    //                 window.location.href = '/orders';
+    //             }, 2000);
+    //         } else {
+    //             throw new Error("Unexpected response format");
+    //         }
+    //     } catch (error) {
+    //         console.error('Error uploading CSV:', error);
+    //         loader.style.display = 'none';
+    //     }
+    // });
 
     $('.filter-sort').on('click', function() {
         const offset = $(this).offset();

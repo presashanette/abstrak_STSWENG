@@ -603,13 +603,14 @@ input[type="date"], input[type="number"],
 
 /* file upload */
 #upload-form {
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
-    background: #f9f9f9;
+    /* background: #f9f9f9; */
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     max-width: 400px;
     margin: 20px auto;
+    gap: 20px;
 }
 
 .custom-file-upload {
@@ -641,6 +642,7 @@ input[type="date"], input[type="number"],
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    
 }
 
 .upload-button:hover {
@@ -661,7 +663,7 @@ input[type="date"], input[type="number"],
 .filter-sort{
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 20px;
     align-items: center;
     cursor: pointer;
 }
@@ -749,4 +751,154 @@ input[type="date"], input[type="number"],
 #filter-sort-clear, #filter-sort-done {
     padding: 10px;
     width: 48%;
+}
+
+
+/* upload css */
+/* Upload Modal Styles */
+#upload-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+#upload-modal .modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 40px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+}
+
+#upload-modal .modal-content h2 {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    /* margin-bottom: 20px; */
+}
+
+#upload-modal .upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+#upload-modal .upload-area:hover {
+    border-color: #888;
+}
+
+#upload-modal .upload-area img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+#upload-modal .upload-area p {
+    font-size: 16px;
+    color: #666;
+}
+
+#upload-modal .upload-area .browse-files {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#upload-modal .upload-area .browse-files:hover {
+    background-color: #005f6b;
+}
+
+#csvFileInput {
+    display: none;
+}
+
+#upload-modal #file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+#upload-modal .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#upload-modal .dot {
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #333;
+    border-radius: 50%;
+    animation: dotPulse 1s infinite ease-in-out;
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+#upload-modal .success-message {
+    color: green;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#upload-modal .exit-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+#upload-modal .exit-button img {
+    width: 20px;
+    height: 20px;
+}
+
+.modal-open {
+    overflow: hidden;
+}
+
+.upload-button {
+    padding: 10px 20px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px;
+}
+
+.upload-button:hover {
+    background-color: #005f6b;
 }
