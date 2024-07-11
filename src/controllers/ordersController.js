@@ -36,16 +36,14 @@ const getOrders = async (req, res) => {
         if (paymentStatus) {
             filter.paymentStatus = paymentStatus;
         }
-        if (startDate) {
-            filter.dateCreated = {
-                $gte: new Date(startDate).setHours(0, 0, 0, 0)  // Start of the day
-            };
-        }
-        if (endDate) {
-            filter.dateCreated = {
-                ...filter.dateCreated,
-                $lte: new Date(endDate).setHours(23, 59, 59, 999)  // End of the day
-            };
+        if (startDate || endDate) {
+            filter.dateCreated = {};
+            if (startDate) {
+                filter.dateCreated.$gte = new Date(startDate).setHours(0, 0, 0, 0); // Start of the day
+            }
+            if (endDate) {
+                filter.dateCreated.$lte = new Date(endDate).setHours(23, 59, 59, 999); // End of the day
+            }
         }
 
         console.log('Filter:', filter);
@@ -64,17 +62,12 @@ const getOrders = async (req, res) => {
             }
         }
 
-        const countResult = await OrderInfo.aggregate([
-            { $match: filter },
-            { $count: "totalOrders" }
-        ]);
-
-        const totalOrders = countResult[0] ? countResult[0].totalOrders : 0;
+        const totalOrders = await OrderInfo.countDocuments(filter);
         const totalPages = Math.ceil(totalOrders / limit);
 
         const orders = await OrderInfo.find(filter).sort(sortOrder).skip(skip).limit(limit).lean();
         console.log('Orders:', orders);
-        const initialOrders = page === 1 ? orders : [];
+
         const nextPage = page < totalPages ? page + 1 : null;
 
         console.log('Total Pages:', totalPages);
@@ -83,16 +76,15 @@ const getOrders = async (req, res) => {
             res.json({
                 orders,
                 currentPage: page,
-                totalPages // Ensure totalPages is included in the response
+                totalPages, // Ensure totalPages is included in the response
             });
         } else {
             res.render('orders', {
                 orders: JSON.stringify(orders),
-                initialOrders,
                 currentPage: page,
                 totalPages,
                 nextPage,
-                lastUpdatedDate,
+                lastUpdatedDate: new Date(), // Assuming this needs to be the current date
                 "grid-add-button": "Order",
                 "grid-title": "ORDERS"
             });
@@ -102,6 +94,7 @@ const getOrders = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 async function addOrder(req, res) {
     const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate, totalPrice } = req.body;

@@ -1,13 +1,16 @@
 const Collection = require('../models/AbstrakCol');
 const Product = require('../models/Product');
 const OrderInfo = require('../models/OrderInfo');
+const Voucher = require('../models/Voucher');
 // const Sales = require('../models/Sales');
+const User = require('../models/User'); 
 const fs = require('fs');
 const csv = require('csv-parser');
-const multer = require('multer');
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
 const productsJson = "src/models/data/data-products.json";
+const voucherJson = "src/models/data/data-vouchers.json"; 
+const usersJson = "src/models/data/data-users.json";
 
 function parseJson(pathToJson) {
   return JSON.parse(fs.readFileSync(pathToJson));
@@ -25,6 +28,23 @@ async function loadProducts() {
   await Product.deleteMany({}).then(() => {
     Product.insertMany(result);
   });
+}
+
+async function loadVouchers() {
+  const result = parseJson(voucherJson);
+  console.log('Voucher data:', result); // Log the parsed voucher data
+  await Voucher.deleteMany({}).then(() => {
+    Voucher.insertMany(result);
+  });
+}
+
+async function loadUsers() {
+  const result = parseJson(usersJson);
+  await User.deleteMany({});
+  for (const userData of result) {
+    const user = new User(userData);
+    await user.save();
+  }
 }
 
 async function processCsvData(csvFilePath) {
@@ -48,7 +68,6 @@ async function processCsvData(csvFilePath) {
                       time: row['Time'],
                       fulfillBy: row['Fulfill by'],
                       totalOrderQuantity: parseInt(row['Total order quantity'], 10),
-                      // contactEmail: row['Contact email'],
                       items: [],
                       paymentStatus: row['Payment status'],
                       paymentMethod: row['Payment method'],
@@ -104,4 +123,4 @@ async function processCsvData(csvFilePath) {
 }
 
 
-module.exports = { loadCollections, loadProducts, processCsvData };
+module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers };

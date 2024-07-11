@@ -112,23 +112,34 @@
                     {{/each}}
                 </tbody>
             </table>
+
+{{!-- upload csv this part --}}
             <div class="upload-header">
-                <button id="toggle-upload" class="upload-toggle-btn">
-                    <img src="/assets/upload-file.svg" alt="Upload Icon" class="upload-icon">
-                </button>
-                <div class="last-updated">
-                    Last updated: <span id="last-updated-date">{{lastUpdatedDate}}</span>
-                </div>
+            <button id="toggle-upload" class="upload-toggle-btn">
+                <img src="/assets/upload-file.svg" alt="Upload Icon" class="upload-icon">
+            </button>
+            <div class="last-updated">
+                Last updated: <span id="last-updated-date">{{lastUpdatedDate}}</span>
             </div>
-            <div class="upload-container" style="display: none;">
+        </div>
+
+       <div id="upload-modal" class="modal">
+            <div class="modal-content">
+                <div class="exit-button">
+                    <img src="/assets/back.png" alt="Close" class="exit-upload-modal">
+                </div>
+                <h2>Upload CSV</h2>
                 <form id="upload-form" enctype="multipart/form-data">
-                    <label for="csvFileInput" class="custom-file-upload">
-                        Choose File
-                    </label>
-                    <input type="file" id="csvFileInput" name="csvFile" accept=".csv">
+                    <div class="upload-area" id="upload-area">
+                        <img src="/assets/upload-icon.png" alt="Upload Icon">
+                        <p>Drag & Drop files here</p>
+                        <p>or</p>
+                        <label for="csvFileInput" class="browse-files">Browse Files</label>
+                        <input type="file" id="csvFileInput" name="csvFile" accept=".csv">
+                    </div>
+                    <div id="file-name"></div>
                     <button type="submit" class="upload-button">Upload CSV</button>
                 </form>
-
                 <div class="loader" id="loader" style="display: none;">
                     <div class="dot"></div>
                     <div class="dot"></div>
@@ -141,6 +152,10 @@
                     File uploaded successfully!
                 </div>
             </div>
+        </div>
+
+
+
             <div class="pagination-container">
                 <div class="pagination">
                     <button id="prev-button" style="display: none;">Previous</button>
@@ -229,6 +244,7 @@
                 </select>
                 
                 <input type="number" class="shipping-fee" placeholder="Shipping Fee">
+                <input type="text" id="voucher" class="voucher" placeholder="Voucher">
                 
                 <div class="itemslist" id = "itemslist">
                     <h3>Items Ordered</h3>
@@ -243,6 +259,7 @@
                     <div><span>Items</span> <span class="payment-itemtotal">₱0.00</span></div>
                     <div><span>Shipping</span> <span class="payment-shipping">₱0.00</span></div>
                     <div><span>Tax</span> <span class="payment-taxtotal">₱0.00</span></div>
+                    <div><span>Discount</span> <span class="payment-discount">₱0.00</span></div>
                     <div><span>Total</span> <span class="payment-total">₱0.00</span></div>
                 </div>
                 <div class="submit">

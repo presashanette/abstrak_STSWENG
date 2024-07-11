@@ -5,6 +5,12 @@ const Product = require('../models/Product');
 const { handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
+const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
+const { getVouchers } = require('../controllers/vouchersController');
+const { login, logout } = require('../controllers/loginController');
+const { isAuthenticated } = require('../middleware/authMiddleware');
+
+
 
 
 
@@ -30,6 +36,16 @@ const storageProductPicture = multer.diskStorage({
 
 const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
+
+
+
+//user login
+router.get('/login', (req, res) => { res.render('login');});
+router.post('/login', login);
+router.get('/logout', logout);
+
+//middelware
+router.use(isAuthenticated);
 
 // collections page
 router.get(['/', '/collections'], handleCollectionPageRequest);
@@ -60,6 +76,14 @@ router.post('/orders/add', addOrder);
 router.post('/upload-csv', uploadCSV.single('csvFile'), uploadCSVFile);
 router.get('/orders/checkOrderNo', checkOrderNo);
 
+// expenses
+router.get('/expenses', getAllExpenses);
+router.post('/api/expenses', addExpense);
+router.put('/api/expenses/:id', updateExpense);
+router.delete('/api/expenses/:id', deleteExpense);
+
+// vouchers
+router.get('/api/search-voucher', getVouchers);
 
 // testing
 router.get('/api/products/name/:name', async (req, res) => {
