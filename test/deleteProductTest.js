@@ -6,18 +6,31 @@ async function testProductDeletion() {
     try {
         driver = await new Builder().forBrowser('chrome').build();
 
-        const collectionId = '6651ead6a17e4939441ea321'; // Change collection upon testing
-        await driver.get(`http://localhost:3000/collections/${collectionId}`);
+        await driver.get('http://localhost:3000/login');
+        const usernameInput = await driver.findElement(By.id('username'));
+        await usernameInput.sendKeys('Max_Verstappen');
+        await driver.sleep(2000);
+
+        const passwordInput = await driver.findElement(By.id('password'));
+        await passwordInput.sendKeys('12345678');
+        await driver.sleep(2000);
+
+        const loginButton = await driver.findElement(By.css('.action-button'));
+        await loginButton.click();
+        await driver.sleep(2000);
+
+
+        const collectionItem = await driver.findElement(By.css('.collection-item-container'));
+        await collectionItem.click();
+        await driver.sleep(2000);
 
         const productId = '6651f0d4f6accfe89090a8a6';
         await fetchProductData(driver, productId);
 
         // TEST CASE 1: Cancel of Deletion
-        const threeDotsButton = await driver.findElement(By.css('.three-dots-product-option'));
-        await driver.wait(until.elementIsVisible(threeDotsButton), 5000);
-        await driver.wait(until.elementIsEnabled(threeDotsButton), 5000);
-        await driver.sleep(1000);
-        await threeDotsButton.click();
+        const threeDotsMenu = await driver.wait(until.elementLocated(By.css('.three-dots-product-option')), 10000);
+        await threeDotsMenu.click();
+        await driver.sleep(2000);
 
         const deleteOption = await driver.findElement(By.css('.product-option-popup.delete-product'));
         await driver.wait(until.elementIsVisible(deleteOption), 5000);
@@ -35,10 +48,8 @@ async function testProductDeletion() {
         await driver.wait(until.stalenessOf(firstCancelButton), 5000);
 
         // TEST CASE 2: Deletion of Product
-        await driver.wait(until.elementIsVisible(threeDotsButton), 5000);
-        await driver.wait(until.elementIsEnabled(threeDotsButton), 5000);
-        await driver.sleep(1000);
-        await threeDotsButton.click();
+        await threeDotsMenu.click();
+        await driver.sleep(2000);
 
         await driver.wait(until.elementIsVisible(deleteOption), 5000);
         await driver.wait(until.elementIsEnabled(deleteOption), 5000);
