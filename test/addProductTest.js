@@ -10,7 +10,22 @@ async function testProductAddition() {
     try {
         driver = await new Builder().forBrowser('chrome').build();
 
-        await driver.get('http://localhost:3000/collections/6651ead6a17e4939441ea328');
+        await driver.get('http://localhost:3000/login');
+        const usernameInput = await driver.findElement(By.id('username'));
+        await usernameInput.sendKeys('Max_Verstappen');
+        await driver.sleep(2000);
+
+        const passwordInput = await driver.findElement(By.id('password'));
+        await passwordInput.sendKeys('12345678');
+        await driver.sleep(2000);
+
+        const loginButton = await driver.findElement(By.css('.action-button'));
+        await loginButton.click();
+        await driver.sleep(2000);
+
+        const collectionItem = await driver.findElement(By.css('.collection-item-container'));
+        await collectionItem.click();
+        await driver.sleep(2000);
 
         await driver.wait(until.elementLocated(By.css('.grid-header-add-button')), 5000).click();
         await driver.sleep(1000); 

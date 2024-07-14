@@ -1,4 +1,5 @@
 const { Builder, By, Key, until } = require('selenium-webdriver');
+const { Select } = require('selenium-webdriver/lib/select');
 
 async function testOrderAddition() {
     let driver;
@@ -6,7 +7,26 @@ async function testOrderAddition() {
     try {
         driver = await new Builder().forBrowser('chrome').build();
 
-        await driver.get('http://localhost:3000/orders');
+        await driver.get('http://localhost:3000/login');
+        const usernameInput = await driver.findElement(By.id('username'));
+        await usernameInput.sendKeys('Max_Verstappen');
+        await driver.sleep(2000);
+
+        const passwordInput = await driver.findElement(By.id('password'));
+        await passwordInput.sendKeys('12345678');
+        await driver.sleep(2000);
+
+        const loginButton = await driver.findElement(By.css('.action-button'));
+        await loginButton.click();
+        await driver.sleep(2000);
+
+        const sidebar = await driver.findElement(By.css('.header-menu'));
+        await sidebar.click();
+        await driver.sleep(2000);
+        
+        const ordersOption = await driver.findElement(By.css('a[href="/orders"]'));
+        await ordersOption.click();
+        await driver.sleep(2000);
 
         await driver.sleep(1000);
         await driver.wait(until.elementLocated(By.css('.grid-header-add-button')), 5000).click();
@@ -15,30 +35,33 @@ async function testOrderAddition() {
         await driver.findElement(By.css('.order-num')).sendKeys('10100');
         await driver.sleep(500);
 
-        await driver.findElement(By.css('.orderedfrom')).click();
-        await driver.sleep(500);
-        await driver.findElement(By.css('option[value="In-person"]')).click();
-        await driver.sleep(500);
+        const orderFromSelect = await driver.findElement(By.css('.orderedfrom'));
+        const orderFromDropdown = new Select(orderFromSelect);
+        await orderFromDropdown.selectByValue('In-person');
+        await driver.sleep(2000);
 
         await driver.findElement(By.css('.order-date')).sendKeys('18062024');
         await driver.sleep(500);
 
-        await driver.findElement(By.css('.fulfillmentstatus')).click();
-        await driver.sleep(500);
-        await driver.findElement(By.css('option[value="Unfulfilled"]')).click();
-        await driver.sleep(500);
+        const fulfillmentStatusSelect = await driver.findElement(By.css('.fulfillmentstatus'));
+        const fulfillmentStatusDropdown = new Select(fulfillmentStatusSelect);
+        await fulfillmentStatusDropdown.selectByValue('Unfulfilled');
+        await driver.sleep(2000);
 
-        await driver.findElement(By.css('.paymentmethod')).click();
-        await driver.sleep(500);
-        await driver.findElement(By.css('option[value="Offline"]')).click();
-        await driver.sleep(500);
+        const paymentMethodSelect = await driver.findElement(By.css('.paymentmethod'));
+        const paymentMethodDropdown = new Select(paymentMethodSelect);
+        await paymentMethodDropdown.selectByValue('Offline');
+        await driver.sleep(2000);
 
-        await driver.findElement(By.css('.paymentstatus')).click();
-        await driver.sleep(500);
-        await driver.findElement(By.css('option[value="Unpaid"]')).click();
-        await driver.sleep(500);
+        const paymentStatusSelect = await driver.findElement(By.css('.paymentstatus'));
+        const paymentStatusDropdown = new Select(paymentStatusSelect);
+        await paymentStatusDropdown.selectByValue('Unpaid');
+        await driver.sleep(2000);
 
         await driver.findElement(By.css('.shipping-fee')).sendKeys('150');
+        await driver.sleep(500);
+
+        await driver.findElement(By.css('.voucher')).sendKeys('SUMMER25');
         await driver.sleep(500);
 
         await driver.findElement(By.id('plus-sign')).click();

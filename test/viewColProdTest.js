@@ -5,8 +5,18 @@ const assert = require('assert');
     let driver = await new Builder().forBrowser('chrome').build();
     
     try {
-        await driver.get('http://localhost:3000/collections');
-        await delay(1000);
+        await driver.get('http://localhost:3000/login');
+        const usernameInput = await driver.findElement(By.id('username'));
+        await usernameInput.sendKeys('Max_Verstappen');
+        await driver.sleep(2000);
+
+        const passwordInput = await driver.findElement(By.id('password'));
+        await passwordInput.sendKeys('12345678');
+        await driver.sleep(2000);
+
+        const loginButton = await driver.findElement(By.css('.action-button'));
+        await loginButton.click();
+        await driver.sleep(2000);
 
         await driver.wait(until.elementLocated(By.css('.collection-item-container')), 10000);
         await delay(1000);
