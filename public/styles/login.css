@@ -1,4 +1,5 @@
-/* Reset some default browser styles */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -8,10 +9,25 @@
 body, html {
     height: 100%;
     font-family: "DM Sans";
+}
+
+.login-main {
+    height: 100%;
+}
+
+.background-half {
+    background: url('/assets/bg.png') no-repeat center center;
+    width: 50%;
+    height: 100%;
+}
+
+.whole-login {
+    width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url('/assets/bg.png') no-repeat center center;
+    flex-direction: column;
+    background: white;
 }
 
 .login-container {
@@ -25,7 +41,7 @@ body, html {
 }
 
 .login-container h1 {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Arial', 'DM Sans';
     font-size: 1.5rem;
     margin-bottom: 20px;
     color: #333;
@@ -41,9 +57,10 @@ body, html {
 }
 
 .input-label {
-    display: block;
+    display: block; 
     margin-bottom: 5px;
-    font-weight: bold;
+    /* font-weight: bold; */
+    /* font-family: "Arial"; */
 }
 
 input[type="text"], input[type="password"] {
@@ -117,4 +134,39 @@ input[type="text"], input[type="password"] {
     font-size: 0.9rem;
     color: #666;
     text-align: center;
+}
+
+.divider {
+    display: flex;
+    height: 100%;
+}
+
+.background-half {
+    width: 50%;
+    height: 100%;
+    background-color: #b0b0b0;
+}
+
+.whole-login {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+}
+
+
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+.red-outline {
+    outline: 1px solid red;
 }

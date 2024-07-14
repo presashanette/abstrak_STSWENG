@@ -1,7 +1,6 @@
 function shakeBoxes() {
     document.getElementById("login-form").classList.add("make-login-small");
     document.getElementById("wrong-creds-text").classList.add("show-wrong-creds-text");
-    document.getElementById("logo-text").classList.add("make-logo-text-small");
     document.getElementById("username").style.outline = "1px solid red";
     document.getElementById("password").style.outline = "1px solid red";
 
@@ -33,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (params.loadError === 'true') {
         document.getElementById("wrong-creds-text").style.display = 'block';
+        shakeBoxes();
     }
 
     document.querySelector('.show-password').addEventListener('click', function() {
