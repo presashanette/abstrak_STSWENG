@@ -417,14 +417,15 @@ $(document).ready(() => {
         const fulfillmentStatus = document.querySelector('.fulfillmentstatus').value;
         const paymentMethod = document.querySelector('.paymentmethod').value;
         const paymentStatus = document.querySelector('.paymentstatus').value;
-
+        const voucherBorderColor = document.querySelector('#voucher').style.borderColor;
+    
         if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus || !orderNo) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops!',
-            text: 'Please complete all fields.'
-          });
-          return; 
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Please complete all fields.'
+            });
+            return;
         } else if (shippingFee < 0 || isNaN(shippingFee)) {
             Swal.fire({
                 icon: 'error',
@@ -439,45 +440,42 @@ $(document).ready(() => {
                 text: 'Enter a valid order number.'
             });
             return;
-        } else if(cart.length === 0) {
+        } else if (cart.length === 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops!',
                 text: 'Cart is still empty.'
             });
-            return; 
-        }
-        console.log('Order number:', orderNo);
-
-        try {
-            const response = await fetch(`/orders/checkOrderNo?orderNo=${orderNo}`);
-            const data = await response.json();
-
-            if (!data.success) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops!',
-                    text: 'Order number already exists.'
-                });
-            } else {
-                // Call your saveOrder function here, passing the collected data
-                saveOrder(
-                    orderNo,
-                    orderedFrom,
-                    shippingFee,
-                    orderDate,
-                    fulfillmentStatus,
-                    paymentMethod,
-                    paymentStatus
-                );
-            }
-        } catch (err) {
-            console.error('Error checking order number:', err);
+            return;
+        } else if (voucherBorderColor === 'red') {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops!',
-                text: 'An error occurred while checking the order number.'
+                icon: 'warning',
+                title: 'Invalid Voucher',
+                text: 'The current voucher entered is non-existent or already expired. There would be no discount/s on this order. Do you want to continue?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: 'No, change voucher'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    saveOrder(orderNo,
+                        orderedFrom,
+                        shippingFee,
+                        orderDate,
+                        fulfillmentStatus,
+                        paymentMethod,
+                        paymentStatus);
+                } else {
+                    // Do nothing, user chose to change the voucher
+                }
             });
+        } else {
+            saveOrder(orderNo,
+                orderedFrom,
+                shippingFee,
+                orderDate,
+                fulfillmentStatus,
+                paymentMethod,
+                paymentStatus);
         }
     });
 
