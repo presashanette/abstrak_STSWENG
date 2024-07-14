@@ -38,14 +38,27 @@ const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
 
 
+// Apply isAuthenticated middleware to all routes except login and logout
+router.use((req, res, next) => {
+  if (req.path === '/login' || req.path === '/logout') {
+      return next();
+  }
+  return isAuthenticated(req, res, next);
+});
+
 
 //user login
-router.get('/login', (req, res) => { res.render('login');});
+router.get('/login', (req, res) => {
+  
+  if(!req.session.userId){
+    res.render('login');
+  } else {
+    res.redirect('/collections');
+  }
+});
 router.post('/login', login);
 router.get('/logout', logout);
 
-//middelware
-router.use(isAuthenticated);
 
 // collections page
 router.get(['/', '/collections'], handleCollectionPageRequest);
