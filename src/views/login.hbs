@@ -51,7 +51,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/login.css">
-    <link rel="shortcut icon" href="assets/tab-icon.png" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="/uploads/web-logo.png">
     <script src="/scripts/login.js"></script>
     <title>ABSTRAK - Log In</title>
 </head>
@@ -59,6 +59,7 @@
 <main class="login-main">
     <div class="divider">
         <div class="background-half">
+            <img src="/assets/bg.jpg" alt="" class="bg-img">
         </div>
         <div class="whole-login">
             <div class="login-container">
@@ -72,7 +73,7 @@
                         <input type="text" id="username" name="username" required>
                     </div>
                     <div class="box password-box" style="position:relative;">
-                        <label for="password" class="input-label">Password</label>
+                        <label for="password" class="input-label label-space">Password</label>
                         <input type="password" id="password" name="password" required>
                         <span class="show-password" id="show-password">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,7 +83,8 @@
         
                     </div>
                     <label for="rememberMe" id="forgot">
-                        <input type="checkbox" id="rememberMe" name="rememberMe"> Remember Me
+                        <input type="checkbox" id="rememberMe" name="rememberMe"> 
+                        <span class="input-label">Remember Me</span>
                     </label>
                     <div class="action-button-container">
                         <button type="submit" class="action-button">Log in</button>

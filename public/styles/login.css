@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import "base.css";
+
 
 * {
     box-sizing: border-box;
@@ -15,12 +16,17 @@ body, html {
     height: 100%;
 }
 
-.background-half {
-    background: url('/assets/bg.png') no-repeat center center;
-    width: 50%;
-    height: 100%;
-}
 
+.bg-img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* position: relative; */
+    filter: brightness(50%);
+}
 .whole-login {
     width: 50%;
     display: flex;
@@ -33,11 +39,17 @@ body, html {
 .login-container {
     width: 100%;
     max-width: 400px;
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
     border-radius: 10px;
-    padding: 20px 40px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 5%;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     text-align: center;
+}
+
+input {
+    font-family: 'DM Sans';
+
+
 }
 
 .login-container h1 {
@@ -58,9 +70,14 @@ body, html {
 
 .input-label {
     display: block; 
+    text-align: left;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+
+.label-space {
     margin-bottom: 5px;
-    /* font-weight: bold; */
-    /* font-family: "Arial"; */
 }
 
 input[type="text"], input[type="password"] {
@@ -105,6 +122,7 @@ input[type="text"], input[type="password"] {
 
 .action-button-container {
     margin-top: 20px;
+    margin-bottom: 3%;
 }
 
 .action-button {
