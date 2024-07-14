@@ -801,10 +801,10 @@ $(document).ready(() => {
             console.error('Error loading page:', error);
         }
     };
-
-    $('#voucher').on('input', function() {
-        const voucherCode = $(this).val();
-        const orderDate = $('#order-date').val(); // Assuming the order date input has an id of 'order-date'
+    
+    const validateVoucher = () => {
+        const voucherCode = $('#voucher').val();
+        const orderDate = $('#order-date').val();
     
         if (!orderDate) {
             Swal.fire({
@@ -819,7 +819,7 @@ $(document).ready(() => {
             $.ajax({
                 url: '/api/search-voucher',
                 method: 'GET',
-                data: { code: voucherCode, orderDate: orderDate }, // Include the order date in the request
+                data: { code: voucherCode, orderDate: orderDate }, 
                 success: function(response) {
                     $('#voucher').css('border-color', 'green');
     
@@ -844,11 +844,10 @@ $(document).ready(() => {
             voucherDiscount = 0;
             updateTotal();
         }
-    });
+    }
     
-    initialize();
-    
-    
+    $('#voucher').on('input', validateVoucher);
+    $('#order-date').on('change', validateVoucher);
 
     initialize();
 });
