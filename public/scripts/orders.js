@@ -425,11 +425,11 @@ $(document).ready(() => {
             text: 'Please complete all fields.'
           });
           return; 
-        } else if (shippingFee < 0) {
+        } else if (shippingFee < 0 || isNaN(shippingFee)) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops!',
-                text: 'Shipping fee cannot be negative.'
+                text: 'Shipping fee must be a valid value in Php.'
             });
             return;
         } else if (orderNo < 0) {
@@ -804,15 +804,25 @@ $(document).ready(() => {
 
     $('#voucher').on('input', function() {
         const voucherCode = $(this).val();
-
+        const orderDate = $('#order-date').val(); // Assuming the order date input has an id of 'order-date'
+    
+        if (!orderDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Please input the order date first.'
+            });
+            return;
+        }
+    
         if (voucherCode.length > 0) {
             $.ajax({
                 url: '/api/search-voucher',
                 method: 'GET',
-                data: { code: voucherCode },
+                data: { code: voucherCode, orderDate: orderDate }, // Include the order date in the request
                 success: function(response) {
                     $('#voucher').css('border-color', 'green');
-
+    
                     // Update voucher discount and recalculate total
                     voucherDiscount = response.discountAmount;
                     updateTotal();
@@ -835,6 +845,10 @@ $(document).ready(() => {
             updateTotal();
         }
     });
+    
+    initialize();
+    
+    
 
     initialize();
 });
