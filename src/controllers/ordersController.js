@@ -49,7 +49,7 @@ const getOrders = async (req, res) => {
         console.log('Filter:', filter);
 
         // Build sort object
-        let sortOrder = {};
+        let sortOrder = { dateCreated: -1 };
         if (sort) {
             if (sort === 'ordernumascending') {
                 sortOrder.orderNumber = 1;
