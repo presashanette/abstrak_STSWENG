@@ -49,7 +49,7 @@ const getOrders = async (req, res) => {
         console.log('Filter:', filter);
 
         // Build sort object
-        let sortOrder = { dateCreated: -1 };
+        let sortOrder = { };
         if (sort) {
             if (sort === 'ordernumascending') {
                 sortOrder.orderNumber = 1;
@@ -60,6 +60,9 @@ const getOrders = async (req, res) => {
             } else if (sort === 'orderdateearliest') {
                 sortOrder.dateCreated = 1;
             }
+        }
+        else {
+            sortOrder.dateCreated = -1;
         }
 
         const totalOrders = await OrderInfo.countDocuments(filter);
