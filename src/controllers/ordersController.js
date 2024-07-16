@@ -148,10 +148,28 @@ const uploadCSVFile = async (req, res) => {
     }
     const csvFilePath = path.join(__dirname, '../models/data/', req.file.filename);
     try {
-        await processCsvData(csvFilePath);
+        const processedData = await processCsvData(csvFilePath);
+        console.log('Processed Data:', processedData);
+
+        // Verify processedData is an array
+        if (!Array.isArray(processedData)) {
+            console.error('Error: Processed data is not an array');
+            throw new Error('Processed data is not an array');
+        }
+        
         lastUpdatedDate = new Date().toLocaleString();
-        res.status(200).json({ message: 'File uploaded and processed successfully.' });
+
+        console.log('Processed CSV Data:', processedData);
+
+        // Assuming processCsvData returns an array of orders
+        for (let order of processedData) {
+            console.log(`Updating inventory for order ID: ${order._id}, Fulfillment Status: ${order.fulfillmentStatus}`);
+            await updateInventoryBasedOnFulfillmentStatus(order._id, order.fulfillmentStatus);
+        }
+
+        res.status(200).json({ message: 'File uploaded, processed, and inventory updated successfully.' });
     } catch (error) {
+        console.error('Error processing CSV file:', error);
         res.status(500).json({ message: 'Error processing CSV file: ' + error.message });
     }
 };
@@ -202,4 +220,107 @@ async function checkOrderNo(req, res) {
     }
 }
 
-module.exports = { getOrders, getAnOrder, uploadCSVFile, addOrder, uploadCSV, checkOrderNo };
+const updateInventoryBasedOnFulfillmentStatus = async (orderId, fulfillmentStatus) => {
+    try {
+        // Fetch the order
+        const order = await OrderInfo.findById(orderId).lean();
+        if (!order) {
+            console.error('Order not found');
+            return;
+        }
+
+        console.log(`Order found: ${JSON.stringify(order, null, 2)}`);
+        const orderDate = new Date(order.dateCreated);
+
+        for (const item of order.items) {
+            console.log(`Processing SKU: ${item.sku}, Variation: ${item.variant}, Quantity: ${item.quantity}`);
+
+            // Fetch the product based on SKU
+            const product = await Product.findOne({ SKU: item.sku }).lean();
+            if (!product) {
+                console.error(`Product with SKU: ${item.sku} not found`);
+                continue;
+            }
+
+            console.log(`Product found: ${JSON.stringify(product, null, 2)}`);
+            const lastInventoryUpdate = new Date(product.lastInventoryUpdate);
+
+            if (orderDate <= lastInventoryUpdate) {
+                console.log(`Order date ${orderDate} is before or on the last inventory update date ${lastInventoryUpdate}. Skipping inventory update.`);
+                continue;
+            }
+
+            // Clean and preprocess text for variation comparison
+            const cleanVariant = item.variant.toLowerCase().replace(/^(size:|variation:)/, '').trim();
+            console.log(`Cleaned variant: ${cleanVariant}`);
+
+            const variation = product.variations.find(v => v.variation.trim().toLowerCase() === cleanVariant);
+
+            if (!variation) {
+                console.error(`Variation ${item.variant} not found for SKU ${item.sku}`);
+                continue;
+            }
+
+            let updateQuantity = 0;
+            const normalizedFulfillmentStatus = fulfillmentStatus.toLowerCase();
+            if (normalizedFulfillmentStatus === 'fulfilled') {
+                updateQuantity = -item.quantity;
+                console.log(`Decreasing inventory for SKU: ${item.sku}, Variation: ${item.variant} by ${item.quantity} through order ${orderId}`);
+            } else if (normalizedFulfillmentStatus === 'cancelled') {
+                updateQuantity = item.quantity;
+                console.log(`Increasing inventory for SKU: ${item.sku}, Variation: ${item.variant} by ${item.quantity} through order ${orderId}`);
+            } else if (normalizedFulfillmentStatus === 'unfulfilled') {
+                console.log(`No change in inventory for SKU: ${item.sku}, Variation: ${item.variant} as fulfillment status is unfulfilled through order ${orderId}`);
+                continue;
+            }
+
+            // Check if the update will result in negative stock
+            if (variation.stocks + updateQuantity < 0) {
+                console.error(`Cannot update inventory for SKU: ${item.sku}, Variation: ${item.variant}. Insufficient stock.`);
+                continue;
+            }
+
+            // Update the variation stock
+            variation.stocks += updateQuantity;
+            const currentDateTime = new Date();
+
+            // Prepare updates object
+            const updates = {
+                variations: product.variations,
+                //lastInventoryUpdate: currentDateTime,
+            };
+
+            try {
+                // Find the product by ID and update its details
+                const updatedProduct = await Product.findByIdAndUpdate(product._id, updates, { new: true });
+
+                if (!updatedProduct) {
+                    console.error('No document matched or no modification was made.');
+                } else {
+                    console.log('Update successful:', JSON.stringify(updatedProduct, null, 2));
+                }
+            } catch (err) {
+                console.error('Update failed:', err);
+            }
+
+            console.log({
+                _id: product._id,
+                'variations.variation': item.variant
+            });
+
+            console.log({
+                'variations.$.stocks': variation.stocks,
+                lastInventoryUpdate: currentDateTime
+            });
+
+            console.log(`Inventory updated for SKU: ${item.sku}, Variation: ${item.variant}, New Stocks: ${variation.stocks}`);
+            console.log(`Product last updated date set to: ${currentDateTime}`);
+        }
+
+        console.log('Inventory update completed.');
+    } catch (err) {
+        console.error('Error updating inventory based on fulfillment status:', err);
+    }
+};
+
+module.exports = { updateInventoryBasedOnFulfillmentStatus, getOrders, getAnOrder, uploadCSVFile, addOrder, uploadCSV, checkOrderNo };
