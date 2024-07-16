@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const User = require('./models/User'); // Adjust the path to your User model
+//const User = require('./models/User'); // Adjust the path to your User model
 //const users = require('./sampleUsers.json'); // Adjust the path to your JSON file
 const users = require('../models/data/data-users.json');
+const User = require('../models/User')
 
+/*
 async function hashPassword(password) {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
@@ -28,7 +30,7 @@ async function createUsers() {
         console.error('Error creating users:', error);
     }
 }
-
+*/
 async function viewDashboard(req, res) {
     try {
         const admins = await User.find({ role: 'admin'}).lean();
@@ -48,7 +50,7 @@ async function viewDashboard(req, res) {
     }
 }
 
-createUsers();
+//createUsers();
 
 module.exports = {
     viewDashboard
