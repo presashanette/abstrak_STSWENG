@@ -1,13 +1,11 @@
-<button name="edit-details">
-    <div class="user-card">
-        <div class="picture">
-            <img src="../assets/{{profilePicture}}" alt="Profile Picture" class="prof-pic">
-        </div>
-        <div class="details">
-            <p id="name">{{firstName}} {{lastName}}</p>
-            <p id="role">{{role}}</p>
-            <p id="email">{{email}}</p>
-            <p id="phone">{{phoneNumber}}</p>
-        </div>
+
+<div class="user-card">
+    <div class="picture">
+        <img src="../uploads/users/{{profilePicture}}" alt="Profile Picture" class="prof-pic">
     </div>
-</button>
+    <div class="details">
+        <h2 id="name">{{firstName}} {{lastName}}</h2>
+        <p id="role">{{role}}</p>
+        <a id="email">{{email}}</a> 
+    </div>
+</div>

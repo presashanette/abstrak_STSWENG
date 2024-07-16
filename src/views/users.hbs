@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="admin-panel panel">
                     <div class="label">
-                        <b><p>Admins <i>({{adminCount}})</i></p></b>
+                        <b><h1>Admins <i>({{adminCount}})</i></h1></b>
                         <button class="add-button" id="add-admin-button">
                             <img src="/assets/search.png" alt="Search Icon" class="search-icon">
                             Add Admin
@@ -34,7 +34,7 @@
 
                 <div class="non-admin-panel panel">
                     <div class="label">
-                        <b><p>Non-admins <i>({{nonAdminCount}})</i></p></b>
+                        <b><h1>Non-admins <i>({{nonAdminCount}})</i></h1></b>
                         <button class="add-button" id="add-non-admin-button">
                             <img src="/assets/search.png" alt="Search Icon" class="search-icon">
                             Add Non-Admin
@@ -42,11 +42,9 @@
                     </div>
 
                     <div class="users">
-                        <div class="card">
-                            {{#each nonAdmins}}
-                                {{>usercard}}
-                            {{/each}}
-                        </div>
+                        {{#each nonAdmins}}
+                            {{>usercard}}
+                        {{/each}}
                     </div>
                 </div>
             </div>
