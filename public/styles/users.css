@@ -1,0 +1,83 @@
+@import "base.css";
+@import "navbar.css";
+@import "gridheader.css";
+
+.main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.container {
+    padding: 2%;
+    width: 80%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    max-height: 400px;
+    padding: 5px;
+}
+
+.label {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: fit-content;
+    margin: 3% 0%;
+    align-content: center;
+}
+
+.card {
+    display: grid;
+    grid-template-columns: 150px 150px;
+    grid-template-rows: repeat();
+}
+
+/* Search Button */
+#search-button {
+    padding: 8px 15px;
+    color: #ffffff;
+    background-color: #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#search-button:hover {
+    background-color: transparent;
+    color: #333;
+    border: 2px solid #333;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.search-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.search-icon {
+    width: 15px;
+    height: 15px;
+}
