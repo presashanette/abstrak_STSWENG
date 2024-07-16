@@ -9,7 +9,7 @@ const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('..
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
-
+const { viewDashboard } = require('../controllers/userController');
 
 
 
@@ -88,6 +88,9 @@ router.get('/api/orders/:id', getAnOrder);
 router.post('/orders/add', addOrder);
 router.post('/upload-csv', uploadCSV.single('csvFile'), uploadCSVFile);
 router.get('/orders/checkOrderNo', checkOrderNo);
+
+//users
+router.get('/users', viewDashboard);
 
 // expenses
 router.get('/expenses', getAllExpenses);
