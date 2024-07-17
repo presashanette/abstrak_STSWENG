@@ -1,5 +1,16 @@
 $(document).ready(function() {
     let currentProductIndex = 0;
+    let salesChart, profitChart;
+
+    // Function to destroy existing charts
+    function destroyCharts() {
+        if (salesChart) {
+            salesChart.destroy();
+        }
+        if (profitChart) {
+            profitChart.destroy();
+        }
+    }
 
     // Pop up 
     $(".three-dots-product-option").click(popupClick);
@@ -137,7 +148,9 @@ $(document).ready(function() {
                 var salesChartCtx = document.getElementById('salesChart').getContext('2d');
                 var profitChartCtx = document.getElementById('profitChart').getContext('2d');
 
-                new Chart(salesChartCtx, {
+                destroyCharts(); // Destroy existing charts
+
+                salesChart = new Chart(salesChartCtx, {
                     type: 'line',
                     data: {
                         labels: salesDates,
@@ -157,7 +170,7 @@ $(document).ready(function() {
                     }
                 });
 
-                new Chart(profitChartCtx, {
+                profitChart = new Chart(profitChartCtx, {
                     type: 'line',
                     data: {
                         labels: profitDates,
@@ -222,18 +235,18 @@ $(document).ready(function() {
         });
     }
     
-    function updateProductDetails(productId, productPicture) {
+    function fetchAndUpdateProductDetails(productId, productPicture) {
         console.log(`Updating product details for product ID: ${productId}`);
         fetchViewProductInfo(productId);
         fetchViewProductMetrics(productId);
         fetchProductGraphs(productId);
         fetchViewProductDetails(productId);
-    
+
         // Set the product image
         console.log(`Product Image: ${productPicture}`);
         $(".product-img").attr("src", productPicture);
     }
-    
+
     function viewProduct(index) {
         console.log(`Viewing product at index: ${index}`);
         currentProductIndex = index;
@@ -242,7 +255,7 @@ $(document).ready(function() {
         const productPicture = container.data('picture'); // Get the picture URL from the data attribute
         console.log(`Product ID: ${productId}`);
         console.log(`Product Picture: ${productPicture}`);
-        updateProductDetails(productId, productPicture);
+        fetchAndUpdateProductDetails(productId, productPicture);
         $(".product-card-modal").fadeIn();
         showSection(1);
     }
@@ -253,7 +266,7 @@ $(document).ready(function() {
         console.log(`Product picture clicked, index: ${index}`);
         viewProduct(index);
     });
-    
+
 
     $(".close-product-card").click(closeCard);
 
