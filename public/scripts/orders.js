@@ -343,6 +343,9 @@ $(document).ready(() => {
                     renderCartItems();
                     console.log('Order added to cart:', order);
                 }
+
+                closeModal(productDetailsModal);
+                openModal(productListModal);
             });
 
         } catch (error) {
