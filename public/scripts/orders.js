@@ -421,7 +421,36 @@ $(document).ready(() => {
         const paymentMethod = document.querySelector('.paymentmethod').value;
         const paymentStatus = document.querySelector('.paymentstatus').value;
         const voucherBorderColor = document.querySelector('#voucher').style.borderColor;
-    
+
+        const checkOrderNoExists = async (orderNo) => {
+            try {
+                const response = await fetch(`/orders/checkOrderNo?orderNo=${orderNo}`);
+                const data = await response.json();
+                return data.success;
+            } catch (error) {
+                console.error('Error checking order number:', error);
+                return false;
+            }
+        };
+
+        const checkStockAvailability = async (cartItems) => {
+            try {
+                const response = await fetch('/products/checkStock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ items: cartItems })
+                });
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error checking stock:', error);
+                return { success: false };
+            }
+        };
+
         if (!orderedFrom || !orderDate || !fulfillmentStatus || !paymentMethod || !paymentStatus || !orderNo) {
             Swal.fire({
                 icon: 'error',
@@ -443,6 +472,13 @@ $(document).ready(() => {
                 text: 'Enter a valid order number.'
             });
             return;
+        } else if (!await checkOrderNoExists(orderNo)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Order number already exists. Please enter a different order number.'
+            });
+            return;
         } else if (cart.length === 0) {
             Swal.fire({
                 icon: 'error',
@@ -450,7 +486,20 @@ $(document).ready(() => {
                 text: 'Cart is still empty.'
             });
             return;
-        } else if (voucherBorderColor === 'red') {
+        }
+
+        const stockCheckResult = await checkStockAvailability(getCartItemsForOrder());
+        if (!stockCheckResult.success) {
+            const stockIssues = stockCheckResult.stockIssues.map(issue => issue.message).join(', ');
+            Swal.fire({
+                icon: 'error',
+                title: 'Stock Issue',
+                text: `There are stock issues with the following items: ${stockIssues}`
+            });
+            return;
+        }
+
+        if (voucherBorderColor === 'red') {
             Swal.fire({
                 icon: 'warning',
                 title: 'Invalid Voucher',
