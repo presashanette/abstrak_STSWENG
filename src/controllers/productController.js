@@ -73,6 +73,53 @@ async function fetchProductData(req, res) {
     }
 }
 
+async function checkStock (req, res) {
+    const items = req.body.items;
+    console.log(items);
+
+    try {
+        const stockIssues = [];
+        for (const item of items) {
+
+            const product = await Product.findById(item._id);
+            console.log(product);
+            if (!product) {
+                stockIssues.push({ itemId: item._id, message: 'Product not found' });
+            } else {
+                console.log(`variant: ${item.variant}`);
+                console.log(`Product variations: ${JSON.stringify(product.variations)}`);
+                console.log(product.variations);
+
+                const trimmedVariant = item.variant.trim();
+                
+                let variation = null;
+                for (const v of product.variations) {
+                    console.log(v.get('variation'));
+                    if (v.get('variation') === trimmedVariant) {
+                        variation = v;
+                        break;
+                    }
+                }
+
+                if (!variation) {
+                    stockIssues.push({ itemId: item._id, message: `Variation ${item.variant} not found` });
+                } else if (item.quantity > variation.get('stocks')) {
+                    stockIssues.push({ itemId: item._id, message: `Insufficient stock for variation ${item.variant}` });
+                }
+            }
+        }
+
+        if (stockIssues.length > 0) {
+            res.json({ success: false, stockIssues: stockIssues });
+        } else {
+            res.json({ success: true });
+        }
+    } catch (err) {
+        console.error('Error checking stock:', err);
+        res.status(500).json({ success: false, message: 'Server error while checking stock.' });
+    }
+}
+
 async function fetchProductMetrics(req, res) {
     try {
         const productId = req.params.id;
@@ -526,5 +573,6 @@ module.exports = {
     fetchSizeStockCost,
     updateProduct,
     addProduct,
-    getVariation
+    getVariation,
+    checkStock
 };
