@@ -109,8 +109,24 @@ async function updateProfile(req, res) {
     }
 }
 
+async function getNonAdminDetails (req, res){
+    const userId = req.query.id;
+
+    try {
+        const user = await User.findById(userId).select('firstName lastName role');
+        if (!user) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+        res.send(user);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch user details' });
+    }
+}
+
 module.exports = {
     viewDashboard,
     getProfile,
-    updateProfile
+    updateProfile,
+    getNonAdminDetails
+
 }

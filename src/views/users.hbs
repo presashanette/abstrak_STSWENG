@@ -1,87 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Dashboard</title>
-        <link rel="stylesheet" href="/styles/users.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="/scripts/users.js"></script>
-
-    </head>
-
-    <body>
-        <div class="main">
-            {{>navbar}}
-            <div class="container">
-                <div class="admin-panel panel">
-                    <div class="label">
-                        <b><h1>Admins <i>({{adminCount}})</i></h1></b>
-                        <button class="add-button" id="add-admin-button">
-                            
-                            Add Admin
-                        </button>
-                    </div>
-
-                    <div class="users">
-                        {{#each admins}}
-                            {{>usercard}}
-                        {{/each}}
-                    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="/styles/users.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/scripts/users.js"></script>
+</head>
+<body>
+    <div class="main">
+        {{>navbar}}
+        <div class="container">
+            <div class="admin-panel panel">
+                <div class="label">
+                    <b><h1>Admins <i>({{adminCount}})</i></h1></b>
+                    <button class="add-button" id="add-admin-button">Add Admin</button>
                 </div>
-
-                <div class="non-admin-panel panel">
-                    <div class="label">
-                        <b><h1>Non-admins <i>({{nonAdminCount}})</i></h1></b>
-                        <button class="add-button" id="add-non-admin-button">
-                            
-                            Add Non-Admin
-                        </button>
-                    </div>
-
-                    <div class="users">
-                        {{#each nonAdmins}}
-                            {{>usercard}}
-                        {{/each}}
-                    </div>
+                <div class="users">
+                    {{#each admins}}
+                        {{>usercard}}
+                    {{/each}}
+                </div>
+            </div>
+            <div class="non-admin-panel panel">
+                <div class="label">
+                    <b><h1>Non-admins <i>({{nonAdminCount}})</i></h1></b>
+                    <button class="add-button" id="add-non-admin-button">Add Non-Admin</button>
+                </div>
+                <div class="users">
+                    {{#each nonAdmins}}
+                        {{>usercard}}
+                    {{/each}}
                 </div>
             </div>
         </div>
-
-        <div class="add-user-modal">
-            <div class="user-form">
-                    <div class="exit-button">
-                        <img src="assets/back.png" alt="" class="exit">
+    </div>
+    <div class="add-user-modal">
+        <div class="user-form">
+            <div class="exit-button">
+                <img src="assets/back.png" alt="" class="exit">
+            </div>
+            <div class="form-title">
+                <h1>ADD user</h1>
+            </div>
+            <div class="form-fields">
+                <div class="user-left">
+                    <div class="main-picture">
+                        <img src="/assets/upload-icon.png" name="userPicture" alt="" id="upload-icon" accept="image/*">
+                        <input type="file" name="main-image" id="imageInput">
                     </div>
-                    
-                    <div class="form-title">
-                        <h1>ADD user</h1>
-                    </div>
-
-                    <div class="form-fields">
-                        <div class="user-left">
-                            <div class="main-picture">
-                                <img src="/assets/upload-icon.png" name="userPicture" alt="" id="upload-icon" accept="image/*">
-                                <input type="file" name="main-image" id="imageInput">
-                            </div>
-                        </div>
-                        <div class="user-right">
-                            
-                            <input type="text" name="" placeholder="Name" id="user-name-input" class="text-input" required>
-                            <textarea name="" placeholder="Description" id="user-description-input" class="text-input"></textarea>
-                            <button class="submit-user-button">Add user</button>
-                        </div>
-                    </div>
-                
+                </div>
+                <div class="user-right">
+                    <input type="text" placeholder="Name" id="user-name-input" class="text-input" required>
+                    <textarea placeholder="Description" id="user-description-input" class="text-input"></textarea>
+                    <button class="submit-user-button">Add user</button>
                 </div>
             </div>
         </div>
-    </body>
+    </div>
+    <div class="edit-user-modal">
+        <div class="user-form">
+            <div class="exit-button">
+                <img src="assets/back.png" alt="" class="exit-edit">
+            </div>
+            <div class="form-title">
+                <h1 id="headername"></h1>
+            </div>
+            <div class="form-fields">
+                <div class="nonadmin-details">
+                    <input type="text" placeholder="First Name" id="edit-first-name-input" class="text-input" required>
+                    <input type="text" placeholder="Last Name" id="edit-last-name-input" class="text-input" required>
+                    <select id="edit-role-input" class="text-input">
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="admin">admin</option>
+                        <option value="editor">editor</option>
+                        <option value="user">user</option>
+                    </select>
 
+                    <button class="submit-edit-user-button">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
-        $(".add-user-modal").hide();
+        $(".add-user-modal, .edit-user-modal").hide();
+        
     </script>
-
+</body>
 </html>
