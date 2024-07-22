@@ -9,7 +9,7 @@ const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('..
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
-const { viewDashboard, updateProfile, getProfile, getNonAdminDetails } = require('../controllers/userController');
+const { viewDashboard, updateProfile, getProfile, getNonAdminDetails, updateNonAdminDetails } = require('../controllers/userController');
 
 
 
@@ -108,6 +108,7 @@ router.get('/orders/checkOrderNo', checkOrderNo);
 //users
 router.get('/users', viewDashboard);
 router.get('/getUserDetails', getNonAdminDetails);
+router.post('/updateUserDetails', updateNonAdminDetails);
 
 // expenses
 router.get('/expenses', getAllExpenses);

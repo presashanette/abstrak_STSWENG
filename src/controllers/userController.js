@@ -123,10 +123,22 @@ async function getNonAdminDetails (req, res){
     }
 }
 
+async function updateNonAdminDetails(req, res){
+    const { id, firstName, lastName, role } = req.body;
+
+    try {
+        await User.findByIdAndUpdate(id, { firstName, lastName, role });
+        res.send({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: 'Failed to update user details' });
+    }
+}
+
 module.exports = {
     viewDashboard,
     getProfile,
     updateProfile,
-    getNonAdminDetails
-
+    getNonAdminDetails,
+    updateNonAdminDetails
 }
