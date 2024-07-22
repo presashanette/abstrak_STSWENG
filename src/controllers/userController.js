@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-//const User = require('./models/User'); // Adjust the path to your User model
-//const users = require('./sampleUsers.json'); // Adjust the path to your JSON file
 const users = require('../models/data/data-users.json');
 const User = require('../models/User')
 
@@ -31,6 +29,8 @@ async function createUsers() {
     }
 }
 */
+
+
 async function viewDashboard(req, res) {
     try {
         const admins = await User.find({ role: 'admin'}).lean();
@@ -48,10 +48,69 @@ async function viewDashboard(req, res) {
         console.error(err);
         res.status(500).send("Internal Server Error!");
     }
+    
 }
 
-//createUsers();
+
+async function getProfile(req, res) {
+    try {
+        const userId = req.session.userId; // Retrieve user ID from session
+        if (!userId) {
+            console.error('User ID is not available in req.session');
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const user = await User.findById(userId).select('-password'); // Exclude password field
+        if (!user) {
+            console.error(`User not found for ID: ${userId}`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        console.log('Fetched user profile:', user); // Add logging
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ error: 'Failed to fetch profile' });
+    }
+}
+
+async function updateProfile(req, res) {
+    try {
+        const userId = req.session.userId; // Retrieve user ID from session
+        const { firstName, lastName, role, password } = req.body;
+        let profilePicture;
+
+        if (req.file) {
+            profilePicture = req.file.filename;
+        }
+
+        const updatedData = {
+            firstName,
+            lastName,
+            role
+        };
+
+        if (profilePicture) {
+            updatedData.profilePicture = profilePicture;
+        }
+
+        if (password) {
+            // const hashedPassword = await bcrypt.hash(password, 10);
+            updatedData.password = password;
+        }
+
+        const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
+
+        console.log('Updated user profile:', user); // Add logging
+        res.json(user);
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+}
 
 module.exports = {
-    viewDashboard
+    viewDashboard,
+    getProfile,
+    updateProfile
 }

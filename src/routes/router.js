@@ -9,7 +9,7 @@ const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('..
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
-const { viewDashboard } = require('../controllers/userController');
+const { viewDashboard, updateProfile, getProfile } = require('../controllers/userController');
 
 
 
@@ -33,7 +33,16 @@ const storageProductPicture = multer.diskStorage({
     }
 });
 
+const storageProfilePicture = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'public/uploads/users/');
+  },
+  filename: function (req, file, cb) {
+      cb(null, file.originalname);
+  }
+});
 
+const uploadProfilePicture = multer({ storage: storageProfilePicture });
 const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
 
@@ -45,6 +54,12 @@ router.use((req, res, next) => {
   }
   return isAuthenticated(req, res, next);
 });
+
+
+
+// Route to update user profile
+router.get('/api/users/profile', getProfile);
+router.put('/api/users/update-profile', uploadProfilePicture.single('profilePicture'), updateProfile);
 
 
 //user login
