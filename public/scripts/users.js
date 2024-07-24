@@ -1,34 +1,50 @@
 // Global variable to store user data
 let currentUserData = null;
-
 $(document).ready(function() {
     // Function to open edit modal with user details
     $(".user-card").click(function() {
         var userId = $(this).data('id');
-        
+
+        // Check if the user is an admin
         $.ajax({
-            url: '/getUserDetails', // Endpoint to get user details
+            url: '/checkIfAdmin', // Endpoint to check if user is an admin
             type: 'GET',
             data: { id: userId },
-            success: function(user) {
-                $("#headername").text(`Edit ${user.firstName}'s profile`);
-                $("#edit-first-name-input").val(user.firstName);
-                $("#edit-last-name-input").val(user.lastName);
-                $("#edit-role-input").val(user.role);
+            success: function(response) {
+                if (response.isAdmin) {
+                   return;
+                } else {
+                    // Fetch user details if not an admin
+                    $.ajax({
+                        url: '/getUserDetails', // Endpoint to get user details
+                        type: 'GET',
+                        data: { id: userId },
+                        success: function(user) {
+                            $("#headername").text(`Edit ${user.firstName}'s profile`);
+                            $("#edit-first-name-input").val(user.firstName);
+                            $("#edit-last-name-input").val(user.lastName);
+                            $("#edit-role-input").val(user.role);
 
-                // Store user data globally
-                currentUserData = {
-                    id: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    role: user.role
-                };
+                            // Store user data globally
+                            currentUserData = {
+                                id: user._id,
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                role: user.role
+                            };
 
-                $(".edit-user-modal").show();
+                            $(".edit-user-modal").show();
+                        },
+                        error: function(error) {
+                            console.log(error);
+                            Swal.fire('Error', 'Failed to fetch user details', 'error');
+                        }
+                    });
+                }
             },
             error: function(error) {
                 console.log(error);
-                Swal.fire('Error', 'Failed to fetch user details', 'error');
+                Swal.fire('Error', 'Failed to check user role', 'error');
             }
         });
     });
@@ -81,4 +97,3 @@ $(document).ready(function() {
         });
     });
 });
-

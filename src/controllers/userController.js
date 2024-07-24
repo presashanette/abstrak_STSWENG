@@ -33,22 +33,24 @@ async function createUsers() {
 
 async function viewDashboard(req, res) {
     try {
-        const admins = await User.find({ role: 'admin'}).lean();
+        const admins = await User.find({ role: 'admin' }).lean();
         const adminCount = admins.length;
 
-        const nonAdmins = await User.find({ role: { $ne: 'admin'} }).lean();
+        const nonAdmins = await User.find({ role: { $ne: 'admin' } }).lean();
         const nonAdminCount = nonAdmins.length;
+
         console.log(admins);
         console.log(nonAdmins);
         console.log("Admins: " + adminCount + " Non-admins: " + nonAdminCount);
 
+        // Check if the current user is an admin
+        const isAdmin = req.session.userRole === 'admin';
 
-        res.render('users', { adminCount, admins, nonAdminCount, nonAdmins });  // Pass the admins to the 'users' template
+        res.render('users', { adminCount, admins, nonAdminCount, nonAdmins, isAdmin }); // Pass the isAdmin boolean to the 'users' template
     } catch (err) {
         console.error(err);
         res.status(500).send("Internal Server Error!");
     }
-    
 }
 
 
@@ -123,7 +125,11 @@ async function getNonAdminDetails (req, res){
     }
 }
 
-async function updateNonAdminDetails(req, res){
+async function updateNonAdminDetails(req, res) {
+    if (req.session.userRole !== 'admin') {
+        return res.status(403).send({ success: false, message: 'Access denied. Admins only.' });
+    }
+
     const { id, firstName, lastName, role } = req.body;
 
     try {
@@ -135,10 +141,27 @@ async function updateNonAdminDetails(req, res){
     }
 }
 
+async function checkIfAdmin(req, res) {
+    try {
+        const userId = req.query.id;
+        const user = await User.findById(userId);
+
+        if (user) {
+            res.json({ isAdmin: user.role === 'admin' });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 module.exports = {
     viewDashboard,
     getProfile,
     updateProfile,
     getNonAdminDetails,
-    updateNonAdminDetails
+    updateNonAdminDetails,
+    checkIfAdmin
 }

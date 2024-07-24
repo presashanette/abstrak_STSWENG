@@ -61,6 +61,7 @@
             </div>
         </div>
     </div>
+    {{#if (eq isAdmin true)}}
     <div class="edit-user-modal">
         <div class="user-form">
             <div class="exit-button">
@@ -79,12 +80,12 @@
                         <option value="editor">editor</option>
                         <option value="user">user</option>
                     </select>
-
-                    <button class="submit-edit-user-button">Save Changes</button>
+                     <button class="submit-edit-user-button">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
+    {{/if}}
     <script>
         $(".add-user-modal, .edit-user-modal").hide();
         

@@ -8,8 +8,8 @@ const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo 
 const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
-const { isAuthenticated } = require('../middleware/authMiddleware');
-const { viewDashboard, updateProfile, getProfile, getNonAdminDetails, updateNonAdminDetails } = require('../controllers/userController');
+const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
+const { viewDashboard, updateProfile, getProfile, getNonAdminDetails, updateNonAdminDetails, checkIfAdmin } = require('../controllers/userController');
 
 
 
@@ -108,7 +108,8 @@ router.get('/orders/checkOrderNo', checkOrderNo);
 //users
 router.get('/users', viewDashboard);
 router.get('/getUserDetails', getNonAdminDetails);
-router.post('/updateUserDetails', updateNonAdminDetails);
+router.post('/updateUserDetails', isAdmin, updateNonAdminDetails);
+router.get('/checkIfAdmin', checkIfAdmin);
 
 // expenses
 router.get('/expenses', getAllExpenses);
