@@ -8,6 +8,7 @@ async function loginUser(req, username, password) {
                 req.session.userId = user._id;
                 req.session.username = user.username;
                 req.session.profilePicture = user.profilePicture;
+                req.session.userRole = user.role;
                 req.session['loggedIn'] = true;
                 return { success: true, redirectUrl: "/collections" }; // Redirect to collections
             } else {
