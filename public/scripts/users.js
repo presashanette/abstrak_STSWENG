@@ -85,10 +85,13 @@ $(document).ready(function() {
                 role: role
             },
             success: function(response) {
-                Swal.fire('Success', 'User details updated successfully', 'success');
-                $(".edit-user-modal").hide();
-                location.reload()
-                // Optionally update the user card on the page to reflect changes
+                Swal.fire('Success', 'User details updated successfully', 'success').then(() => {
+                    // Hide the edit modal
+                    $(".edit-user-modal").hide();
+                    // Reload the page
+                    location.reload();
+                });
+                
             },
             error: function(error) {
                 console.log(error);
