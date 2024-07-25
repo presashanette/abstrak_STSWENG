@@ -101,6 +101,8 @@ async function updateProfile(req, res) {
             updatedData.password = password;
         }
 
+        req.session.userRole = req.body.role;
+
         const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
 
         console.log('Updated user profile:', user); // Add logging
