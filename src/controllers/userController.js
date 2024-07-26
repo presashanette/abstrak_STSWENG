@@ -30,6 +30,55 @@ async function createUsers() {
 }
 */
 
+async function checkExistingEmail(req, res) {
+    const email = req.body.email;
+
+    console.log(req.body.email);
+
+    User.findOne({email: email}).then(user =>{
+        if(user){
+            console.log("Email taken.");
+            res.send({ success: false, message: 'Email is already in use.'});
+        } else {
+            res.send({ success: true, message: 'Email is available.'})
+        }
+    })
+}
+
+async function checkExistingUsername(req, res) {
+    const username = req.body.username;
+
+    User.findOne({username: username}).then(user =>{
+        if(user){
+            res.send({ success: false, message: 'Username is already in use.'});
+        } else {
+            res.send({ success: true, message: 'Username is available.'})
+        }
+    })
+}
+
+async function createUser(req, res) {
+    try {
+        const { firstName, lastName, password, email, username, role } = req.body;
+
+        const newUser = new User({
+            firstName,
+            lastName,
+            password,
+            email,
+            username,
+            role,
+            profilePicture: req.file.filename || 'default.jpg'
+        })
+
+        console.log(newUser);
+        await newUser.save();
+        res.send({ success: true, message: 'User successfully created!'})
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+    }
+}
 
 async function viewDashboard(req, res) {
     try {
@@ -165,5 +214,8 @@ module.exports = {
     updateProfile,
     getNonAdminDetails,
     updateNonAdminDetails,
-    checkIfAdmin
+    checkIfAdmin,
+    checkExistingEmail,
+    checkExistingUsername,
+    createUser
 }
