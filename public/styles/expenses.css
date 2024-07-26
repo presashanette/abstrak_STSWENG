@@ -317,3 +317,130 @@ button[type="submit"]:hover {
     align-items: center; /* Centers the buttons horizontally */
 }
 
+
+.charts-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.chart-wrapper {
+    width: 400px;
+    height: 300px;
+    margin: 10px;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.collection-chart-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.collection-chart-nav button {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.collection-chart-nav button:hover {
+    background-color: white;
+    color: black;
+    border: 2px solid #033f63;
+}
+
+.arrow-button {
+    background: none;
+    border: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.prev-arrow::before, .next-arrow::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.prev-arrow::before {
+    border-width: 10px 15px 10px 0;
+    border-color: transparent #033f63 transparent transparent;
+}
+
+.next-arrow::before {
+    border-width: 10px 0 10px 15px;
+    border-color: transparent transparent transparent #033f63;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    margin-top: 20px;
+}
+
+.pagination-container button, .pagination-container span, .pagination-container .of-text {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-container button:hover, .pagination-container span:hover, .pagination-container .of-text:hover {
+    background-color: #333333;
+}
+
+.pagination-container .active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.pagination-container span, .pagination-container .of-text {
+    display: inline-block;
+    text-align: center;
+    min-width: 40px;
+}
+
+.filter-sort-text {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.filtersort-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    grid-area: button;
+}
+
+.filter-sort-clear, .filter-sort-done {
+    padding: 10px;
+    width: 48%;
+}

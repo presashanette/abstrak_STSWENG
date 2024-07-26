@@ -98,8 +98,6 @@ const getOrders = async (req, res) => {
     }
 };
 
-
-
 async function addOrder(req, res) {
     const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate, totalPrice } = req.body;
 
