@@ -68,7 +68,7 @@ async function createUser(req, res) {
             email,
             username,
             role,
-            profilePicture: req.file.filename || 'default.jpg'
+            profilePicture: req.file|| 'default.jpg'
         })
 
         console.log(newUser);
