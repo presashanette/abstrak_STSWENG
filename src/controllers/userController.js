@@ -59,7 +59,7 @@ async function checkExistingUsername(req, res) {
 
 async function createUser(req, res) {
     try {
-        const { firstName, lastName, password, email, username, role } = req.body;
+        const { firstName, lastName, password, email, username, selectedRole } = req.body;
         let newUser;
         try {
                 newUser = new User({
@@ -68,7 +68,7 @@ async function createUser(req, res) {
                 password,
                 email,
                 username,
-                role,
+                selectedRole,
                 profilePicture: req.file.filename
             })
         } catch (err) {
@@ -78,7 +78,7 @@ async function createUser(req, res) {
                 password,
                 email,
                 username,
-                role,
+                selectedRole,
                 profilePicture: 'default.jpg'
             })
         }

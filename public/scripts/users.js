@@ -226,7 +226,7 @@ $(document).ready(function() {
             var confirmPassword = $("#password-confirmation").val().trim();
             var email = $("#email-input").val().trim();
             var username = $("#username").val().trim();
-            var role = $("#role-input").val().trim();
+            var role = $("#role-selection").val().trim();
             var image = $("#image-input")[0].files[0];
             
             
@@ -238,7 +238,7 @@ $(document).ready(function() {
             formData.append("confirmPassword", confirmPassword);
             formData.append("email", email);
             formData.append("username", username);
-            formData.append("role", role);
+            formData.append("selectedRole", role);
             formData.append("profilePicture", image);
             $.ajax({
                 url: "/api/users/add",
