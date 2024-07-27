@@ -60,16 +60,28 @@ async function checkExistingUsername(req, res) {
 async function createUser(req, res) {
     try {
         const { firstName, lastName, password, email, username, role } = req.body;
-
-        const newUser = new User({
-            firstName,
-            lastName,
-            password,
-            email,
-            username,
-            role,
-            profilePicture: req.file|| 'default.jpg'
-        })
+        let newUser;
+        try {
+                newUser = new User({
+                firstName,
+                lastName,
+                password,
+                email,
+                username,
+                role,
+                profilePicture: req.file.filename
+            })
+        } catch (err) {
+                newUser = new User({
+                firstName,
+                lastName,
+                password,
+                email,
+                username,
+                role,
+                profilePicture: 'default.jpg'
+            })
+        }
 
         console.log(newUser);
         await newUser.save();

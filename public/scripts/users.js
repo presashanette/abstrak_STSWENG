@@ -128,23 +128,32 @@ $(document).ready(function() {
     $("#image-input").change(function(event){
         var file = this.files[0];
         var reader = new FileReader();
-        
-        $(".user-photo-container").remove();
 
-        mediaContainer = $(".main-picture")
-        reader.onload = function(e){
-            const photoContainer = document.createElement('div');
-            photoContainer.className = 'user-photo-container';
+        if (file) {
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (validImageTypes.includes(file.type)) {
+                console.log('Valid image file:', file.name);
+                $(".user-photo-container").remove();
 
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.className = 'user-photo';
-            photoContainer.appendChild(img);
+                mediaContainer = $(".main-picture")
+                reader.onload = function(e){
+                    const photoContainer = document.createElement('div');
+                    photoContainer.className = 'user-photo-container';
 
-            mediaContainer.append(photoContainer);
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'user-photo';
+                    photoContainer.appendChild(img);
 
+                    mediaContainer.append(photoContainer);
+
+                }
+                reader.readAsDataURL(file);
+                // You can handle the valid image here (e.g., upload to server)
+            } else {
+                Swal.fire('Error', 'Please upload an image.', 'error');
+            }
         }
-        reader.readAsDataURL(file);
     });
 
     $("#email-input").keyup(function(event){
@@ -211,14 +220,15 @@ $(document).ready(function() {
             Swal.fire('Error', 'Username is already taken!', 'error');
         }
         else { //No errors. Should lead to a successful user creation.
-            var firstName = $("#firstName-input").val();
-            var lastName = $("#lastName-input").val();
-            var password = $("#password").val();
-            var confirmPassword = $("#password-confirmation").val();
-            var email = $("#email-input").val();
-            var username = $("#username").val();
-            var role = $("#role-input").val();
+            var firstName = $("#firstName-input").val().trim();
+            var lastName = $("#lastName-input").val().trim();
+            var password = $("#password").val().trim();
+            var confirmPassword = $("#password-confirmation").val().trim();
+            var email = $("#email-input").val().trim();
+            var username = $("#username").val().trim();
+            var role = $("#role-input").val().trim();
             var image = $("#image-input")[0].files[0];
+            
             
             var formData = new FormData();
             
