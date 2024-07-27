@@ -192,6 +192,10 @@ $(document).ready(function() {
             }
         });
     });
+    
+    $("#role-selection").change(function(event) {
+        console.log($("#role-selection").val());
+    })
 
     $(".submit-user-button").click(function(){
         const $textInputs = $('.add-user-text-input');
@@ -225,10 +229,10 @@ $(document).ready(function() {
             var password = $("#password").val().trim();
             var confirmPassword = $("#password-confirmation").val().trim();
             var email = $("#email-input").val().trim();
+            var selectedRole = $("#role-selection").val();
             var username = $("#username").val().trim();
-            var role = $("#role-selection").val().trim();
             var image = $("#image-input")[0].files[0];
-            
+            console.log(selectedRole);
             
             var formData = new FormData();
             
@@ -237,8 +241,8 @@ $(document).ready(function() {
             formData.append("password", password);
             formData.append("confirmPassword", confirmPassword);
             formData.append("email", email);
+            formData.append("selectedRole", selectedRole);
             formData.append("username", username);
-            formData.append("selectedRole", role);
             formData.append("profilePicture", image);
             $.ajax({
                 url: "/api/users/add",

@@ -61,6 +61,7 @@ async function createUser(req, res) {
     try {
         const { firstName, lastName, password, email, username, selectedRole } = req.body;
         let newUser;
+        console.log("SELECTED ROLE: " + selectedRole);
         try {
                 newUser = new User({
                 firstName,
