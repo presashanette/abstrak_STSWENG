@@ -59,17 +59,30 @@ async function checkExistingUsername(req, res) {
 
 async function createUser(req, res) {
     try {
-        const { firstName, lastName, password, email, username, role } = req.body;
-
-        const newUser = new User({
-            firstName,
-            lastName,
-            password,
-            email,
-            username,
-            role,
-            profilePicture: req.file|| 'default.jpg'
-        })
+        const { firstName, lastName, password, email, username, selectedRole } = req.body;
+        let newUser;
+        console.log("SELECTED ROLE: " + selectedRole);
+        try {
+                newUser = new User({
+                firstName,
+                lastName,
+                password,
+                email,
+                username,
+                role: selectedRole,
+                profilePicture: req.file.filename
+            })
+        } catch (err) {
+                newUser = new User({
+                firstName,
+                lastName,
+                password,
+                email,
+                username,
+                role: selectedRole,
+                profilePicture: 'default.jpg'
+            })
+        }
 
         console.log(newUser);
         await newUser.save();
