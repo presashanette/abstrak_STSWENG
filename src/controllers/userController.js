@@ -69,7 +69,7 @@ async function createUser(req, res) {
                 password,
                 email,
                 username,
-                selectedRole,
+                role: selectedRole,
                 profilePicture: req.file.filename
             })
         } catch (err) {
@@ -79,7 +79,7 @@ async function createUser(req, res) {
                 password,
                 email,
                 username,
-                selectedRole,
+                role: selectedRole,
                 profilePicture: 'default.jpg'
             })
         }
