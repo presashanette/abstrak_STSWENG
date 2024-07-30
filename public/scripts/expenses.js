@@ -36,11 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = () => {
         modal.style.display = "none";
         form.reset();
+        $('#expense-id').val('');
     };
-
     const openFilterModal = () => {
+        document.getElementById('sorting-expense').value = currentFilters.sort || '';
+        document.getElementById('filter-payment-method').value = currentFilters.paymentMethod || '';
+        document.getElementById('filter-collection').value = currentFilters.collection || '';
+        document.getElementById('filter-category').value = currentFilters.category || '';
+        document.getElementById('start-date-expense').value = currentFilters.startDate || '';
+        document.getElementById('end-date-expense').value = currentFilters.endDate || '';
+        document.getElementById('quantity-filter-type').value = currentFilters.quantityType || '';
+        document.getElementById('quantity-filter-value').value = currentFilters.quantityValue || '';
         filterModal.style.display = "block";
     };
+    
 
     const closeFilterModal = () => {
         filterModal.style.display = "none";
@@ -73,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-
+    
         const expenseId = document.getElementById("expense-id").value;
         const expenseData = {
             name: form.name.value,
@@ -86,13 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
             description: form.description.value,
             receiptUrl: form["receipt-url"].value
         };
-
+    
         // Input validation
         if (expenseData.amount <= 0 || expenseData.quantity <= 0) {
             alert("Amount and Quantity must be greater than zero.");
             return;
         }
-
+    
         try {
             let response;
             if (expenseId) {
@@ -114,9 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(expenseData)
                 });
             }
-
+    
             if (response.ok) {
+                reloadGraphData();
                 const successMessage = expenseId ? 'Expense edited successfully!' : 'Expense added successfully!';
+                reloadGraphData();
                 Swal.fire({
                     title: 'Success',
                     text: successMessage,
@@ -125,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).then(() => {
                     reloadExpensesTable();
                     closeModal();
+                    $('#expense-id').val(''); // Ensure the expense ID is cleared after operation
                 });
             } else {
                 throw new Error('Failed to save the expense');
@@ -133,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error:", error);
         }
     });
+    
 
     const fetchExpenseDetails = (expenseId) => {
         $.ajax({
@@ -236,14 +249,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createCategoryPieChart(categoryData) {
         var categoryChartCtx = document.getElementById('categoryChart').getContext('2d');
-
+    
+        const hasData = categoryData && categoryData.data.length > 0;
+    
         categoryChart = new Chart(categoryChartCtx, {
             type: 'pie',
             data: {
-                labels: categoryData.labels,
+                labels: hasData ? categoryData.labels : ['No data available'],
                 datasets: [{
-                    data: categoryData.data,
-                    backgroundColor: ['#033f63', '#28666e', '#7c9885', '#b5b682', '#fedc97']
+                    data: hasData ? categoryData.data : [1],
+                    backgroundColor: hasData ? ['#033f63', '#28666e', '#7c9885', '#b5b682', '#fedc97'] : ['#e0e0e0']
                 }]
             },
             options: {
@@ -262,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     tooltip: {
                         callbacks: {
                             label: function(context) {
+                                if (!hasData) return 'No data available';
                                 var label = context.label || '';
                                 if (label) {
                                     label += ': ';
@@ -271,39 +287,50 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     },
-                    datalabels: {
-                        color: '#fff',
+                    title: {
+                        display: true,
+                        text: 'Category Distribution',
                         font: {
-                            size: 10
+                            size: 16,
+                            weight: 'bold'
                         },
-                        formatter: (value, context) => {
-                            let sum = 0;
-                            let dataArr = context.chart.data.datasets[0].data;
-                            dataArr.map(data => {
-                                sum += data;
-                            });
-                            let percentage = (value * 100 / sum).toFixed(2) + "%";
-                            return percentage;
-                        }
+                        color: '#000'
                     }
                 }
             },
-            plugins: [ChartDataLabels]
+            plugins: [{
+                id: 'custom-text',
+                afterDraw: function(chart) {
+                    if (!hasData) {
+                        var ctx = chart.ctx;
+                        var width = chart.width;
+                        var height = chart.height;
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = '16px sans-serif';
+                        ctx.fillStyle = '#000';
+                        ctx.restore();
+                    }
+                }
+            }]
         });
     }
-
+    
     function createCollectionBarChart(data) {
         collectionData = data;
         var collectionChartCtx = document.getElementById('collectionChart').getContext('2d');
-
+    
+        const hasData = data && data.length > 0 && data[currentCollectionIndex].data.length > 0;
+    
         collectionChart = new Chart(collectionChartCtx, {
             type: 'bar',
             data: {
-                labels: collectionData[currentCollectionIndex].labels,
+                labels: hasData ? data[currentCollectionIndex].labels : ['No data available'],
                 datasets: [{
-                    label: collectionData[currentCollectionIndex].collection,
-                    data: collectionData[currentCollectionIndex].data,
-                    backgroundColor: ['#033f63', '#28666e', '#7c9885', '#b5b682', '#fedc97']
+                    label: hasData ? data[currentCollectionIndex].collection : 'No data available',
+                    data: hasData ? data[currentCollectionIndex].data : [0],
+                    backgroundColor: hasData ? ['#033f63', '#28666e', '#7c9885', '#b5b682', '#fedc97'] : ['#e0e0e0']
                 }]
             },
             options: {
@@ -311,10 +338,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 maintainAspectRatio: false,
                 scales: {
                     x: {
-                        stacked: true
+                        stacked: hasData,
+                        display: hasData
                     },
                     y: {
-                        stacked: true
+                        stacked: hasData,
+                        display: hasData
                     }
                 },
                 plugins: {
@@ -330,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     tooltip: {
                         callbacks: {
                             label: function(context) {
+                                if (!hasData) return 'No data available';
                                 var label = context.label || '';
                                 if (label) {
                                     label += ': ';
@@ -338,12 +368,185 @@ document.addEventListener('DOMContentLoaded', () => {
                                 return label;
                             }
                         }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Collection Costs',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        color: '#000'
                     }
                 }
+            },
+            plugins: [{
+                id: 'custom-text',
+                afterDraw: function(chart) {
+                    if (!hasData) {
+                        var ctx = chart.ctx;
+                        var width = chart.width;
+                        var height = chart.height;
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = '16px sans-serif';
+                        ctx.fillStyle = '#000';
+                        ctx.restore();
+                    }
+                }
+            }]
+        });
+    }
+    
+    function createOrUpdateTotalCostsChart(data) {
+        var totalCostsChartCtx = document.getElementById('totalCostsChart').getContext('2d');
+        
+        const hasData = data && data.length > 0;
+        
+        let labels = hasData ? data.map(item => item.collection) : ['No data available'];
+        let totalCosts = hasData ? data.map(item => item.data.reduce((a, b) => a + b, 0)) : [0];
+        
+        if (totalCostsChart) {
+            totalCostsChart.data.labels = labels;
+            totalCostsChart.data.datasets[0].data = totalCosts;
+            totalCostsChart.update();
+        } else {
+            totalCostsChart = new Chart(totalCostsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: hasData ? 'Total Costs for Collections' : 'No data available',
+                        data: totalCosts,
+                        backgroundColor: hasData ? '#033f63' : '#e0e0e0'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: hasData,
+                            display: hasData
+                        },
+                        y: {
+                            stacked: hasData,
+                            display: hasData
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 10,
+                                    color: '#000'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (!hasData) return 'No data available';
+                                    var label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.raw.toLocaleString();
+                                    return label;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Total Costs for Collections',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#000'
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'custom-text',
+                    afterDraw: function(chart) {
+                        if (!hasData) {
+                            var ctx = chart.ctx;
+                            var width = chart.width;
+                            var height = chart.height;
+                            ctx.save();
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.font = '16px sans-serif';
+                            ctx.fillStyle = '#000';
+                            ctx.restore();
+                        }
+                    }
+                }]
+            });
+        }
+    }
+
+    function reloadGraphData() {
+        // Fetch the latest expense data
+        $.ajax({
+            url: '/api/expense-graphs', // Endpoint to get the latest expense graphs data
+            method: 'GET',
+            success: function(response) {
+                var expenseAggregations = response.expenseAggregations;
+                var collectionAggregations = response.collectionAggregations;
+    
+                var categoryData = calculateCategoryData(expenseAggregations);
+                var collectionData = calculateCollectionData(collectionAggregations);
+    
+                // Update the category pie chart
+                if (categoryChart) {
+                    categoryChart.data.labels = categoryData.labels;
+                    categoryChart.data.datasets[0].data = categoryData.data;
+                    categoryChart.update();
+                } else {
+                    createCategoryPieChart(categoryData);
+                }
+    
+                // Update the collection bar chart
+                if (collectionChart) {
+                    collectionData.forEach((data, index) => {
+                        if (collectionChart.data.datasets[index]) {
+                            collectionChart.data.datasets[index].label = data.collection;
+                            collectionChart.data.datasets[index].data = data.data;
+                        } else {
+                            collectionChart.data.datasets.push({
+                                label: data.collection,
+                                data: data.data,
+                                backgroundColor: ['#033f63', '#28666e', '#7c9885', '#b5b682', '#fedc97'][index % 5]
+                            });
+                        }
+                    });
+                    collectionChart.update();
+                } else {
+                    createCollectionBarChart(collectionData);
+                }
+    
+                // Update the total costs chart
+                if (totalCostsChart) {
+                    let totalCosts = collectionData.map(item => item.data.reduce((a, b) => a + b, 0));
+                    totalCostsChart.data.labels = collectionData.map(item => item.collection);
+                    totalCostsChart.data.datasets[0].data = totalCosts;
+                    totalCostsChart.update();
+                } else {
+                    createOrUpdateTotalCostsChart(collectionData);
+                }
+    
+                console.log('Graphs data reloaded successfully.');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error reloading graph data:", error);
             }
         });
     }
-
+   
     function updateCollectionBarChart(index) {
         const data = collectionData[index];
         window.collectionChart.data.labels = data.labels;
@@ -362,69 +565,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCollectionBarChart(currentCollectionIndex);
     });
 
-    function createOrUpdateTotalCostsChart(data) {
-        var totalCostsChartCtx = document.getElementById('totalCostsChart').getContext('2d');
-
-        // Calculate the total costs for all collections
-        let labels = data.map(item => item.collection);
-        let totalCosts = data.map(item => item.data.reduce((a, b) => a + b, 0));
-
-        if (totalCostsChart) {
-            totalCostsChart.data.labels = labels;
-            totalCostsChart.data.datasets[0].data = totalCosts;
-            totalCostsChart.update();
-        } else {
-            totalCostsChart = new Chart(totalCostsChartCtx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Costs for Collections',
-                        data: totalCosts,
-                        backgroundColor: '#033f63'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            stacked: true
-                        },
-                        y: {
-                            stacked: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 10,
-                                    color: '#000'
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    var label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += context.raw.toLocaleString();
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        console.log('Total costs chart created or updated:', totalCostsChart);
-    }
-
     const reloadExpensesTable = async () => {
         const page = parseInt(pageNumber.textContent);
         await filterResultExpenses(page);
@@ -434,6 +574,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const filters = { ...currentFilters };
         if (filters.collection === 'All') {
             delete filters.collection;
+        }
+        if (filters.quantityValue) {
+            filters.quantityValue = parseInt(filters.quantityValue); // Ensure it's a number
         }
         const query = $.param({ ...filters, page });
         try {
@@ -478,14 +621,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>
                 `;
                 tbody.appendChild(tr);
-
+    
                 // Add event listener for edit and delete buttons
                 tr.querySelector('.edit-btn').addEventListener('click', () => {
                     document.getElementById("modal-title").innerText = "Edit Expense";
                     openModal();
                     fetchExpenseDetails(expense._id);
                 });
-
+    
                 tr.querySelector('.delete-btn').addEventListener('click', () => {
                     const expenseName = name;
                     Swal.fire({
@@ -503,6 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 method: 'DELETE'
                             }).then(response => {
                                 if (response.ok) {
+                                    reloadGraphData();
                                     Swal.fire(
                                         'Deleted!',
                                         'Your expense has been deleted.',
@@ -529,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
             });
-
+    
             pageNumber.textContent = page;
             if (totalPages <= 1) {
                 prevButton.style.display = 'none';
@@ -550,6 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading page:', error);
         }
     };
+    
 
     nextButton.addEventListener('click', () => {
         const currentPage = parseInt(pageNumber.textContent);
@@ -589,10 +734,15 @@ document.addEventListener('DOMContentLoaded', () => {
         currentFilters.category = document.getElementById('filter-category').value;
         currentFilters.startDate = document.getElementById('start-date-expense').value;
         currentFilters.endDate = document.getElementById('end-date-expense').value;
+        currentFilters.quantityType = document.getElementById('quantity-filter-type').value;
+        currentFilters.quantityValue = document.getElementById('quantity-filter-value').value;
         
         reloadExpensesTable();
         closeFilterModal();
     });
+    
+    
+    
     
     clearBtn.addEventListener('click', () => {
         document.getElementById('filter-sort-form-expense').reset();
@@ -602,12 +752,15 @@ document.addEventListener('DOMContentLoaded', () => {
             collection: '',
             category: '',
             startDate: '',
-            endDate: ''
+            endDate: '',
+            quantityType: '',
+            quantityValue: ''
         };
         
         reloadExpensesTable();
         closeFilterModal();
     });
+    
 
     loadExpensesPage(1);
     fetchExpenseGraphs();

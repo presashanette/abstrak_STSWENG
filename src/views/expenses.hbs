@@ -143,8 +143,31 @@
                     </select>
                 </div>
                 <div class="form-column">
+                    <label for="quantity-filter">Quantity:</label>
+                    <div class="quantity-container">
+                        <select id="quantity-filter-type" class="quantityfiltertype">
+                            <option value="">Select</option>
+                            <option value="lower">Lower than</option>
+                            <option value="higher">Higher than</option>
+                            <option value="equal">Equal to</option>
+                        </select>
+                        <input type="number" id="quantity-filter-value" class="quantityfiltervalue quantity-input" min="0">
+                    </div>
+                </div>
+                <div class="form-column">
                     <label for="filter-payment-method">Payment Method:</label>
-                    <input type="text" id="filter-payment-method" class="paymentmethodfilter">
+                    <select id="filter-payment-method" class="paymentmethodfilter">
+                        <option value="">All</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Gcash">Gcash</option>
+                        <option value="Credit/Debit Card">Credit/Debit Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cryptocurrency">Cryptocurrency</option>
+                        <option value="Contactless Payment">Contactless Payment</option>
+                        <option value="Buy Now, Pay Later">Buy Now, Pay Later</option>
+                        <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
+                        <option value="Others">Others</option>
+                    </select>
                 </div>
             </div>
             <div class="form-row">
@@ -160,6 +183,7 @@
                         <option value="Equipment">Equipment</option>
                         <option value="Fabric">Fabric</option>
                         <option value="Labor Fee">Labor Fee</option>
+                        <option value="Marketing">Marketing</option>
                         <option value="Misc (Delivery Fee, Gas, etc)">Misc (Delivery Fee, Gas, etc)</option>
                         <option value="Others">Others</option>
                     </select>
@@ -196,9 +220,21 @@
                         <label for="date">Date:</label>
                         <input type="date" id="date" name="date" required>
                     </div>
-                    <div class="form-column">
-                        <label for="payment-method">Payment Method:</label>
-                        <input type="text" id="payment-method" name="payment-method" required>
+                    <div class="form-row">
+                        <div class="form-column">
+                            <label for="payment-method">Payment Method:</label>
+                            <select id="payment-method" name="payment-method" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Cash">Gcash</option>
+                                <option value="Credit/Debit Card">Credit/Debit Card</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cryptocurrency">Cryptocurrency</option>
+                                <option value="Contactless Payment">Contactless Payment</option>
+                                <option value="Buy Now, Pay Later">Buy Now, Pay Later</option>
+                                <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
@@ -219,6 +255,7 @@
                             <option value="Equipment">Equipment</option>
                             <option value="Fabric">Fabric</option>
                             <option value="Labor Fee">Labor Fee</option>
+                            <option value="Marketing">Marketing</option>
                             <option value="Misc (Delivery Fee, Gas, etc)">Misc (Delivery Fee, Gas, etc)</option>
                             <option value="Others">Others</option>
                         </select>

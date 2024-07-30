@@ -71,9 +71,9 @@ const getAllExpenses = async (req, res) => {
 };
 
 const buildExpenseFilter = async (query) => {
-    const { sort, paymentMethod, collection, category, startDate, endDate } = query;
+    const { sort, paymentMethod, collection, category, startDate, endDate, quantityType, quantityValue } = query;
 
-    let filter = {};
+    let filter = {}; // Use 'let' to allow modifications
     if (paymentMethod) {
         filter.paymentMethod = paymentMethod;
         console.log(`Filter by paymentMethod: ${paymentMethod}`);
@@ -97,9 +97,30 @@ const buildExpenseFilter = async (query) => {
             console.log(`Filter by endDate: ${new Date(endDate).toISOString()}`);
         }
     }
+    if (quantityType && quantityValue) {
+        const parsedQuantityValue = parseInt(quantityValue, 10); // Ensure quantityValue is an integer
+        switch (quantityType) {
+            case 'lower':
+                filter.quantity = { $lt: parsedQuantityValue };
+                console.log(`Filter by quantity lower than: ${parsedQuantityValue}`);
+                break;
+            case 'higher':
+                filter.quantity = { $gt: parsedQuantityValue };
+                console.log(`Filter by quantity higher than: ${parsedQuantityValue}`);
+                break;
+            case 'equal':
+                filter.quantity = { $eq: parsedQuantityValue };
+                console.log(`Filter by quantity equal to: ${parsedQuantityValue}`);
+                break;
+            default:
+                break;
+        }
+    }
 
+    console.log('Final filter object:', filter);
     return filter;
 };
+
 
 const buildSortOrder = (sort) => {
     let sortOrder = {};
@@ -124,8 +145,6 @@ const buildSortOrder = (sort) => {
 
     return sortOrder;
 };
-
-
 
 const getExpense = async (req, res) => {
     const expenseId = req.params.id;
@@ -182,17 +201,12 @@ const deleteExpense = async (req, res) => {
 
 const fetchExpenseGraphs = async (req, res) => {
     try {
-        const { startDate, endDate } = getLastSixMonthsRange();
-
-        console.log(`Fetching expense data from ${startDate.toISOString()} to ${endDate.toISOString()}`);
-
-        // Fetch all documents within the date range and print them
-        const expensesWithinDateRange = await Expense.find({ date: { $gte: startDate, $lte: endDate } }).lean();
-        console.log('Expenses within date range:', expensesWithinDateRange);
+        // Fetch all expenses
+        const expenses = await Expense.find({}).lean();
+        console.log('All Expenses:', expenses);
 
         // Perform the aggregation for expenses by category
         const expenseAggregations = await Expense.aggregate([
-            { $match: { date: { $gte: startDate, $lte: endDate } } },
             { $project: {
                 category: 1,
                 totalCost: { $multiply: ['$amount', '$quantity'] }
@@ -213,7 +227,6 @@ const fetchExpenseGraphs = async (req, res) => {
 
         // Perform the aggregation for expenses by collection and category
         const collectionAggregations = await Expense.aggregate([
-            { $match: { date: { $gte: startDate, $lte: endDate } } },
             { $project: {
                 collectionName: 1,
                 category: 1,
@@ -241,15 +254,8 @@ const fetchExpenseGraphs = async (req, res) => {
     }
 }
 
-function getLastSixMonthsRange() {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setMonth(endDate.getMonth() - 6);
-    startDate.setHours(0, 0, 0, 0); // Set to start of the day
-    endDate.setHours(23, 59, 59, 999); // Set to end of the day
-    console.log(`Calculated date range: Start Date = ${startDate.toISOString()}, End Date = ${endDate.toISOString()}`);
-    return { startDate, endDate };
-}
+// No need for date range helper function since we are fetching all data
+
 
 
 
