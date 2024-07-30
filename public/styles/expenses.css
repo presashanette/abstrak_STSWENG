@@ -187,7 +187,7 @@ form button:hover {
 }
 
 .modal-content > * {
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Adjusted for better spacing */
 }
 
 .close {
@@ -208,7 +208,8 @@ form button:hover {
 .form-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    gap: 20px; /* Added gap for better spacing */
+    margin-bottom: 20px; /* More consistent spacing */
 }
 
 .form-column {
@@ -223,6 +224,7 @@ form button:hover {
 label {
     font-size: 14px;
     font-weight: bold;
+    margin-bottom: 5px; /* Added margin for spacing between label and input */
 }
 
 input[type="text"],
@@ -233,12 +235,12 @@ select,
 textarea {
     width: 100%;
     padding: 10px;
-    margin-top: 5px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-family: 'DM Sans', sans-serif;
     background-color: #f9f9f9;
     box-sizing: border-box;
+    margin-bottom: 10px; /* Added margin for better spacing */
 }
 
 textarea {
@@ -267,9 +269,29 @@ button[type="submit"]:hover {
 @media (max-width: 600px) {
     .form-row {
         flex-direction: column;
+        gap: 10px;
     }
+
     .form-column {
         margin-right: 0;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px; /* Added margin-top for spacing */
+    }
+
+    .filter-sort-clear,
+    .filter-sort-done {
+        width: 48%;
+        padding: 10px 0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
     }
 }
 
@@ -443,4 +465,49 @@ canvas {
 .filter-sort-clear, .filter-sort-done {
     padding: 10px;
     width: 48%;
+}
+
+.filter-sort-done {
+    background-color: #2a2929;
+    color: #fff;
+}
+
+.filter-sort-clear {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.filter-sort-clear:hover {
+    background-color: #e0e0e0;
+}
+
+.filter-sort-done:hover {
+    background-color: black;
+}
+
+.quantity-column .quantity-input {
+    width: 55%; /* Adjust the width as needed */
+    min-width: 150px; /* Optional: set a minimum width */
+    margin-top: 10px; /* Space between select and input */
+}
+.quantity-input {
+    width: 50px; /* Set a fixed width for the number input */
+    margin-top: 0; /* Remove margin-top if present */
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between select and input */
+}
+
+.quantity-container select {
+    width: 130px; /* Set a fixed width for the select element */
+    min-width: 130px; /* Ensure minimum width is sufficient to display "Select" */
+    flex: none; /* Prevent the select from expanding unnecessarily */
+}
+
+.quantity-container input {
+    width: 80px; /* Set a fixed width for the number input */
+    margin-top: 0; /* Aligns with the select element */
 }
