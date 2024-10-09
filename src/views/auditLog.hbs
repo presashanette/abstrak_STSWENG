@@ -18,56 +18,40 @@
     <div class="main">
         {{>navbar}}
         <div class="container">
-            <div class="recent-expenses">
-                {{#each recentExpenses}}
-                <div class="expense-card">
-                    <p><strong>Name:</strong> {{name}}</p>
-                    <p><strong>Collection:</strong> {{collectionName}}</p>
-                    <p><strong>Date:</strong> {{formatDate date}}</p>
-                    <p><strong>Amount:</strong> {{amount}}</p>
-                    <p><strong>Quantity:</strong> {{quantity}}</p>
-                    <p><strong>Payment Method:</strong> {{paymentMethod}}</p>
-                    </p>
-                </div>
-                {{/each}}
-            </div>
             <header>
-                <h1>Expenses</h1>
-                <button id="add-expense-btn" class="btn">Add Expense</button>
+                <h1>Audit Log</h1>
                 <button id="expense-filter-sort-btn" class="btn">Filter and Sort</button>
             </header>
-            <section class="expenses">
-                <table class="orders-table">
+            <section class="history">
+                <table class="action-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Collection</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Quantity</th>
-                            <th>Payment Method</th>
+                            <th>Date and Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Old Data</th>
+                            <th>New Data</th>
                         </tr>
                     </thead>
-                    <tbody id="expenses-list">
-                        {{#each expenses}}
+                    <tbody id="actions-list">   
+                        {{#each action}}
                         <tr>
-                            <td>{{name}}</td>
-                            <td>{{collectionName}}</td>
-                            <td>{{formatDate date}}</td>
-                            <td>{{amount}}</td>
-                            <td>{{quantity}}</td>
-                            <td>{{paymentMethod}}</td>
+                            <td>{{dateTime}}</td>
+                            <td>{{username}}</td>
+                            <td>{{action}}</td>
+                            <td>{{oldData}}</td>
+                            <td>{{newData}}</td>
                         </tr>
                         {{/each}}
                     </tbody>
                 </table>
             </section>
             <div class="pagination-container">
-                <button id="prev-expense-button">Previous</button>
-                <span id="expense-page-number">1</span>
+                <button id="prev-log-button">Previous</button>
+                <span id="log-page-number">1</span>
                 <span class="of-text">of</span>
-                <span id="total-expense-pages">1</span>
-                <button id="next-expense-button">Next</button>
+                <span id="total-log-pages">1</span>
+                <button id="next-log-button">Next</button>
             </div>
         </div>
     </div>
