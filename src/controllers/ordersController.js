@@ -4,6 +4,8 @@ const multer = require('multer');
 const { processCsvData } = require('../routes/loader');
 const path = require('path');
 
+const MainFund = require('../models/MainFund'); // Ensure the main fund model is imported
+
 let lastUpdatedDate = 'Never';
 
 const storageCSV = multer.diskStorage({
@@ -98,9 +100,18 @@ const getOrders = async (req, res) => {
     }
 };
 
+
 async function addOrder(req, res) {
     const { orderNo, date, totalOrderQuantity, items, paymentStatus, paymentMethod, fulfillmentStatus, orderedFrom, shippingRate, totalPrice } = req.body;
 
+    // Check if the order number already exists
+    const existingOrder = await OrderInfo.findOne({ orderNumber: orderNo });
+    if (existingOrder) {
+        console.log(`Order Number ${orderNo} already exists.`);
+        return res.status(400).json({ success: false, message: 'Order Number already exists. Please use a different order number.' });
+    }
+
+    // Create the new order
     const newOrder = new OrderInfo({
         orderNumber: orderNo,
         dateCreated: date,
@@ -115,7 +126,26 @@ async function addOrder(req, res) {
     });
 
     try {
+        // Save the order to the database
         await newOrder.save();
+
+        // Log the order as a transaction in MainFund and update balance
+        const mainFund = await MainFund.findOneAndUpdate(
+            {},
+            { 
+                $inc: { balance: totalPrice }, // Increment main fund by order total
+                $push: { 
+                    transactions: { 
+                        type: 'order', 
+                        amount: totalPrice, 
+                        description: `Order #${orderNo} added on ${new Date().toLocaleDateString()}` 
+                    }
+                } 
+            },
+            { new: true, upsert: true }
+        );
+
+        console.log(`Main fund updated: ${mainFund.balance}`);
 
         // Deduct inventory for each product in the order
         for (const item of items) {
@@ -127,13 +157,13 @@ async function addOrder(req, res) {
             );
 
             if (!product) {
-                console.error(`Product with SKU: ${item.SKU} and Variation: ${item.variation} not found`);
+                console.error(`Product with SKU: ${item.SKU} and Variation: ${item.variant} not found`);
             } else {
                 console.log(`Updated product inventory: ${product}`);
             }
         }
 
-        res.send({ success: true, message: 'Order added successfully' });
+        res.send({ success: true, message: 'Order added successfully, main fund updated with transaction.' });
     } catch (err) {
         console.error("Error in add order: " + err);
         res.status(500).send('Server Error');

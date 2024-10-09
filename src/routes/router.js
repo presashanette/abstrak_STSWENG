@@ -97,6 +97,10 @@ router.post('/api/products/update/:id', uploadProductPicture.single('picture'), 
 router.post('/api/products/add', uploadProductPicture.single('picture'), addProduct);
 router.post('/products/checkStock', checkStock);
 
+router.get('/mainfund', async (req, res) => {
+  const mainFund = await MainFund.findOne({});
+  res.json({ balance: mainFund ? mainFund.balance : 0 });
+});
 
 // orders
 router.get('/orders', getOrders);
