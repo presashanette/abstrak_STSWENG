@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const populateForm = async (expense) => {
         await fetchCollections();
-        $('#expense-id').val(expense._id);
+        $('#expense-id').val(expense.expenseId);
         $('#name').val(expense.name);
         $('#collection').val(expense.collectionName);
         $('#date').val(new Date(expense.date).toISOString().split('T')[0]);
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         $('#receipt-url').val(expense.receiptUrl);
         $('#modal-title').text('Edit Expense');
     };
-
+    
     function fetchExpenseGraphs() {
         $.ajax({
             url: '/api/expense-graphs',

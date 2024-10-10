@@ -47,6 +47,7 @@
             <div class="recent-expenses">
                 {{#each recentExpenses}}
                 <div class="expense-card">
+                    <p><strong>Expense ID:</strong> {{expenseId}}</p>
                     <p><strong>Name:</strong> {{name}}</p>
                     <p><strong>Collection:</strong> {{collectionName}}</p>
                     <p><strong>Date:</strong> {{formatDate date}}</p>
@@ -74,6 +75,7 @@
                 <table class="orders-table">
                     <thead>
                         <tr>
+                            <th>Expense ID</th> <!-- Add this line -->
                             <th>Name</th>
                             <th>Collection</th>
                             <th>Date</th>
@@ -89,6 +91,7 @@
                     <tbody id="expenses-list">
                         {{#each expenses}}
                         <tr>
+                            <td>{{expenseId}}</td> <!-- Add this line to show Expense ID -->
                             <td>{{name}}</td>
                             <td>{{collectionName}}</td>
                             <td>{{formatDate date}}</td>
