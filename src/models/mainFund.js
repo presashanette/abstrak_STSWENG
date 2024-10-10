@@ -1,17 +1,15 @@
-// src/models/MainFund.js
-
 const mongoose = require('mongoose');
 
 const mainFundSchema = new mongoose.Schema({
-    balance: { type: Number, default: 0 },
+    balance: { type: Number, required: true },
     transactions: [
         {
-            type: { type: String, required: true }, // e.g., 'order' or 'expense'
+            orderId: { type: String, default: null }, // Optional field for orders
+            expenseId: { type: String, default: null }, // Optional field for expenses
+            type: { type: String, required: true },
             amount: { type: Number, required: true },
-            description: { type: String, required: false },
-            date: { type: Date, default: Date.now },
-            orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'OrderInfo' }, // Reference to OrderInfo if transaction is an order
-            expenseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Expense' }  // Reference to Expense if transaction is an expense
+            description: { type: String, required: true },
+            date: { type: Date, default: Date.now }
         }
     ]
 });
