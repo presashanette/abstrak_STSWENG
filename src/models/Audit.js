@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const auditSchema = new Schema({
     username: { type: String, unique: true, required: true },
-    createdAt: { type: Date, default: Date.now },
+    dateTime: { type: Date, default: Date.now },
     action: { type: String, required: true},
     page: { type: String, required: true},
     oldData: { type: String, required: false },

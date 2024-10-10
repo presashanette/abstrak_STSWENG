@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const multer = require('multer');
 const { processCsvData } = require('../routes/loader');
 const path = require('path');
+const Audit = require('../models/Audit');
 
 let lastUpdatedDate = 'Never';
 
@@ -115,6 +116,15 @@ async function addOrder(req, res) {
     });
 
     try {
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Created a new order",
+            page: "Orders Page",
+            oldData: "--",
+            newData: "New Order: " + orderNumber
+        })
+        await newAudit.save();
         await newOrder.save();
 
         // Deduct inventory for each product in the order

@@ -1,4 +1,6 @@
 const Collection = require('../models/AbstrakCol');
+const Audit = require('../models/Audit');
+const Product = require('../models/Product');
 
 
 async function handleCollectionPageRequest (req, res) {
@@ -18,6 +20,18 @@ async function addProductToCollection(collectionId, productId) {
     if (!collection.pieces.includes(productId)) {
         collection.pieces.push(productId);
         await collection.save();  
+
+        // Record this action 
+        const newProduct = await Product.findById(productId)
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Added " + productId + " into " + collectionId,
+            page: "Collections Page",
+            oldData: "--",
+            newData: "New Product: " + newProduct.name
+        })
+
+        await newAudit.save();
     }
 }
 
@@ -25,7 +39,6 @@ async function handleAddCollectionRequest (req, res) {
     try {
         const { name, description } = req.body
         const collectionPicture = req.file || { filename: 'default.jpg' }
-
         const newCollection = new Collection({
             name,
             description,
@@ -33,7 +46,17 @@ async function handleAddCollectionRequest (req, res) {
             collectionPicture: collectionPicture.filename
         })
 
-        newCollection.save();
+        //record changes
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Added a new collection",
+            page: "Collections Page",
+            oldData: "--",
+            newData: "New collection: " + name
+        })
+
+        await newAudit.save();
+        await newCollection.save();
         res.send({ success: true, message: 'Collection added successfully' })
     } catch (error) {
         console.log("error in add collections: " + error)

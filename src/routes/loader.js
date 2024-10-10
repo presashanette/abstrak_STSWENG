@@ -6,11 +6,13 @@ const Voucher = require('../models/Voucher');
 const User = require('../models/User'); 
 const fs = require('fs');
 const csv = require('csv-parser');
+const Audit = require('../models/Audit');
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
 const productsJson = "src/models/data/data-products.json";
 const voucherJson = "src/models/data/data-vouchers.json"; 
 const usersJson = "src/models/data/data-users.json";
+const auditJson = "src/models/data/data-audit.json";
 
 function parseJson(pathToJson) {
   return JSON.parse(fs.readFileSync(pathToJson));
@@ -46,6 +48,11 @@ async function loadUsers() {
     await user.save();
   }
 }
+
+async function loadAudit() {
+    const result = parseJson(usersJson);
+    await Audit.deleteMany({});
+  }
 
 /*async function processCsvData(csvFilePath) {
   try {
@@ -207,4 +214,4 @@ async function processCsvData(csvFilePath) {
 }
 
 
-module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers };
+module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers, loadAudit };

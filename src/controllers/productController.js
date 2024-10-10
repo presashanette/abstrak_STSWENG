@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const AbstrakCol = require('../models/AbstrakCol');
+const Audit = require('../models/Audit');
 const OrderInfo = require('../models/OrderInfo');
 const { addProductToCollection } = require('./collectionControllers');
 
@@ -481,6 +482,15 @@ async function addProduct(req, res) {
 
 
     try{
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Added a product into " + collectionId,
+            page: "Collections Page",
+            oldData: "--",
+            newData: "New Product: " + name
+        })
+        await newAudit.save();
         await newProduct.save();
         addProductToCollection(collectionId, newProduct._id);
         res.send({ success: true, message: 'Product added successfully' });

@@ -28,16 +28,18 @@
                         <tr>
                             <th>Date and Time</th>
                             <th>User</th>
+                            <th>Page</th>
                             <th>Action</th>
                             <th>Old Data</th>
                             <th>New Data</th>
                         </tr>
                     </thead>
                     <tbody id="actions-list">   
-                        {{#each action}}
+                        {{#each changes}}
                         <tr>
                             <td>{{dateTime}}</td>
                             <td>{{username}}</td>
+                            <td>{{page}}</td>
                             <td>{{action}}</td>
                             <td>{{oldData}}</td>
                             <td>{{newData}}</td>

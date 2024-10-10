@@ -169,6 +169,16 @@ const addExpense = async (req, res) => {
     try {
         const expense = new Expense(req.body);
         await expense.save();
+
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Added a new expense",
+            page: "Expense Page",
+            oldData: "--",
+            newData: "New Expense: " + expense.amount
+        })
+        await newAudit.save();
         res.status(201).send(expense);
     } catch (err) {
         res.status(400).send(err);

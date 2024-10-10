@@ -9,7 +9,7 @@ const MemoryStore = require('memorystore')(session);
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
-const { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers  } = require('./src/routes/loader.js');
+const { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers, loadAudit  } = require('./src/routes/loader.js');
 
 const app = express();
 
@@ -45,6 +45,7 @@ async function initializeLoad(){
     await loadUsers();
     await processCsvData(productsJson);
     await loadVouchers();
+    await loadAudit();
 }
 
 function initializeHandlebars() {
