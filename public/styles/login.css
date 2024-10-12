@@ -126,7 +126,7 @@ input[type="text"], input[type="password"] {
 }
 
 .action-button {
-    width: 100%;
+    width: 75%;
     padding: 10px;
     background-color: #333;
     color: white;

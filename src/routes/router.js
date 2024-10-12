@@ -8,6 +8,7 @@ const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo 
 const { fetchExpenseGraphs, getPaginatedExpenses, getAllCollections, getAllExpenses, getExpense, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
+const { signup } = require('../controllers/signupController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 const { viewDashboard, updateProfile, getProfile, checkIfAdmin, getNonAdminDetails, updateNonAdminDetails, checkExistingEmail, checkExistingUsername, createUser } = require('../controllers/userController');
 
@@ -47,9 +48,9 @@ const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
 
 
-// Apply isAuthenticated middleware to all routes except login and logout
+// Apply isAuthenticated middleware to all routes except login and logout (and signup)
 router.use((req, res, next) => {
-  if (req.path === '/login' || req.path === '/logout') {
+  if (req.path === '/login' || req.path === '/logout' || req.path === '/signup') {
       return next();
   }
   return isAuthenticated(req, res, next);
@@ -73,6 +74,15 @@ router.get('/login', (req, res) => {
 });
 router.post('/login', login);
 router.get('/logout', logout);
+
+router.get('/signup', (req, res) => {
+  if (!req.session.userId) {
+    res.render('signup');
+  } else {
+    res.redirect('/collections');
+  }
+});
+router.post('/signup', signup);
 
 
 // collections page
