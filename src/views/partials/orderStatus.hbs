@@ -1,0 +1,65 @@
+<section class="orders-status">
+    <div class="header-container">
+        <h3>Orders Status</h3>
+        <a href="/collections" class="link">Go to Inventory →</a>
+    </div>
+
+    <div class="status">
+        <div class="status-item">
+            <p class="count" id="processing"></p>
+            <span>Processing</span>
+        </div>
+        <div class="status-item">
+            <p class="count" id="to-be-shipped"></p>
+            <span>To be shipped</span>
+        </div>
+        <div class="status-item">
+            <p class="count" id="cancelled"></p>
+            <span>Cancelled</span>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/api/ordersUnfulfilled',
+            method: 'GET',
+            success: function (data) {
+                $('#processing').text(data);
+            },
+            error: function (err) {
+                console.error('Error fetching unfulfilled count:', err);
+                $('#processing').text('Error');
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '/api/ordersFulfilled',
+            method: 'GET',
+            success: function (data) {
+                $('#to-be-shipped').text(data);
+            },
+            error: function (err) {
+                console.error('Error fetching to-process count:', err);
+                $('#to-be-shipped').text('Error');
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '/api/ordersCancelled',
+            method: 'GET',
+            success: function (data) {
+                $('#cancelled').text(data);
+            },
+            error: function (err) {
+                console.error('Error fetching to-process count:', err);
+                $('#cancelled').text('Error');
+            }
+        });
+    });
+</script>
