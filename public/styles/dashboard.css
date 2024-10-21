@@ -1,0 +1,84 @@
+@import "base.css";
+@import "navbar.css";
+@import "gridheader.css";
+@import "addcollection.css";
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: repeat(3, auto);
+    gap: 20px;
+}
+
+.orders-status {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.sales-report {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.finances {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.low-inventory {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+}
+
+.order-notifications {
+    grid-column: 3;
+    grid-row: 1 / span 3;
+}
+
+.orders-status, .sales-report, .low-inventory, .order-notifications, .finances {
+    background-color: #F6F6F6;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #C5C5C5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status, .report {
+    display: flex;
+    justify-content: space-between;
+}
+
+.status-item, .report-item, .finance-item {
+    text-align: center;
+}
+
+.status-item p, .report-item p, .finance-item p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.link {
+    color: #070707;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.count {
+    border: 1px solid #FFFFFF;
+    background-color: #FFFFFF;
+    padding: 5px 10px;
+    border-radius: 7px;
+    margin-bottom: 5px;
+}

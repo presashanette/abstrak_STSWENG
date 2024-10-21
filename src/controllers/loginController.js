@@ -10,7 +10,7 @@ async function loginUser(req, username, password) {
                 req.session.profilePicture = user.profilePicture;
                 req.session.userRole = user.role;
                 req.session['loggedIn'] = true;
-                return { success: true, redirectUrl: "/collections" }; // Redirect to collections
+                return { success: true, redirectUrl: "/" }; // Redirect to dashboard/main page
             } else {
                 console.log('Password mismatch');
             }
