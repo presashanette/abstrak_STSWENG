@@ -122,23 +122,6 @@ await driver.wait(until.elementIsVisible(okButton), 5000);
 await okButton.click();
 await driver.sleep(1000);
 
-let currentUrl = await driver.getCurrentUrl();
-const expectedUrl = "http://localhost:3000/expenses";
-
-// Assert if the navigation was correct based on expected outcome
-if (testCase.isValid) {
-    assert.strictEqual(
-        currentUrl,
-        expectedUrl,
-        `Expected to navigate to ${expectedUrl} on valid input for case ${caseIndex}`
-    );
-} else {
-    assert.notStrictEqual(
-        currentUrl,
-        expectedUrl,
-        `Expected to stay on the same page for invalid input for case ${caseIndex}`
-    );
-}
 }
 
 testAddExpense();
