@@ -41,7 +41,7 @@ describe("Order Status Test", function () {
   this.timeout(30000);
 
   before(async function () {
-    // Set up Chrome driver in headless mode
+    // Set up Chrome options
     const options = new chrome.Options();
     options.addArguments(
       "--headless",

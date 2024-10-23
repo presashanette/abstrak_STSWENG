@@ -8,6 +8,7 @@ describe("Signup Test", function () {
 
   // Increase timeout for tests
   this.timeout(30000);
+
   before(async function () {
     // Set up Chrome options
     const options = new chrome.Options();
@@ -23,7 +24,7 @@ describe("Signup Test", function () {
 
     // Function to navigate back to the signup page
     await driver.get("http://localhost:3000/signup");
-    await driver.sleep(1000); // Wait for the page to load
+    await driver.sleep(1000);
   });
 
   after(async function () {
