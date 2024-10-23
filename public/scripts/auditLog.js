@@ -24,15 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         endDate: ''
     };
 
-    const openModal = () => {
-        modal.style.display = "block";
-    };
-
-    const closeModal = () => {
-        modal.style.display = "none";
-        form.reset();
-        $('#audit-id').val('');
-    };
     const openFilterModal = () => {
         document.getElementById('sorting-audit').value = currentFilters.sort || '';
         document.getElementById('filter-username').value = currentFilters.paymentMethod || '';
@@ -46,14 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filterModal.style.display = "none";
         document.getElementById("filter-sort-form-audit").reset();
     };
-
-    closeBtn.addEventListener('click', closeModal);
-
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
 
     filterBtn.addEventListener('click', openFilterModal);
     closeFilterBtn.addEventListener('click', closeFilterModal);
@@ -133,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    filterBtn.addEventListener('click', openFilterModal);
+    closeFilterBtn.addEventListener('click', closeFilterModal);
 
     nextButton.addEventListener('click', () => {
         const currentPage = parseInt(pageNumber.textContent);

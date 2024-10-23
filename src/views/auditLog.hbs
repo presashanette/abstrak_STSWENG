@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit audit</title>
-    <link rel="stylesheet" href="/styles/auditaudit.css">
+    <link rel="stylesheet" href="/styles/auditLog.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="/scripts/general.js"></script>
+    <script src="/public/scripts/auditLog.js"></script>
 </head>
 
 <body>
@@ -44,10 +45,12 @@
                             <td>{{oldData}}</td>
                             <td>{{newData}}</td>
                         </tr>
+                        
                         {{/each}}
                     </tbody>
                 </table>
             </section>
+            
             <div class="pagination-container">
                 <button id="prev-audit-button">Previous</button>
                 <span id="audit-page-number">1</span>
