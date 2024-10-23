@@ -72,49 +72,48 @@
                 <button id="expense-filter-sort-btn" class="btn">Filter and Sort</button>
             </header>
             <section class="expenses">
-                <table class="orders-table">
-                    <thead>
-                        <tr>
-                            <th>Expense ID</th> <!-- Add this line -->
-                            <th>Name</th>
-                            <th>Collection</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Quantity</th>
-                            <th>Payment Method</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Receipt</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="expenses-list">
-                        {{#each expenses}}
-                        <tr>
-                            <td>{{expenseId}}</td> <!-- Add this line to show Expense ID -->
-                            <td>{{name}}</td>
-                            <td>{{collectionName}}</td>
-                            <td>{{formatDate date}}</td>
-                            <td>{{amount}}</td>
-                            <td>{{quantity}}</td>
-                            <td>{{paymentMethod}}</td>
-                            <td>{{category}}</td>
-                            <td>{{description}}</td>
-                            <td>
-                                {{#if receiptUrl}}
-                                <a href="{{receiptUrl}}" target="_blank">View Receipt</a>
-                                {{else}}
-                                No Receipt
-                                {{/if}}
-                            </td>
-                            <td>
-                                <button class="edit-btn btn" data-id="{{_id}}">Edit</button>
-                                <button class="delete-btn btn" data-id="{{_id}}">Delete</button>
-                            </td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
+<table class="orders-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Collection</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Quantity</th>
+            <th>Payment Method</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Receipt</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="expenses-list">
+        {{#each expenses}}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{collectionName}}</td>
+            <td>{{formatDate date}}</td>
+            <td>{{amount}}</td>
+            <td>{{quantity}}</td>
+            <td>{{paymentMethod}}</td>
+            <td>{{category}}</td>
+            <td>{{description}}</td>
+            <td>
+                {{#if receiptUrl}}
+                <a href="{{receiptUrl}}" target="_blank">View Receipt</a>
+                {{else}}
+                No Receipt
+                {{/if}}
+            </td>
+            <td>
+                <button class="edit-btn btn" data-id="{{_id}}">Edit</button>
+                <button class="delete-btn btn" data-id="{{_id}}">Delete</button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
             </section>
             <div class="pagination-container">
                 <button id="prev-expense-button">Previous</button>
