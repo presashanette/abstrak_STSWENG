@@ -1,7 +1,11 @@
-$(document).ready(function(){
+$(document).ready(function() {
+    const collectionId = $('.main').data('id');
+    console.log("Extracted collectionId:", collectionId); // Should now show the correct collectionId
+
     $(".main-picture").click(function(event){
         $("#imageInput").click();
     });
+
 
     $("#imageInput").click(function(event){
         event.stopPropagation();

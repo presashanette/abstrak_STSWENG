@@ -8,7 +8,7 @@ const productSchema = new Schema({
   SKU: { type: String, required: true },
   material: { type: [String], required: true },
   variations: { type: [Map], required: true },
-  lastInventoryUpdate: { type: Date, required: true}
+  lastInventoryUpdate: { type: Date } // No longer required
 });
 
 const Product = mongoose.model('Product', productSchema);
