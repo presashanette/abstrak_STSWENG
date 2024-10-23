@@ -1,25 +1,23 @@
 const { Builder, By, until } = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
-const path = require("path");
 const assert = require("assert");
 const OrderInfo = require("../src/models/OrderInfo");
-
 const mongoose = require("mongoose");
 
-// fetch order counts from db
+// Fetch order counts from the database
 async function OrderCountsDB() {
   try {
     await mongoose.connect("mongodb://0.0.0.0:27017/abstrak");
 
-    const processingCount = await OrderInfo.find({
+    const processingCount = await OrderInfo.countDocuments({
       fulfillmentStatus: "Unfulfilled",
-    }).countDocuments();
-    const toBeShippedCount = await OrderInfo.find({
+    });
+    const toBeShippedCount = await OrderInfo.countDocuments({
       fulfillmentStatus: "Fulfilled",
-    }).countDocuments();
-    const cancelledCount = await OrderInfo.find({
+    });
+    const cancelledCount = await OrderInfo.countDocuments({
       fulfillmentStatus: "Canceled",
-    }).countDocuments();
+    });
 
     return {
       processing: processingCount,
@@ -28,25 +26,34 @@ async function OrderCountsDB() {
     };
   } catch (err) {
     console.error("Error fetching data from MongoDB:", err);
+    return null;
   }
 }
 
-async function testOrderStatus() {
+describe("Order Status Test", function () {
   let driver;
+  let orderCountsDB;
+  let processingCountDashboard;
+  let toBeShippedCountDashboard;
+  let cancelledCountDashboard;
 
-  try {
-    // Set up Chrome options
+  // Increase timeout for tests
+  this.timeout(30000);
+
+  before(async function () {
+    // Set up Chrome driver in headless mode
     const options = new chrome.Options();
-    options.addArguments("--headless"); // Run in headless mode
-    options.addArguments("--no-sandbox"); // Bypass OS security model
-    options.addArguments("--disable-dev-shm-usage"); // Overcome limited resource problems
-
+    options.addArguments(
+      "--headless",
+      "--no-sandbox",
+      "--disable-dev-shm-usage"
+    );
     driver = await new Builder()
       .forBrowser("chrome")
-      .setChromeOptions(options) // Set the Chrome options here
+      .setChromeOptions(options)
       .build();
 
-    // log in
+    // Log in and fetch counts
     await driver.get("http://localhost:3000/login");
     const usernameInput = await driver.findElement(By.id("username"));
     await usernameInput.sendKeys("Max_Verstappen");
@@ -64,50 +71,41 @@ async function testOrderStatus() {
     const toBeShippedElement = await driver.findElement(By.id("to-be-shipped"));
     const cancelledElement = await driver.findElement(By.id("cancelled"));
 
-    const processingCountDashboard = parseInt(
-      await processingElement.getText()
-    );
-    const toBeShippedCountDashboard = parseInt(
-      await toBeShippedElement.getText()
-    );
+    processingCountDashboard = parseInt(await processingElement.getText());
+    toBeShippedCountDashboard = parseInt(await toBeShippedElement.getText());
+    cancelledCountDashboard = parseInt(await cancelledElement.getText());
 
-    const cancelledCountDashboard = parseInt(await cancelledElement.getText());
-
-    const orderCountsDB = await OrderCountsDB();
+    orderCountsDB = await OrderCountsDB();
     await mongoose.disconnect();
+  });
 
-    console.log("DB Order Counts:", orderCountsDB);
-    console.log("Dashboard Counts:", {
-      processing: processingCountDashboard,
-      toBeShipped: toBeShippedCountDashboard,
-      cancelled: cancelledCountDashboard,
-    });
+  after(async function () {
+    await driver.quit();
+  });
 
-    // checks if db count === dashboard count
+  it("Processing count from dashboard and DB match.", function () {
     assert.strictEqual(
       processingCountDashboard,
       orderCountsDB.processing,
       "Processing count does not match!"
     );
+  });
+
+  it("To be shipped count from dashboard and DB match.", function () {
     assert.strictEqual(
       toBeShippedCountDashboard,
       orderCountsDB.toBeShipped,
       "To be shipped count does not match!"
     );
+  });
+
+  it("Cancelled count from dashboard and DB match.", function () {
     assert.strictEqual(
       cancelledCountDashboard,
       orderCountsDB.cancelled,
       "Cancelled count does not match!"
     );
+  });
 
-    console.log("Counts match between MongoDB and Dashboard!");
-  } catch (error) {
-    console.error("Error occurred:", error);
-  } finally {
-    if (driver) {
-      await driver.quit();
-    }
-  }
-}
-
-testOrderStatus();
+  console.log("Counts match between MongoDB and Dashboard!");
+});
