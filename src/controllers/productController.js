@@ -431,9 +431,31 @@ async function deleteProductById(req, res) {
             if (req.query.deleteAssociations === 'true') {
                 await AbstrakCol.updateMany({ pieces: productId }, { $pull: { pieces: productId } });
                 await Product.findByIdAndDelete(productId);
+
+                // Record this action 
+                const newAudit = new Audit ({
+                    username: req.session.username,
+                    action: "Deleted a product and associatons",
+                    page: "Collections Page",
+                    oldData: product.name,
+                    newData: "--" 
+                })
+                await newAudit.save();
+
                 return res.send('Product and associations deleted');
             } else if (req.query.deleteAssociations === 'false') {
                 await Product.findByIdAndDelete(productId);
+
+                // Record this action 
+                const newAudit = new Audit ({
+                    username: req.session.username,
+                    action: "Deleted a product only",
+                    page: "Collections Page",
+                    oldData: product.name,
+                    newData: "--" 
+                })
+                await newAudit.save();
+
                 return res.send('Product deleted, associations retained');
             } else {
                 return res.status(400).send('Invalid deleteAssociations query parameter');
