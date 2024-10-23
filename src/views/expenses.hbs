@@ -18,6 +18,13 @@
     <div class="main">
         {{>navbar}}
         <div class="container">
+            
+            <!-- Main Fund Display -->
+            <div class="main-fund-display">
+                <h2>Main Fund</h2>
+                <p id="main-fund">₱100,000.00</p>
+            </div>
+            
             <div class="charts-section">
                 <h2>Charts</h2>
                 <div class="charts-container">
@@ -40,6 +47,7 @@
             <div class="recent-expenses">
                 {{#each recentExpenses}}
                 <div class="expense-card">
+                    <p><strong>Expense ID:</strong> {{expenseId}}</p>
                     <p><strong>Name:</strong> {{name}}</p>
                     <p><strong>Collection:</strong> {{collectionName}}</p>
                     <p><strong>Date:</strong> {{formatDate date}}</p>
@@ -67,6 +75,7 @@
                 <table class="orders-table">
                     <thead>
                         <tr>
+                            <th>Expense ID</th> <!-- Add this line -->
                             <th>Name</th>
                             <th>Collection</th>
                             <th>Date</th>
@@ -82,6 +91,7 @@
                     <tbody id="expenses-list">
                         {{#each expenses}}
                         <tr>
+                            <td>{{expenseId}}</td> <!-- Add this line to show Expense ID -->
                             <td>{{name}}</td>
                             <td>{{collectionName}}</td>
                             <td>{{formatDate date}}</td>

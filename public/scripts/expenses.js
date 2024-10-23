@@ -50,6 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
         filterModal.style.display = "block";
     };
     
+        let mainFund = 100000; // Initialize fund or fetch from server/database
+
+    // Function to update the main fund display
+    const updateMainFundDisplay = () => {
+        document.getElementById('main-fund').textContent = `₱${mainFund.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    };
+
+    // Load initial fund amount on page load
+    updateMainFundDisplay();
+
 
     const closeFilterModal = () => {
         filterModal.style.display = "none";
@@ -102,6 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
     
+        const expenseAmount = parseFloat(form.amount.value);
+        mainFund -= expenseAmount; // Deduct from main fund
+        updateMainFundDisplay();
+        
         try {
             let response;
             if (expenseId) {
@@ -193,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const populateForm = async (expense) => {
         await fetchCollections();
-        $('#expense-id').val(expense._id);
+        $('#expense-id').val(expense.expenseId);
         $('#name').val(expense.name);
         $('#collection').val(expense.collectionName);
         $('#date').val(new Date(expense.date).toISOString().split('T')[0]);
@@ -205,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         $('#receipt-url').val(expense.receiptUrl);
         $('#modal-title').text('Edit Expense');
     };
-
+    
     function fetchExpenseGraphs() {
         $.ajax({
             url: '/api/expense-graphs',

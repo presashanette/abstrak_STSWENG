@@ -7,6 +7,7 @@ const User = require('../models/User');
 const fs = require('fs');
 const csv = require('csv-parser');
 const Audit = require('../models/Audit');
+const MainFund = require('../models/MainFund'); 
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
 const productsJson = "src/models/data/data-products.json";
@@ -130,88 +131,105 @@ async function loadAudit() {
 }*/
 
 async function processCsvData(csvFilePath) {
-  return new Promise((resolve, reject) => {
-      try {
-          // Clear data
-          OrderInfo.deleteMany({})
-              .then(() => console.log('Existing orderInfos data cleared'))
-              .catch(err => console.error('Error clearing orderInfos data:', err));
+    return new Promise((resolve, reject) => {
+        try {
+            // Clear existing OrderInfo data
+            OrderInfo.deleteMany({})
+                .then(() => console.log('Existing orderInfos data cleared'))
+                .catch(err => console.error('Error clearing orderInfos data:', err));
 
-          const orders = {};
+            const orders = {};
 
-          fs.createReadStream(csvFilePath)
-              .pipe(csv({
-                  mapHeaders: ({ header }) => header.trim()
-              }))
-              .on('data', (row) => {
-                  const orderNumber = row['Order number'];
-                  if (!orders[orderNumber]) {
-                      orders[orderNumber] = {
-                          orderNumber,
-                          dateCreated: new Date(row['Date created']),
-                          time: row['Time'],
-                          fulfillBy: row['Fulfill by'],
-                          totalOrderQuantity: parseInt(row['Total order quantity'], 10),
-                          items: [],
-                          paymentStatus: row['Payment status'],
-                          paymentMethod: row['Payment method'],
-                          couponCode: row['Coupon code'],
-                          giftCardAmount: parseFloat(row['Gift card amount']) || 0,
-                          shippingRate: parseFloat(row['Shipping rate']),
-                          totalTax: parseFloat(row['Total tax']),
-                          total: parseFloat(row['Total']),
-                          currency: row['Currency'],
-                          refundedAmount: parseFloat(row['Refunded amount']) || 0,
-                          netAmount: parseFloat(row['Net amount']),
-                          additionalFees: parseFloat(row['Additional fees']) || 0,
-                          fulfillmentStatus: row['Fulfillment status'],
-                          trackingNumber: row['Tracking number'],
-                          fulfillmentService: row['Fulfillment service'],
-                          deliveryMethod: row['Delivery method'],
-                          shippingLabel: row['Shipping label'],
-                          orderedFrom: 'WIX website',
-                      };
-                  }
+            fs.createReadStream(csvFilePath)
+                .pipe(csv({
+                    mapHeaders: ({ header }) => header.trim()
+                }))
+                .on('data', (row) => {
+                    const orderNumber = row['Order number'];
+                    if (!orders[orderNumber]) {
+                        orders[orderNumber] = {
+                            orderNumber,
+                            dateCreated: new Date(row['Date created']),
+                            totalOrderQuantity: parseInt(row['Total order quantity'], 10),
+                            items: [],
+                            paymentStatus: row['Payment status'],
+                            paymentMethod: row['Payment method'],
+                            shippingRate: parseFloat(row['Shipping rate']),
+                            total: parseFloat(row['Total']),
+                            fulfillmentStatus: row['Fulfillment status'],
+                            orderedFrom: 'WIX website',
+                        };
+                    }
 
-                  orders[orderNumber].items.push({
-                      itemName: row['Item'],
-                      variant: row['Variant'],
-                      sku: row['SKU'],
-                      quantity: parseInt(row['Qty'], 10),
-                      quantityRefunded: parseInt(row['Quantity refunded'], 10),
-                      price: parseFloat(row['Price']),
-                      weight: parseFloat(row['Weight']),
-                      customText: row['Custom text'],
-                      depositAmount: parseFloat(row['Deposit amount']) || 0,
-                      deliveryTime: row['Delivery time'],
-                  });
-              })
-              .on('end', async () => {
-                  console.log('Order CSV file successfully processed');
-                  const savedOrders = [];
-                  for (const orderData of Object.values(orders)) {
-                      const order = new OrderInfo(orderData);
-                      try {
-                          await order.save();
-                          console.log(`Order ${orderData.orderNumber} saved`);
-                          savedOrders.push(order);
-                      } catch (err) {
-                          console.error('Error saving order:', err);
-                      }
-                  }
-                  resolve(savedOrders); // Resolve the promise with saved orders
-              })
-              .on('error', (error) => {
-                  console.error('Error reading the Order CSV file:', error);
-                  reject(error); // Reject the promise on error
-              });
+                    orders[orderNumber].items.push({
+                        itemName: row['Item'],
+                        variant: row['Variant'],
+                        sku: row['SKU'],
+                        quantity: parseInt(row['Qty'], 10),
+                        price: parseFloat(row['Price']),
+                    });
+                })
+                .on('end', async () => {
+                    console.log('Order CSV file successfully processed');
+                    const savedOrders = [];
 
-      } catch (error) {
-          console.error('Error processing CSV data:', error);
-          reject(error); // Reject the promise on error
-      }
-  });
+                    for (const orderData of Object.values(orders)) {
+                        const existingOrder = await OrderInfo.findOne({ orderNumber: orderData.orderNumber });
+                        if (existingOrder) {
+                            console.log(`Order ${orderData.orderNumber} already exists. Skipping duplicate.`);
+                            continue;
+                        }
+
+                        const order = new OrderInfo(orderData);
+                        await order.save();
+                        console.log(`Order ${orderData.orderNumber} saved`);
+                        savedOrders.push(order);
+
+                        // Verify if transaction already exists for this order in MainFund
+                        const mainFund = await MainFund.findOne({ 
+                            'transactions.description': `Order #${orderData.orderNumber} imported from CSV` 
+                        });
+
+                        if (mainFund) {
+                            console.log(`Transaction for Order ${orderData.orderNumber} already exists in MainFund. Skipping duplicate.`);
+                            continue;
+                        }
+
+                        // Add a unique transaction to MainFund
+                        await MainFund.findOneAndUpdate(
+                            {},
+                            {
+                                $inc: { balance: orderData.total },
+                                $push: {
+                                    transactions: {
+                                        type: 'order',
+                                        amount: orderData.total,
+                                        description: `Order #${orderData.orderNumber} imported from CSV`,
+                                        orderId: order._id,
+                                    }
+                                }
+                            },
+                            { new: true, upsert: true }
+                        );
+
+                        console.log(`Transaction added for Order ${orderData.orderNumber} in MainFund`);
+                    }
+
+                    resolve(savedOrders); // Resolve with all saved orders
+                })
+                .on('error', (error) => {
+                    console.error('Error reading the Order CSV file:', error);
+                    reject(error);
+                });
+
+        } catch (error) {
+            console.error('Error processing CSV data:', error);
+            reject(error);
+        }
+    });
 }
 
 
-module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers, loadAudit };
+
+
+module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers,  loadAudit };
