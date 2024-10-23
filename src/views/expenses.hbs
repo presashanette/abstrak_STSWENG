@@ -19,12 +19,18 @@
         {{>navbar}}
         <div class="container">
             
-            <!-- Main Fund Display -->
-            <div class="main-fund-display">
-                <h2>Main Fund</h2>
-                <p id="main-fund">₱100,000.00</p>
-            </div>
-            
+<div class="main-fund-display">
+    <div class="wallet-card">
+        <div class="wallet-header">
+            <p>Abstrak Wallet</p>
+        </div>
+        <div class="wallet-balance">
+            <span>Balance</span>
+            <h1 id="main-fund">₱0.00</h1> <!-- Will be updated dynamically -->
+            <p class="balance-date" id="balance-date">As of: <span id="current-date"></span></p>
+        </div>
+    </div>
+</div>
             <div class="charts-section">
                 <h2>Charts</h2>
                 <div class="charts-container">

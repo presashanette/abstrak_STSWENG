@@ -130,23 +130,28 @@ async function addOrder(req, res) {
         // Save the order to the database
         await newOrder.save();
 
-        // Log the order as a transaction in MainFund and update balance
-        const mainFund = await MainFund.findOneAndUpdate(
-            {},
-            { 
-                $inc: { balance: totalPrice }, // Increment main fund by order total
-                $push: { 
-                    transactions: { 
-                        type: 'order', 
-                        amount: totalPrice, 
-                        description: `Order #${orderNo} added on ${new Date().toLocaleDateString()}` 
-                    }
-                } 
-            },
-            { new: true, upsert: true }
-        );
+        // Only update main fund if payment status is not 'unpaid'
+        if (paymentStatus.toLowerCase() !== 'unpaid') {
+            // Log the order as a transaction in MainFund and update balance
+            const mainFund = await MainFund.findOneAndUpdate(
+                {},
+                { 
+                    $inc: { balance: totalPrice }, // Increment main fund by order total
+                    $push: { 
+                        transactions: { 
+                            type: 'order', 
+                            amount: totalPrice, 
+                            description: `Order #${orderNo} added on ${new Date().toLocaleDateString()}` 
+                        }
+                    } 
+                },
+                { new: true, upsert: true }
+            );
 
-        console.log(`Main fund updated: ${mainFund.balance}`);
+            console.log(`Main fund updated: ${mainFund.balance}`);
+        } else {
+            console.log('Order is unpaid, main fund remains unchanged.');
+        }
 
         // Deduct inventory for each product in the order
         for (const item of items) {
@@ -164,18 +169,7 @@ async function addOrder(req, res) {
             }
         }
 
-        
-        // Record this action 
-        const newAudit = new Audit ({
-            username: req.session.username,
-            action: "Created a new order",
-            page: "Orders Page",
-            oldData: "--",
-            newData: "New Order: " + orderNo
-        })
-        await newAudit.save();
-
-        res.send({ success: true, message: 'Order added successfully, main fund updated with transaction.' });
+        res.send({ success: true, message: 'Order added successfully, main fund updated with transaction if applicable.' });
     } catch (err) {
         console.error("Error in add order: " + err);
         res.status(500).send('Server Error');
@@ -197,18 +191,70 @@ const uploadCSVFile = async (req, res) => {
             console.error('Error: Processed data is not an array');
             throw new Error('Processed data is not an array');
         }
-        
+
         lastUpdatedDate = new Date().toLocaleString();
 
         console.log('Processed CSV Data:', processedData);
 
-        // Assuming processCsvData returns an array of orders
-        for (let order of processedData) {
-            console.log(`Updating inventory for order ID: ${order._id}, Fulfillment Status: ${order.fulfillmentStatus}`);
-            await updateInventoryBasedOnFulfillmentStatus(order._id, order.fulfillmentStatus);
+        // Assuming processCsvData returns an array of orders, save each order to the database
+        for (let orderData of processedData) {
+            // Check if the order number already exists
+            const existingOrder = await OrderInfo.findOne({ orderNumber: orderData.orderNumber });
+            if (existingOrder) {
+                // If the order exists, check if payment status has changed from unpaid to paid
+                if (existingOrder.paymentStatus.toLowerCase() === 'unpaid' && orderData.paymentStatus.toLowerCase() === 'paid') {
+                    console.log(`Order Number ${orderData.orderNumber} payment status changed from unpaid to paid. Processing...`);
+
+                    // Update the order details
+                    existingOrder.totalOrderQuantity = orderData.totalOrderQuantity;
+                    existingOrder.items = orderData.items;
+                    existingOrder.paymentStatus = orderData.paymentStatus;
+                    existingOrder.paymentMethod = orderData.paymentMethod;
+                    existingOrder.shippingRate = orderData.shippingRate;
+                    existingOrder.total = orderData.total;
+                    existingOrder.fulfillmentStatus = orderData.fulfillmentStatus;
+                    existingOrder.orderedFrom = orderData.orderedFrom;
+
+                    // Save the updated order
+                    await existingOrder.save();
+                    console.log(`Order #${orderData.orderNumber} updated in the database.`);
+
+                    // Update inventory based on the fulfillment status of the order
+                    await updateInventoryBasedOnFulfillmentStatus(existingOrder._id, existingOrder.fulfillmentStatus);
+                } else {
+                    console.log(`Order Number ${orderData.orderNumber} has no relevant changes. Skipping...`);
+                    continue; // Skip if payment status didn't change from unpaid to paid
+                }
+            } else {
+                // If the order does not exist, create a new order
+                const newOrder = new OrderInfo({
+                    orderNumber: orderData.orderNumber,
+                    dateCreated: orderData.dateCreated,
+                    totalOrderQuantity: orderData.totalOrderQuantity,
+                    items: orderData.items,
+                    paymentStatus: orderData.paymentStatus,
+                    paymentMethod: orderData.paymentMethod,
+                    shippingRate: orderData.shippingRate,
+                    total: orderData.total,
+                    fulfillmentStatus: orderData.fulfillmentStatus,
+                    orderedFrom: orderData.orderedFrom
+                });
+
+                try {
+                    // Save the new order to the database
+                    await newOrder.save();
+                    console.log(`New order #${orderData.orderNumber} saved to the database.`);
+
+                    // Update inventory based on the fulfillment status of the order
+                    await updateInventoryBasedOnFulfillmentStatus(newOrder._id, newOrder.fulfillmentStatus);
+                } catch (saveError) {
+                    console.error(`Error saving order #${orderData.orderNumber}:`, saveError);
+                    // Handle any save errors
+                }
+            }
         }
 
-        res.status(200).json({ message: 'File uploaded, processed, and inventory updated successfully.' });
+        res.status(200).json({ message: 'File uploaded, orders processed, and inventory updated successfully.' });
     } catch (error) {
         console.error('Error processing CSV file:', error);
         res.status(500).json({ message: 'Error processing CSV file: ' + error.message });
