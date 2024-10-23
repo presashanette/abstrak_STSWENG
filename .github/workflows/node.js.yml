@@ -5,9 +5,10 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "*" ]
+    branches:
+      - develop
+    paths-ignore:
+    - .github/workflows/**
 
 jobs:
   build:
@@ -46,5 +47,21 @@ jobs:
     - name: Run Signup Tests
       run: npx mocha test/signupTest.js
 
-  
+  test_orderstatus:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.18.0
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - name: Run Order Status Tests
+      run: npx mocha test/orderStatusTest.js
+
 
