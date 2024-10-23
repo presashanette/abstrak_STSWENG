@@ -12,14 +12,24 @@ const getPaginatedExpenses = async (req, res) => {
         const filter = await buildExpenseFilter(req.query);
         const sortOrder = buildSortOrder(req.query.sort);
 
+        console.log('Filter object:', JSON.stringify(filter));
+        console.log('Sort order:', JSON.stringify(sortOrder));
+
         const totalExpenses = await Expense.countDocuments(filter);
+        console.log(`Total expenses count: ${totalExpenses}`);
+        
         const totalPages = Math.ceil(totalExpenses / limit);
+        console.log(`Total pages: ${totalPages}`);
 
         const expenses = await Expense.find(filter).sort(sortOrder).skip(skip).limit(limit).lean();
+        console.log('Retrieved expenses:', JSON.stringify(expenses, null, 2));
+
+        const nextPage = page < totalPages ? page + 1 : null;
+        console.log(`Current page: ${page}, Next page: ${nextPage}`);
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             res.json({
-                expenses,   // This will include `expenseId`
+                expenses,
                 currentPage: page,
                 totalPages, // Ensure totalPages is included in the response
             });
@@ -28,8 +38,10 @@ const getPaginatedExpenses = async (req, res) => {
                 expenses: JSON.stringify(expenses),
                 currentPage: page,
                 totalPages,
-                nextPage: page < totalPages ? page + 1 : null,
-                lastUpdatedDate: new Date(),
+                nextPage,
+                lastUpdatedDate: new Date(), // Assuming this needs to be the current date
+                "grid-add-button": "Expense",
+                "grid-title": "EXPENSES"
             });
         }
     } catch (err) {
@@ -37,7 +49,6 @@ const getPaginatedExpenses = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
-
 
 const getAllCollections = async (req, res) => {
     try {
@@ -184,62 +195,43 @@ const addExpense = async (req, res) => {
 
 const updateExpense = async (req, res) => {
     try {
-        // Fetch the original expense for comparison
         const originalExpense = await Expense.findById(req.params.id);
         if (!originalExpense) {
-            return res.status(404).send('Expense not found.');
+            return res.status(404).send();
         }
 
-        // Calculate the original total cost (amount * quantity)
-        const originalTotalCost = originalExpense.amount * originalExpense.quantity;
+        // Update the expense with new values
+        const updatedExpense = await Expense.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
 
-        // Update the expense object directly with new values from the request body
-        originalExpense.name = req.body.name;
-        originalExpense.collectionName = req.body.collectionName;
-        originalExpense.date = req.body.date;
-        originalExpense.amount = req.body.amount;
-        originalExpense.quantity = req.body.quantity;
-        originalExpense.paymentMethod = req.body.paymentMethod;
-        originalExpense.category = req.body.category;
-        originalExpense.description = req.body.description;
-        originalExpense.receiptUrl = req.body.receiptUrl;
+        // Calculate the difference between the original and updated amount
+        const amountDifference = updatedExpense.amount - originalExpense.amount;
 
-        // Calculate the updated total cost (amount * quantity)
-        const updatedTotalCost = originalExpense.amount * originalExpense.quantity;
+        // Adjust the main fund based on the difference
+        await MainFund.findOneAndUpdate(
+            {},
+            {
+                $inc: { balance: -amountDifference },
+                $push: {
+                    transactions: {
+                        type: 'expense',
+                        amount: amountDifference,
+                        description: `Expense updated: ${updatedExpense.name} - ${updatedExpense.collectionName}`
+                    }
+                }
+            },
+            { new: true, upsert: true }
+        );
 
-        // Calculate the difference between the updated and original total costs
-        const costDifference = updatedTotalCost - originalTotalCost;
-
-        // Save the updated expense object
-        await originalExpense.save();
-
-        // Fetch the specific transaction by _id (provided by you)
-        const transactionId = "67162e02c89a0378e3ec41b0"; // Replace with the actual _id you're working with
-
-        const mainFund = await MainFund.findOne();
-
-        // Find the transaction in the main fund's transaction log
-        const transactionIndex = mainFund.transactions.findIndex(transaction => transaction._id.toString() === transactionId);
-
-        if (transactionIndex === -1) {
-            return res.status(404).send('Transaction not found.');
-        }
-
-        // Update the specific transaction
-        mainFund.transactions[transactionIndex].amount = costDifference; // Adjust the amount
-        mainFund.transactions[transactionIndex].description = `Expense updated: ${originalExpense.name} - ${originalExpense.collectionName}`;
-        
-        // Manually adjust the balance based on the cost difference
-        const updatedBalance = mainFund.balance - costDifference; // Subtract the difference directly
-
-        // Save the updated main fund
-        await mainFund.save();
-
-        res.send(originalExpense); // Send back the updated expense
+        res.send(updatedExpense);
     } catch (err) {
-        res.status(400).send(err.message);
+        res.status(400).send(err);
     }
 };
+
 
 const deleteExpense = async (req, res) => {
     try {
