@@ -126,10 +126,10 @@ async function loadUsers() {
 async function processCsvData(csvFilePath) {
     return new Promise((resolve, reject) => {
         try {
-            // Clear only orders that were uploaded via CSV (i.e., orders with isCsvUploaded: true)
-            OrderInfo.deleteMany({ isCsvUploaded: true })
-                .then(() => console.log('Existing CSV-uploaded orders cleared'))
-                .catch(err => console.error('Error clearing CSV-uploaded orders:', err));
+            // Clear existing OrderInfo data
+            OrderInfo.deleteMany({})
+                .then(() => console.log('Existing orderInfos data cleared'))
+                .catch(err => console.error('Error clearing orderInfos data:', err));
 
             const orders = {};
 
@@ -151,7 +151,6 @@ async function processCsvData(csvFilePath) {
                             total: parseFloat(row['Total']),
                             fulfillmentStatus: row['Fulfillment status'],
                             orderedFrom: 'WIX website',
-                            isCsvUploaded: true,  // Add the CSV flag
                         };
                     }
 
@@ -222,5 +221,7 @@ async function processCsvData(csvFilePath) {
         }
     });
 }
+
+
 
 module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers };

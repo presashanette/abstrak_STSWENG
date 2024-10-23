@@ -28,17 +28,17 @@ header h1 {
 }
 
 .btn {
-    padding: 8px 12px;
-    background-color: #007BFF;
-    color: white;
+    padding: 10px 20px;
+    background-color: #2a2929;
+    color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 2px;
     cursor: pointer;
-    display: inline-block;
 }
 
 .btn:hover {
-    background-color: #0056b3;
+    background-color: black;
+    color: white;
 }
 
 /* Table styling */
@@ -339,9 +339,7 @@ button[type="submit"]:hover {
     align-items: center; /* Centers the buttons horizontally */
 }
 
-.action-buttons {
-    text-align: center;
-}
+
 .charts-container {
     display: flex;
     justify-content: space-around;
