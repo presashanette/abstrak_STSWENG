@@ -137,8 +137,8 @@ const buildSortOrder = (sort) => {
             console.log('Sorting by date descending');
         }
     } else {
-        sortOrder.date = -1; // Default sort by date in descending order
-        console.log('Default sorting by date descending');
+        sortOrder.createdAt = -1; // Default sort by creation date in descending order
+        console.log('Default sorting by createdAt descending');
     }
 
     return sortOrder;
@@ -246,15 +246,44 @@ const updateExpense = async (req, res) => {
 
 const deleteExpense = async (req, res) => {
     try {
-        const expense = await Expense.findByIdAndDelete(req.params.id);
+        // Fetch the expense before deleting
+        const expense = await Expense.findById(req.params.id);
         if (!expense) {
             return res.status(404).send();
         }
+
+        // Calculate the total cost to add back to the main fund
+        const totalCost = expense.amount * expense.quantity;
+
+        // Delete the expense
+        await Expense.findByIdAndDelete(req.params.id);
+
+        // Update the main fund by adding the total cost back
+        await MainFund.findOneAndUpdate(
+            {},
+            {
+                $inc: { balance: totalCost },  // Add the total cost back to the main fund
+                $push: {
+                    transactions: {
+                        expenseId: expense._id,
+                        type: 'refund',
+                        amount: totalCost,
+                        description: `Expense deleted: ${expense.name} - ${expense.collectionName}`
+                    }
+                }
+            },
+            { new: true, upsert: true }
+        );
+
+        // Send the deleted expense back in the response
         res.send(expense);
+
     } catch (err) {
+        console.error('Error deleting expense:', err);
         res.status(500).send(err);
     }
 };
+
 
 const fetchExpenseGraphs = async (req, res) => {
     try {

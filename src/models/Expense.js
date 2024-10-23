@@ -10,7 +10,9 @@ const expenseSchema = new mongoose.Schema({
     paymentMethod: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: String, required: true },
-    receiptUrl: { type: String, required: false }
-});
+    receiptUrl: { type: String, required: false },
+    expenseId: { type: String, required: true, unique: true, default: () => new mongoose.Types.ObjectId() } // Add this line
+}, { timestamps: true });
+
 
 module.exports = mongoose.model('Expense', expenseSchema);

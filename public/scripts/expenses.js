@@ -28,6 +28,40 @@ document.addEventListener('DOMContentLoaded', () => {
         startDate: '',
         endDate: ''
     };
+    const mainFundElement = document.getElementById('main-fund');
+    const currentDateElement = document.getElementById('current-date');
+    const loadMainFundBalance = async () => {
+        try {
+            const response = await fetch('/api/mainfund/balance');
+            if (response.ok) {
+                const data = await response.json();
+                const balance = data.balance;
+
+                // Update the balance display with the fetched value
+                mainFundElement.textContent = `₱${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            } else {
+                console.error('Failed to fetch balance');
+            }
+        } catch (error) {
+            console.error('Error fetching balance:', error);
+        }
+
+        // Format and display the current date
+        const currentDate = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = currentDate.toLocaleDateString('en-US', options);
+        currentDateElement.textContent = formattedDate;
+    };
+
+    // Call the async function for loading balance and date
+    loadMainFundBalance();
+
+    // Attach this function call to relevant buttons or actions (e.g., after adding/updating/deleting expenses)
+    const reloadMainFund = async () => {
+        await loadMainFundBalance();
+    };
+
+
 
     const openModal = () => {
         modal.style.display = "block";
@@ -50,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filterModal.style.display = "block";
     };
     
-        let mainFund = 100000; // Initialize fund or fetch from server/database
+        let mainFund = 0; // Initialize fund or fetch from server/database
 
     // Function to update the main fund display
     const updateMainFundDisplay = () => {
@@ -141,7 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    reloadExpensesTable(); // Refresh the table after editing
+                    reloadMainFund(); 
+                    reloadExpensesTable();
+                    reloadGraphData();   // Refresh the table after editing
                     closeModal();
                     $('#expense-id').val('');  // Clear ID after submission
                 });
@@ -656,12 +692,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 method: 'DELETE'
                             }).then(response => {
                                 if (response.ok) {
+                                    reloadMainFund(); 
                                     reloadGraphData();
                                     Swal.fire(
                                         'Deleted!',
                                         'Your expense has been deleted.',
                                         'success'
                                     ).then(() => {
+                                        reloadMainFund(); 
+                                        reloadGraphData();  
                                         reloadExpensesTable();
                                     });
                                 } else {
@@ -766,10 +805,11 @@ document.addEventListener('DOMContentLoaded', () => {
             quantityType: '',
             quantityValue: ''
         };
-        
+        reloadMainFund(); 
         reloadExpensesTable();
+        reloadGraphData();  // Reload graphs after resetting the filters
         closeFilterModal();
-    });
+    });    
     
 
     loadExpensesPage(1);
