@@ -6,7 +6,16 @@ async function testSignup() {
   let driver;
 
   try {
-    driver = await new Builder().forBrowser("chrome").build();
+    // Set up Chrome options
+    const options = new chrome.Options();
+    options.addArguments("--headless"); // Run in headless mode
+    options.addArguments("--no-sandbox"); // Bypass OS security model
+    options.addArguments("--disable-dev-shm-usage"); // Overcome limited resource problems
+
+    driver = await new Builder()
+      .forBrowser("chrome")
+      .setChromeOptions(options) // Set the Chrome options here
+      .build();
 
     // Function to navigate back to the signup page
     async function navigateToSignup() {
