@@ -47,13 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("filter-sort-form-audit").reset();
     };
 
-    addBtn.addEventListener('click', async () => {
-        document.getElementById("modal-title").innerText = "Add audit";
-        form.reset();
-        await fetchCollections();
-        openModal();
-    });
-
     closeBtn.addEventListener('click', closeModal);
 
     window.addEventListener('click', (event) => {
@@ -86,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const query = $.param({ ...filters, page });
         try {
-            const response = await fetch(`/api/audits?${query}`, {
+            const response = await fetch(`/api/auditLog?${query}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -100,27 +93,21 @@ document.addEventListener('DOMContentLoaded', () => {
             tbody.innerHTML = '';
             document.getElementById('total-audit-pages').textContent = totalPages;
             changes.forEach(audit => {
-                const name = audit.name || 'N/A';
-                const collectionName = audit.collectionName || 'N/A';
-                const date = audit.date ? new Date(audit.date).toLocaleDateString() : 'N/A';
-                const amount = audit.amount || 'N/A';
-                const quantity = audit.quantity || 'N/A';
+                const username = audit.username || 'N/A';
+                const page = audit.page || 'N/A';
+                const dateTime = audit.dateTime ? new Date(audit.date).toLocaleDateString() : 'N/A';
+                const action = audit.action || 'N/A';
+                const oldData = audit.oldData || 'N/A';
+                const newData = audit.newData || 'N/A';
                 const tr = document.createElement('tr');
                 tr.classList.add('audits-row');
                 tr.innerHTML = `
-                    <td>${name}</td>
-                    <td>${collectionName}</td>
-                    <td>${date}</td>
-                    <td>${amount}</td>
-                    <td>${quantity}</td>
-                    <td>${paymentMethod}</td>
-                    <td>${category}</td>
-                    <td>${description}</td>
-                    <td>${receiptUrl}</td>
-                    <td>
-                        <button class="edit-btn btn" data-id="${audit._id}">Edit</button>
-                        <button class="delete-btn btn" data-id="${audit._id}">Delete</button>
-                    </td>
+                    <td>${dateTime}</td>
+                    <td>${username}</td>
+                    <td>${action}</td>
+                    <td>${page}</td>
+                    <td>${oldData}</td>
+                    <td>${newData}</td>
                 `;
                 tbody.appendChild(tr);
             });

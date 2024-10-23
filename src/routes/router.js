@@ -10,7 +10,7 @@ const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 const { viewDashboard, updateProfile, getProfile, checkIfAdmin, getNonAdminDetails, updateNonAdminDetails, checkExistingEmail, checkExistingUsername, createUser } = require('../controllers/userController');
-const { viewAuditLog } = require('../controllers/auditLogControllers');
+const { viewAuditLog, getPaginatedAudits } = require('../controllers/auditLogControllers');
 
 
 
@@ -131,6 +131,7 @@ router.delete('/api/expenses/:id', deleteExpense);
 
 // audit log
 router.get('/auditLog', viewAuditLog);
+router.get('/api/auditLog', getPaginatedAudits);
 
 // vouchers
 router.get('/api/search-voucher', getVouchers);
