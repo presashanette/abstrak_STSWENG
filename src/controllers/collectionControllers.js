@@ -33,18 +33,6 @@ async function addProductToCollection(collectionId, productId) {
     if (!collection.pieces.includes(productId)) {
         collection.pieces.push(productId);
         await collection.save();
-
-        // Record this action 
-        const newProduct = await Product.findById(productId)
-        const newAudit = new Audit ({
-            username: req.session.username,
-            action: "Added " + productId + " into " + collectionId,
-            page: "Collections Page",
-            oldData: "--",
-            newData: "New Product: " + newProduct.name
-        })
-
-        await newAudit.save();
     }
 }
 

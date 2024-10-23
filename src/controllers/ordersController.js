@@ -128,15 +128,6 @@ async function addOrder(req, res) {
 
     try {
         // Save the order to the database
-        // Record this action 
-        const newAudit = new Audit ({
-            username: req.session.username,
-            action: "Created a new order",
-            page: "Orders Page",
-            oldData: "--",
-            newData: "New Order: " + orderNumber
-        })
-        await newAudit.save();
         await newOrder.save();
 
         // Log the order as a transaction in MainFund and update balance
@@ -172,6 +163,17 @@ async function addOrder(req, res) {
                 console.log(`Updated product inventory: ${product}`);
             }
         }
+
+        
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Created a new order",
+            page: "Orders Page",
+            oldData: "--",
+            newData: "New Order: " + orderNo
+        })
+        await newAudit.save();
 
         res.send({ success: true, message: 'Order added successfully, main fund updated with transaction.' });
     } catch (err) {
