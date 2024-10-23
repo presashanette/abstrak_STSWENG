@@ -145,7 +145,7 @@ const buildSortOrder = (sort) => {
 };
 
 const getExpense = async (req, res) => {
-    const expenseId = req.params.id;
+    const expenseId = req.params.id;  // this refers to the MongoDB _id
     console.log(`Received request to get expense with ID: ${expenseId}`);
 
     try {
@@ -164,21 +164,25 @@ const getExpense = async (req, res) => {
     }
 };
 
+
 const addExpense = async (req, res) => {
     try {
-        const expense = new Expense(req.body); // Expense will automatically have an incremented expenseId
+        const expense = new Expense(req.body);
         await expense.save();
 
-        // Update the main fund by subtracting the expense amount
+        // Calculate the total cost (amount * quantity)
+        const totalCost = expense.amount * expense.quantity;
+
+        // Update the main fund by subtracting the total cost
         await MainFund.findOneAndUpdate(
             {},
             {
-                $inc: { balance: -expense.amount },
+                $inc: { balance: -totalCost },  // Deduct total cost from the main fund
                 $push: {
                     transactions: {
-                        expenseId: expense.expenseId, // Include expenseId in main fund transaction
+                        expenseId: expense._id, // Use ObjectId of the expense
                         type: 'expense',
-                        amount: expense.amount,
+                        amount: totalCost,
                         description: `Expense added: ${expense.name} - ${expense.collectionName}`
                     }
                 }
@@ -188,37 +192,44 @@ const addExpense = async (req, res) => {
 
         res.status(201).send(expense);
     } catch (err) {
+        console.error("Error adding expense:", err);
         res.status(400).send(err);
     }
 };
+
 
 
 const updateExpense = async (req, res) => {
     try {
         const originalExpense = await Expense.findById(req.params.id);
         if (!originalExpense) {
-            return res.status(404).send();
+            return res.status(404).send('Expense not found');
         }
 
-        // Update the expense with new values
         const updatedExpense = await Expense.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true, runValidators: true }
         );
 
-        // Calculate the difference between the original and updated amount
-        const amountDifference = updatedExpense.amount - originalExpense.amount;
+        // Calculate the original and updated total costs
+        const originalTotalCost = originalExpense.amount * originalExpense.quantity;
+        const updatedTotalCost = updatedExpense.amount * updatedExpense.quantity;
 
-        // Adjust the main fund based on the difference
+        // Calculate the difference in total cost
+        const costDifference = updatedTotalCost - originalTotalCost;
+
+        // If costDifference is positive, deduct the additional amount from the main fund.
+        // If costDifference is negative, add back the difference to the main fund.
         await MainFund.findOneAndUpdate(
             {},
             {
-                $inc: { balance: -amountDifference },
+                $inc: { balance: -costDifference },  // Adjust main fund based on the cost difference
                 $push: {
                     transactions: {
+                        expenseId: updatedExpense._id, // Use ObjectId of the updated expense
                         type: 'expense',
-                        amount: amountDifference,
+                        amount: costDifference,
                         description: `Expense updated: ${updatedExpense.name} - ${updatedExpense.collectionName}`
                     }
                 }
@@ -228,10 +239,10 @@ const updateExpense = async (req, res) => {
 
         res.send(updatedExpense);
     } catch (err) {
+        console.error("Error updating expense:", err);
         res.status(400).send(err);
     }
 };
-
 
 const deleteExpense = async (req, res) => {
     try {
