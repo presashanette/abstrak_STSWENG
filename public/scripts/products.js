@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    const collectionId = $('.main').data('id');
+    console.log("Extracted collectionId:", collectionId); // Should now show the correct collectionId
+
     let currentProductIndex = 0;
     let salesChart, profitChart;
 

@@ -1,7 +1,7 @@
 const Collection = require('../models/AbstrakCol');
 const Audit = require('../models/Audit');
 const Product = require('../models/Product');
-
+const mongoose = require('mongoose');
 
 async function handleCollectionPageRequest (req, res) {
     try {
@@ -15,11 +15,24 @@ async function handleCollectionPageRequest (req, res) {
 }
 
 async function addProductToCollection(collectionId, productId) {
+    console.log("Received collectionId:", collectionId); // Log collectionId
+    console.log("Received productId:", productId); // Log productId
+
+    if (!mongoose.Types.ObjectId.isValid(collectionId)) {
+        throw new Error('Invalid collectionId');
+    }
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        throw new Error('Invalid productId');
+    }
+
     const collection = await Collection.findById(collectionId);
-    
+    if (!collection) {
+        throw new Error('Collection not found');
+    }
+
     if (!collection.pieces.includes(productId)) {
         collection.pieces.push(productId);
-        await collection.save();  
+        await collection.save();
 
         // Record this action 
         const newProduct = await Product.findById(productId)
@@ -34,6 +47,7 @@ async function addProductToCollection(collectionId, productId) {
         await newAudit.save();
     }
 }
+
 
 async function handleAddCollectionRequest (req, res) {
     try {
