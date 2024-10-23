@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Log</title>
-    <link rel="stylesheet" href="/styles/auditlog.css">
+    <title>Audit audit</title>
+    <link rel="stylesheet" href="/styles/auditaudit.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -19,8 +19,8 @@
         {{>navbar}}
         <div class="container">
             <header>
-                <h1>Audit Log</h1>
-                <button id="expense-filter-sort-btn" class="btn">Filter and Sort</button>
+                <h1>Audit audit</h1>
+                <button id="audit-filter-sort-btn" class="btn">Filter and Sort</button>
             </header>
             <section class="history">
                 <table class="action-table">
@@ -49,14 +49,60 @@
                 </table>
             </section>
             <div class="pagination-container">
-                <button id="prev-log-button">Previous</button>
-                <span id="log-page-number">1</span>
+                <button id="prev-audit-button">Previous</button>
+                <span id="audit-page-number">1</span>
                 <span class="of-text">of</span>
-                <span id="total-log-pages">1</span>
-                <button id="next-log-button">Next</button>
+                <span id="total-audit-pages">1</span>
+                <button id="next-audit-button">Next</button>
             </div>
         </div>
     </div>
+
+    <div id="filter-sort-modal-audit" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Filter and Sort audits</h2>
+        <form id="filter-sort-form-audit">
+            <div class="form-row">
+                <div class="form-column">
+                    <label for="start-date-audit" class="date-label">Start Date:</label>
+                    <input type="date" id="start-date-audit" class="startdatefilter">
+                </div>
+                <div class="form-column">
+                    <label for="end-date-audit" class="date-label">End Date:</label>
+                    <input type="date" id="end-date-audit" class="enddatefilter">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-column">
+                    <label for="sorting-audit">Sort:</label>
+                    <select id="sorting-audit" class="sorting">
+                        <option value="">Sort</option>
+                        <option value="dateasc">Date (ascending)</option>
+                        <option value="datedesc">Date (descending)</option>
+                        <option value="amountasc">Amount (ascending)</option>
+                        <option value="amountdesc">Amount (descending)</option>
+                    </select>
+                </div>
+                <div class="form-column">
+                    <label for="quantity-filter">Quantity:</label>
+                    <div class="quantity-container">
+                        <select id="quantity-filter-type" class="quantityfiltertype">
+                            <option value="">Select</option>
+                            <option value="lower">Lower than</option>
+                            <option value="higher">Higher than</option>
+                            <option value="equal">Equal to</option>
+                        </select>
+                        <input type="number" id="quantity-filter-value" class="quantityfiltervalue quantity-input" min="0">
+                    </div>
+                </div>
+            <div class="button-group">
+                <button type="button" id="filter-sort-clear-audit" class="filter-sort-clear">Clear</button>
+                <button type="button" id="filter-sort-done-audit" class="filter-sort-done">Done</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 
 </html>

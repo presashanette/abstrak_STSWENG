@@ -11,6 +11,21 @@ const auditSchema = new Schema({
     timestamps: true // Automatically manage createdAt and updatedAt fields
 });
 
+// Virtual property to format dateTime
+auditSchema.virtual('formattedDateTime').get(function () {
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: 'numeric', 
+        minute: 'numeric'
+    };
+    return this.dateTime.toLocaleString('en-US', options);
+});
+
+// To ensure virtuals are included when converting to JSON
+auditSchema.set('toJSON', { virtuals: true });
+auditSchema.set('toObject', { virtuals: true });
 
 const Audit = model('Audit', auditSchema); 
 
