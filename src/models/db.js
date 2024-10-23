@@ -5,6 +5,7 @@ const User = require('./User');
 const OrderInfo = require('./OrderInfo');
 const Expense = require('./Expense');   
 const AbstrakCol = require('./AbstrakCol');
+const Audit = require('./Audit');
 
 function connect () {
     mongoose.connect(process.env.MONGODB_URI)
@@ -14,6 +15,7 @@ function connect () {
     mongoose.model('Expense', Expense.schema);
     mongoose.model('AbstrakCol', AbstrakCol.schema);
     mongoose.model('OrderInfo', OrderInfo.schema);
+    mongoose.model('Audit', Audit.schema);
 }
 
 module.exports = connect;

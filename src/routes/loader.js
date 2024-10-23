@@ -51,9 +51,11 @@ async function loadUsers() {
 }
 
 async function loadAudit() {
-    const result = parseJson(usersJson);
-    await Audit.deleteMany({});
-  }
+    const result = parseJson(auditJson);
+    await Audit.deleteMany({}).deleteMany({}).then(() => {
+        Audit.insertMany(result);
+      });
+}
 
 /*async function processCsvData(csvFilePath) {
   try {

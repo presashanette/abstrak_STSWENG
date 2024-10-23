@@ -148,6 +148,15 @@ async function addOrder(req, res) {
                 { new: true, upsert: true }
             );
 
+            const newAudit = new Audit ({
+                username: req.session.username,
+                action: "Added a new order",
+                page: "Orders Page",
+                oldData: "--",
+                newData: orderNo 
+            })
+            await newAudit.save();
+
             console.log(`Main fund updated: ${mainFund.balance}`);
         } else {
             console.log('Order is unpaid, main fund remains unchanged.');

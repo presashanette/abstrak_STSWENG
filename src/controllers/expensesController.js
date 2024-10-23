@@ -176,7 +176,7 @@ const addExpense = async (req, res) => {
             action: "Added a new expense",
             page: "Expense Page",
             oldData: "--",
-            newData: "New Expense: " + expense.amount
+            newData: "New Expense: " + expense._id
         })
         await newAudit.save();
 
@@ -264,6 +264,15 @@ const deleteExpense = async (req, res) => {
 
         // Calculate the total cost to add back to the main fund
         const totalCost = expense.amount * expense.quantity;
+
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Deleted an expense",
+            page: "Expenses Page",
+            oldData: req.params.id,
+            newData: "--" 
+        })
+        await newAudit.save();
 
         // Delete the expense
         await Expense.findByIdAndDelete(req.params.id);
