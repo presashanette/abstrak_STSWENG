@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadPage = async (page) => {
         try {
-            const response = await fetch(`/auditLog?${query}`, {
+            const response = await fetch(`/auditLog?page=${page}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
     
-            pageNumber.textContent = page;
+            
             if (totalPages === 0 || totalPages === 1) {
                 prevButton.style.display = 'none';
                 nextButton.style.display = 'none';

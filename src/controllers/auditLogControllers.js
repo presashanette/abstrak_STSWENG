@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Audit = require('../models/Audit');
 
 async function viewAuditLog(req, res) {
@@ -47,9 +46,10 @@ const getPaginatedAudits = async (req, res) => {
                 currentPage: page,
                 totalPages, // Ensure totalPages is included in the response
             });
+            console.log("hello");
         } else {
             res.render('auditLog', {
-                changes,
+                changes: JSON.stringify(changes),
                 currentPage: page,
                 totalPages,
                 nextPage,
@@ -113,6 +113,5 @@ const buildSortOrder = (sort) => {
 
 
 module.exports = {
-    getPaginatedAudits,
-    viewAuditLog
+    getPaginatedAudits
 }
