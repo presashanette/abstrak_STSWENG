@@ -16,21 +16,18 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="main">
+    <div class="main" data-id="{{collectionId}}">
         {{>navbar}}
         {{>gridheader}}
 
         <div class="collections-grid">
             <div class="grid-wrapper">
-
                 {{#each collections}}
-                        <div class="collection-item-container" data-id="{{_id}}">
-                            <img src="/uploads/collections/{{collectionPicture}}" alt="" class="collection-cover">
-                                <p>{{name}}</p>
-                        </div>
-                        
+                    <div class="collection-item-container" data-id="{{_id}}">
+                        <img src="/uploads/collections/{{collectionPicture}}" alt="" class="collection-cover">
+                        <p>{{name}}</p>
+                    </div>
                 {{/each}}
-                
             </div>
         </div>
     </div>

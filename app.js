@@ -6,10 +6,11 @@ const exphbs = require('express-handlebars');
 const express = require('express');
 const session = require('express-session');
 const MemoryStore = require('memorystore')(session);
+const moment = require('moment'); // Importing moment for date formatting
 
 const mongoConnector = require('./src/models/db.js');
 const router = require('./src/routes/router.js');
-const { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers  } = require('./src/routes/loader.js');
+const { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers, loadAudit  } = require('./src/routes/loader.js');
 
 const app = express();
 
@@ -45,6 +46,7 @@ async function initializeLoad(){
     await loadUsers();
     await processCsvData(productsJson);
     await loadVouchers();
+    await loadAudit();
 }
 
 function initializeHandlebars() {
@@ -66,6 +68,9 @@ function initializeHandlebars() {
             formatDate: function(date) {
                 const options = { year: 'numeric', month: 'long', day: 'numeric' };
                 return new Date(date).toLocaleDateString(undefined, options);
+            },
+            formatDateTime: function (dateTime) {
+                return moment(dateTime).format('MMMM D, YYYY | h:mm A');
             },
             json: function(context) {
                 return JSON.stringify(context);

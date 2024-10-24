@@ -444,7 +444,7 @@ function submitProduct(event) {
     const material = $('#material-list').children().map(function() { return $(this).text().replace("×", ""); }).get();
     const existingProductId = editingProductId;
     const image = $("#imageInput")[0].files[0];
-    const collectionId = $('.main').data('id');
+    const collectionId = $('.main').data('id'); // Ensure this line captures the correct collectionId
 
     if (existingProductId) {
         updateForm(name, price, sku, material, existingProductId);
@@ -453,12 +453,13 @@ function submitProduct(event) {
 
     variations = validateForm2();
 
-    if(variations === undefined){
+    if (variations === undefined) {
         return;
     }
-    
-    console.log(variations);
-    console.log(material);
+
+    console.log("Form Data:");  // Add this line for debugging
+    console.log("collectionId:", collectionId);  // Check if collectionId is being captured properly
+    console.log("variations:", variations);
 
     var formData = new FormData();
     formData.append("name", name);
@@ -467,8 +468,7 @@ function submitProduct(event) {
     formData.append("material", JSON.stringify(material));
     formData.append("picture", image);
     formData.append("variations", JSON.stringify(variations));
-    formData.append("collectionId", collectionId);
-
+    formData.append("collectionId", collectionId);  // Ensure this is being added
 
     $.ajax({
         url: '/api/products/add',
@@ -481,6 +481,7 @@ function submitProduct(event) {
         }
     });
 }
+
 
 function toForm1Click(event){
     $(".form-1").show();
