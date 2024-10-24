@@ -47,6 +47,8 @@ jobs:
 
     - name: Start Application
       run: node app.js &
+      env:
+          PORT: 3000
     
     - name: Run Signup Tests
       run: npx mocha test/signupTest.js
