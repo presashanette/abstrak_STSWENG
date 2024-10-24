@@ -47,8 +47,7 @@ jobs:
 
     - name: Start Application
       run: nohup node app.js &
-          sleep 5    
-            curl -i localhost:3000
+      
     - name: Run Signup Tests
       run: npx mocha test/signupTest.js
 
@@ -67,7 +66,7 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - name: Start Application
-      run: node app.js &
+      run: nohup node app.js &
       env:
           PORT: 3000
       
