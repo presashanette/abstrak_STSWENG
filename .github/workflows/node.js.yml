@@ -46,8 +46,9 @@ jobs:
     - run: npm run build --if-present
 
     - name: Start Application
-      run: node app.js &
-           curl -i localhost:3000
+      run: nohup node app.js &
+          sleep 5    
+            curl -i localhost:3000
     - name: Run Signup Tests
       run: npx mocha test/signupTest.js
 
