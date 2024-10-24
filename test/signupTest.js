@@ -126,7 +126,7 @@ describe("Signup Test", function () {
 
   testCases.forEach((testCase) => {
     it(`"${testCase.testName}"`, async function () {
-      await driver.get("http://localhost:3000/signup");
+      await driver.get("http://127.0.0.1:3000/signup");
       await driver.sleep(1000);
 
       const firstNameInput = await driver.findElement(By.id("first-name"));
