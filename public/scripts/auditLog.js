@@ -1,11 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById("audit-modal");
-    const addBtn = document.getElementById("add-audit-btn");
-    const form = document.getElementById("audit-form");
     const prevButton = document.getElementById('prev-audit-button');
     const nextButton = document.getElementById('next-audit-button');
     const pageNumber = document.getElementById('audit-page-number');
-    const closeBtn = modal.querySelector(".close");
 
     const filterModal = document.getElementById('filter-sort-modal-audit');
     const filterBtn = document.getElementById('audit-filter-sort-btn');
@@ -48,13 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const loadPage = async (page) => {
-        if (filters.collection === 'All') {
-            delete filters.collection;
-        }
-        if (filters.quantityValue) {
-            filters.quantityValue = parseInt(filters.quantityValue); // Ensure it's a number
-        }
-        
         try {
             const response = await fetch(`/auditLog?${query}`, {
                 headers: {
@@ -90,27 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     
             pageNumber.textContent = page;
-            if (totalPages <= 1) {
+            if (totalPages === 0 || totalPages === 1) {
                 prevButton.style.display = 'none';
                 nextButton.style.display = 'none';
+                console.log("hi");
             } else {
-                if (page === 1) {
-                    prevButton.style.display = 'none';
-                } else {
-                    prevButton.style.display = 'inline';
-                }
-                if (page === totalPages) {
-                    nextButton.style.display = 'none';
-                } else {
-                    nextButton.style.display = 'inline';
-                }
+                prevButton.style.display = (page === 1) ? 'none' : 'inline';
+                nextButton.style.display = (page === totalPages) ? 'none' : 'inline';
+                console.log("hi");
             }
         } catch (error) {
             console.error('Error loading page:', error);
         }
     };
 
-    loadPage(1)
+    const initialize = () => {
+        loadPage(parseInt(pageNumber.textContent));
+    };
     
     filterBtn.addEventListener('click', openFilterModal);
     closeFilterBtn.addEventListener('click', closeFilterModal);
@@ -206,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentFilters.startDate = document.getElementById('start-date-audit').value;
         currentFilters.endDate = document.getElementById('end-date-audit').value;
         
-        reloadauditsTable();
         closeFilterModal();
     });
     
@@ -221,10 +205,9 @@ document.addEventListener('DOMContentLoaded', () => {
             endDate: ''
         };
         
-        reloadauditsTable();
         closeFilterModal();
     });
     
 
-    loadauditsPage(1);
+    initialize();
 })
