@@ -47,22 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const reloadauditsTable = async () => {
-        const page = parseInt(pageNumber.textContent);
-        await filterResultAudits(page);
-    };
-
-    const filterResultAudits = async (page) => {
-        const filters = { ...currentFilters };
+    const loadPage = async (page) => {
         if (filters.collection === 'All') {
             delete filters.collection;
         }
         if (filters.quantityValue) {
             filters.quantityValue = parseInt(filters.quantityValue); // Ensure it's a number
         }
-        const query = $.param({ ...filters, page });
+        
         try {
-            const response = await fetch(`/api/auditLog?${query}`, {
+            const response = await fetch(`/auditLog?${query}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -78,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             changes.forEach(audit => {
                 const username = audit.username || 'N/A';
                 const page = audit.page || 'N/A';
-                const dateTime = audit.dateTime ? new Date(audit.date).toLocaleDateString() : 'N/A';
+                const dateTime = audit.dateTime || 'N/A';
                 const action = audit.action || 'N/A';
                 const oldData = audit.oldData || 'N/A';
                 const newData = audit.newData || 'N/A';
@@ -87,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.innerHTML = `
                     <td>${dateTime}</td>
                     <td>${username}</td>
-                    <td>${action}</td>
                     <td>${page}</td>
+                    <td>${action}</td>
                     <td>${oldData}</td>
                     <td>${newData}</td>
                 `;
@@ -115,6 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading page:', error);
         }
     };
+
+    loadPage(1)
     
     filterBtn.addEventListener('click', openFilterModal);
     closeFilterBtn.addEventListener('click', closeFilterModal);
@@ -125,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFiltersApplied(currentFilters)) {
                 filterResultAudits(currentPage + 1);
             } else {
-                loadAuditsPage(currentPage + 1);
+                loadPage(currentPage + 1);
             }
         }
     });
@@ -136,13 +132,66 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFiltersApplied(currentFilters)) {
                 filterResultAudits(currentPage - 1);
             } else {
-                loadAuditsPage(currentPage - 1);
+                loadPage(currentPage - 1);
             }
         }
     });
 
-    const loadAuditsPage = async (page) => {
-        filterResultAudits(page);
+    const filterResult = async (page) => {
+        const query = $.param({ ...currentFilters, page });
+        try {
+            const response = await fetch(`/auditLog?${query}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+            const { changes, totalPages } = result;
+            const tbody = document.getElementById('audits-list');
+            tbody.innerHTML = '';
+            document.getElementById('total-audit-pages').textContent = totalPages;
+            changes.forEach(audit => {
+                const username = audit.username || 'N/A';
+                const page = audit.page || 'N/A';
+                const dateTime = audit.dateTime || 'N/A';
+                const action = audit.action || 'N/A';
+                const oldData = audit.oldData || 'N/A';
+                const newData = audit.newData || 'N/A';
+                const tr = document.createElement('tr');
+                tr.classList.add('audits-row');
+                tr.innerHTML = `
+                    <td>${dateTime}</td>
+                    <td>${username}</td>
+                    <td>${page}</td>
+                    <td>${action}</td>
+                    <td>${oldData}</td>
+                    <td>${newData}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            pageNumber.textContent = page;
+            if (totalPages <= 1) {
+                prevButton.style.display = 'none';
+                nextButton.style.display = 'none';
+            } else {
+                if (page === 1) {
+                    prevButton.style.display = 'none';
+                } else {
+                    prevButton.style.display = 'inline';
+                }
+                if (page === totalPages) {
+                    nextButton.style.display = 'none';
+                } else {
+                    nextButton.style.display = 'inline';
+                }
+            }
+        } catch (error) {
+            console.error('Error loading page:', error);
+        }
     };
 
     // Function to check if filters are applied

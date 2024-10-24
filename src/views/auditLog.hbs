@@ -35,7 +35,7 @@
                             <th>New Data</th>
                         </tr>
                     </thead>
-                    <tbody id="actions-list">   
+                    <tbody id="audits-list">   
                         {{#each changes}}
                         <tr>
                             <td>{{formatDateTime dateTime}}</td>
@@ -53,9 +53,9 @@
             
             <div class="pagination-container">
                 <button id="prev-audit-button">Previous</button>
-                <span id="audit-page-number">1</span>
+                <span id="audit-page-number">{{currentPage}}</span>
                 <span class="of-text">of</span>
-                <span id="total-audit-pages">1</span>
+                <span id="total-audit-pages">{{totalPages}}</span>
                 <button id="next-audit-button">Next</button>
             </div>
         </div>

@@ -130,8 +130,7 @@ router.put('/api/expenses/:id', updateExpense);
 router.delete('/api/expenses/:id', deleteExpense);
 
 // audit log
-router.get('/auditLog', viewAuditLog);
-router.get('/api/auditLog', getPaginatedAudits);
+router.get('/auditLog', getPaginatedAudits);
 
 // vouchers
 router.get('/api/search-voucher', getVouchers);
