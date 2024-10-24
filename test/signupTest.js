@@ -23,7 +23,7 @@ describe("Signup Test", function () {
       .build();
 
     // Function to navigate back to the signup page
-    await driver.get("http://127.0.0.1:3000/signup");
+    await driver.get("http://localhost:3000/signup");
     await driver.sleep(1000);
   });
 
@@ -126,7 +126,7 @@ describe("Signup Test", function () {
 
   testCases.forEach((testCase) => {
     it(`"${testCase.testName}"`, async function () {
-      await driver.get("http://127.0.0.1:3000/signup");
+      await driver.get("http://localhost:3000/signup");
       await driver.sleep(1000);
 
       const firstNameInput = await driver.findElement(By.id("first-name"));
@@ -165,13 +165,13 @@ describe("Signup Test", function () {
       if (testCase.isValid) {
         assert.strictEqual(
           currentUrl,
-          "http://127.0.0.1:3000/login",
+          "http://localhost:3000/login",
           `Expected to redirect for "${testCase.testName}"`
         );
       } else {
         assert.strictEqual(
           currentUrl,
-          "http://127.0.0.1:3000/signup",
+          "http://localhost:3000/signup",
           `Expected to stay on signup for "${testCase.testName}"`
         );
       }
