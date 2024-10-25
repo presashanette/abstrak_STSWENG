@@ -68,11 +68,18 @@ describe("Order Status Test", function () {
     await driver.sleep(2000);
 
     const processingElement = await driver.findElement(By.id("processing"));
+    await driver.sleep(2000);
+    
     const toBeShippedElement = await driver.findElement(By.id("to-be-shipped"));
+    await driver.sleep(2000);
+    
     const cancelledElement = await driver.findElement(By.id("cancelled"));
+    await driver.sleep(2000);
 
     processingCountDashboard = parseInt(await processingElement.getText());
+    await driver.sleep(2000);
     toBeShippedCountDashboard = parseInt(await toBeShippedElement.getText());
+    await driver.sleep(2000);
     cancelledCountDashboard = parseInt(await cancelledElement.getText());
 
     orderCountsDB = await OrderCountsDB();
