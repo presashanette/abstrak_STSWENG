@@ -57,11 +57,11 @@ describe("Order Status Test", function () {
     await driver.get("http://localhost:3000/login");
     const usernameInput = await driver.findElement(By.id("username"));
     await usernameInput.sendKeys("Max_Verstappen");
-    await driver.sleep(2000);
+    await driver.sleep(5000);
 
     const passwordInput = await driver.findElement(By.id("password"));
     await passwordInput.sendKeys("12345678");
-    await driver.sleep(2000);
+    await driver.sleep(5000);
 
     const loginButton = await driver.findElement(By.css(".action-button"));
     await loginButton.click();
