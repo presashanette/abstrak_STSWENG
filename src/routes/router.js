@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
+const {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled} = require('../controllers/dashboardController');
 const {  handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation, checkStock } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
@@ -69,7 +70,7 @@ router.get('/login', (req, res) => {
   if(!req.session.userId){
     res.render('login');
   } else {
-    res.redirect('/collections');
+    res.redirect('/');
   }
 });
 router.post('/login', login);
@@ -79,14 +80,23 @@ router.get('/signup', (req, res) => {
   if (!req.session.userId) {
     res.render('signup');
   } else {
-    res.redirect('/collections');
+    res.redirect('/');
   }
 });
 router.post('/signup', signup);
 
 
+router.get('/', (req, res) => {
+    res.render('dashboard'); // main page
+});
+
+// dashboard
+router.get('/api/ordersUnfulfilled', getOrdersUnfulfilled);
+router.get('/api/ordersFulfilled', getOrdersFulfilled);
+router.get('/api/ordersCancelled', getOrdersCancelled);
+
 // collections page
-router.get(['/', '/collections'], handleCollectionPageRequest);
+router.get('/collections', handleCollectionPageRequest);
 router.get('/collections/:id', handleCollectionProductsRequest);
 router.post('/api/collections/add', uploadCollectionPicture.single('collectionPicture'), handleAddCollectionRequest)
 router.delete('/api/products/delete/:id', deleteProductById);
