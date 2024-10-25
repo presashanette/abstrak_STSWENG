@@ -87,6 +87,8 @@ jobs:
 
       - name: Setup ChromeDriver
         uses: nanasess/setup-chromedriver@v1
+        with:
+          chromedriver-version: 117.0.5938.62
 
       - name: Run Signup Tests
         run: npx mocha test/signupTest.js
