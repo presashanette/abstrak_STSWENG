@@ -67,14 +67,29 @@ describe("Order Status Test", function () {
     await loginButton.click();
     await driver.sleep(2000);
 
-    const processingElement = await driver.findElement(By.id("processing"));
-    await driver.sleep(2000);
-    
-    const toBeShippedElement = await driver.findElement(By.id("to-be-shipped"));
-    await driver.sleep(2000);
-    
-    const cancelledElement = await driver.findElement(By.id("cancelled"));
-    await driver.sleep(2000);
+    // const processingElement = await driver.findElement(By.id("processing"));
+    // await driver.sleep(2000);
+
+    // const toBeShippedElement = await driver.findElement(By.id("to-be-shipped"));
+    // await driver.sleep(2000);
+
+    // const cancelledElement = await driver.findElement(By.id("cancelled"));
+    // await driver.sleep(2000);
+
+    const processingElement = await driver.wait(
+      until.elementLocated(By.id("processing")),
+      10000 // waits up to 10 seconds
+    );
+
+    const toBeShippedElement = await driver.wait(
+      until.elementLocated(By.id("to-be-shipped")),
+      10000
+    );
+
+    const cancelledElement = await driver.wait(
+      until.elementLocated(By.id("cancelled")),
+      10000
+    );
 
     processingCountDashboard = parseInt(await processingElement.getText());
     await driver.sleep(2000);
