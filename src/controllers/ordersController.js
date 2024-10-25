@@ -150,10 +150,10 @@ async function addOrder(req, res) {
 
             const newAudit = new Audit ({
                 username: req.session.username,
-                action: "Added a new order",
-                page: "Orders Page",
+                action: "Add",
+                page: "Orders",
                 oldData: "--",
-                newData: orderNo 
+                newData: "New order: " + orderNo 
             })
             await newAudit.save();
 
@@ -252,6 +252,16 @@ const uploadCSVFile = async (req, res) => {
                 try {
                     // Save the new order to the database
                     await newOrder.save();
+
+                    const newAudit = new Audit ({
+                        username: req.session.username,
+                        action: "Add",
+                        page: "Orders",
+                        oldData: "--",
+                        newData: "New order: " + newOrder.orderNumber
+                    })
+                    await newAudit.save();
+
                     console.log(`New order #${orderData.orderNumber} saved to the database.`);
 
                     // Update inventory based on the fulfillment status of the order

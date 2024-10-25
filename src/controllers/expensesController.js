@@ -174,10 +174,10 @@ const addExpense = async (req, res) => {
         // Record this action 
         const newAudit = new Audit ({
             username: req.session.username,
-            action: "Added a new expense",
-            page: "Expense Page",
+            action: "Add",
+            page: "Expense",
             oldData: "--",
-            newData: "New Expense: " + expense._id
+            newData: "New expense under: " + expense.name
         })
         await newAudit.save();
 
@@ -248,6 +248,37 @@ const updateExpense = async (req, res) => {
             { new: true, upsert: true }
         );
 
+        function formatData(data) {
+            const formatDate = (date) => {
+                const d = new Date(date);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                const year = d.getFullYear();
+                return `${month}/${day}/${year}`;
+            };
+        
+            return `
+                <strong>Name</strong>: ${String(data.name || '')} <br>
+                <strong>Collection Name</strong>: ${String(data.collectionName || '')} <br>
+                <strong>Date</strong>: ${data.date ? formatDate(data.date) : ''} <br>
+                <strong>Amount</strong>: ${String(data.amount || '')} <br>
+                <strong>Quantity</strong>: ${String(data.quantity || '')} <br>
+                <strong>Payment Method</strong>: ${String(data.paymentMethod || '')} <br>
+                <strong>Category</strong>: ${String(data.category || '')} <br>
+                <strong>Description</strong>: ${String(data.description || '')} <br>
+                <strong>Receipt URL</strong>: ${String(data.receiptUrl || '')} <br>
+            `;
+        }
+        
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Edit",
+            page: "Expenses",
+            oldData: formatData(originalExpense),
+            newData: formatData(updatedExpense) 
+        })
+        await newAudit.save();
+
         res.send(updatedExpense);
     } catch (err) {
         console.error("Error updating expense:", err);
@@ -268,9 +299,9 @@ const deleteExpense = async (req, res) => {
 
         const newAudit = new Audit ({
             username: req.session.username,
-            action: "Deleted an expense",
-            page: "Expenses Page",
-            oldData: req.params.id,
+            action: "Delete",
+            page: "Expenses",
+            oldData: "Deleted expense under: " + expense.name,
             newData: "--" 
         })
         await newAudit.save();

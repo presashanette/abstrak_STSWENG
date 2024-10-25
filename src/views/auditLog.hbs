@@ -19,7 +19,7 @@
         {{>navbar}}
         <div class="container">
             <header>
-                <h1>Audit audit</h1>
+                <h1>Audit Log</h1>
                 <button id="audit-filter-sort-btn" class="btn">Filter and Sort</button>
             </header>
             <section class="history">
@@ -41,8 +41,8 @@
                             <td>{{username}}</td>
                             <td>{{page}}</td>
                             <td>{{action}}</td>
-                            <td>{{oldData}}</td>
-                            <td>{{newData}}</td>
+                            <td>{{{oldData}}}</td>
+                            <td>{{{newData}}}</td>
                         </tr>
                         
                         {{/each}}

@@ -51,8 +51,8 @@ async function handleAddCollectionRequest (req, res) {
         //record changes
         const newAudit = new Audit ({
             username: req.session.username,
-            action: "Added a new collection",
-            page: "Collections Page",
+            action: "Add",
+            page: "Collections",
             oldData: "--",
             newData: "New collection: " + name
         })

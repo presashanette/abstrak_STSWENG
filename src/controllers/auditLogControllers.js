@@ -49,7 +49,7 @@ const getPaginatedAudits = async (req, res) => {
             console.log("hello");
         } else {
             res.render('auditLog', {
-                changes: JSON.stringify(changes),
+                changes,
                 currentPage: page,
                 totalPages,
                 nextPage,

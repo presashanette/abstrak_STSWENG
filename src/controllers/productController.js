@@ -435,8 +435,8 @@ async function deleteProductById(req, res) {
                 // Record this action 
                 const newAudit = new Audit ({
                     username: req.session.username,
-                    action: "Deleted a product and associatons",
-                    page: "Collections Page",
+                    action: "Delete",
+                    page: "Products",
                     oldData: product.name,
                     newData: "--" 
                 })
@@ -449,8 +449,8 @@ async function deleteProductById(req, res) {
                 // Record this action 
                 const newAudit = new Audit ({
                     username: req.session.username,
-                    action: "Deleted a product only",
-                    page: "Collections Page",
+                    action: "Delete",
+                    page: "Products of ",
                     oldData: product.name,
                     newData: "--" 
                 })
@@ -461,6 +461,15 @@ async function deleteProductById(req, res) {
                 return res.status(400).send('Invalid deleteAssociations query parameter');
             }
         } else {
+            // Record this action 
+            const newAudit = new Audit ({
+                username: req.session.username,
+                action: "Delete",
+                page: "Products",
+                oldData: product.name,
+                newData: "--" 
+            })
+            await newAudit.save();
             await Product.findByIdAndDelete(productId);
             return res.send('Product deleted');
         }
@@ -567,11 +576,38 @@ async function updateProduct(req, res) {
 
   try {
       // Find the product by ID and update its details
+      const originalProduct = await Product.findById(productId);
       const updatedProduct = await Product.findByIdAndUpdate(productId, updates, { new: true });
 
       if (!updatedProduct) {
           return res.status(404).json({ error: 'Product not found' });
       }
+
+      function formatData(data) {
+        const formatDate = (date) => {
+            const d = new Date(date);
+            return d.toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
+        };
+    
+        return `
+            <strong>Name</strong>: ${String(data.name || '')} <br>
+            <strong>Picture</strong>: ${String(data.picture || '')} <br>
+            <strong>Price</strong>: ${String(data.price || '')} <br>
+            <strong>SKU</strong>: ${String(data.SKU || '')} <br>
+            <strong>Material</strong>: ${Array.isArray(data.material) ? data.material.join(', ') : ''} <br>
+            <strong>Variations</strong>: ${data.variations ? JSON.stringify(data.variations) : ''} <br>
+            <strong>Last Inventory Update</strong>: ${data.lastInventoryUpdate ? formatDate(data.lastInventoryUpdate) : 'N/A'} <br>
+        `;
+    }
+
+    const newAudit = new Audit ({
+        username: req.session.username,
+        action: "Edit",
+        page: "Product",
+        oldData: formatData(originalProduct),
+        newData: formatData(updatedProduct) 
+    })
+    await newAudit.save();
 
       res.json(updatedProduct); // Return the updated product
   } catch (error) {
