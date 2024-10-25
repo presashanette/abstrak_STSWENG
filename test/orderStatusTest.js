@@ -65,8 +65,9 @@ describe("Order Status Test", function () {
 
     const loginButton = await driver.findElement(By.css(".action-button"));
     await loginButton.click();
-    await driver.sleep(5000);
-
+    // await driver.sleep(5000);
+    await driver.wait(until.urlIs("http://localhost:3000/"), 10000);
+    
     const processingElement = await driver.findElement(By.id("processing"));
     await driver.sleep(2000);
 
