@@ -1,3 +1,4 @@
+const { json } = require("express");
 const OrderInfo = require("../models/OrderInfo");
 
 async function getOrdersUnfulfilled(req, res) {
@@ -19,7 +20,6 @@ async function getOrdersFulfilled(req, res) {
     res.status(500).send('Server Error');
   }
 }
-
 
 async function getOrdersCancelled(req, res) {
   try {
@@ -72,12 +72,13 @@ async function getSalesMetric(req, res) {
 
       // Calculate overall metrics across all products
       const overallMetrics = calculateOverallMetrics(orderAggregations);
+      console.log("Metrics: " + JSON.stringify(overallMetrics));
 
       // Calculate trend data for all products
-      const trendData = calculateTrendData(orderAggregations, overallMetrics.sellingPrice, overallMetrics.costPrice);
+      const trendData = calculateTrendData(orderAggregations);
       console.log('trendData:', trendData);
 
-      res.json({ overallMetrics, trendData });
+      res.json({ trendData });
   } catch (error) {
       console.error('Error fetching overall metrics:', error);
       res.status(500).send('Internal Server Error');
@@ -85,58 +86,77 @@ async function getSalesMetric(req, res) {
 }
 
 function calculateOverallMetrics(orderAggregations) {
-  let totalSold = 0;
-  let totalRevenue = 0;
-  let totalCost = 0;
-  let totalRefunded = 0;
+  let netSold = 0;
+  let netRevenue = 0;
+  let netCost = 0;
+  let netRefunded = 0;
   let grossProfit = 0;
 
   orderAggregations.forEach(agg => {
-      const revenue = agg.netSold * agg.sellingPrice;
-      const cost = agg.netSold * agg.costPrice;
-      totalSold += agg.netSold;
-      totalRevenue += revenue;
-      totalCost += cost;
-      totalRefunded += agg.totalRefunded;
-      grossProfit += (agg.sellingPrice - agg.costPrice) * agg.netSold;
+      const revenue = agg.totalSold * agg.sellingPrice;
+      const cost = agg.totalSold * agg.costPrice;
+      netSold += agg.totalSold;
+      netRevenue += revenue;
+      netCost += cost;
+      netRefunded += agg.totalRefunded;
+      grossProfit += (agg.sellingPrice - agg.costPrice) * agg.totalSold;
   });
 
-  const returnRate = totalRefunded / (totalSold + totalRefunded) * 100;
-  const profitMargin = (grossProfit / totalRevenue) * 100;
+  const returnRate = netRefunded / (netSold + netRefunded) * 100;
+  const profitMargin = (grossProfit / netRevenue) * 100;
 
   return {
-      totalSold,
-      totalRefunded,
-      totalRevenue,
-      totalCost,
+      netSold,
+      netRefunded,
+      netRevenue,
+      netCost,
       grossProfit,
       returnRate,
       profitMargin
   };
 }
 
-
-function calculateTrendData(orderAggregations, sellingPrice, costPrice) {
-  // Calculate sales over time by date
-  const salesOverTime = orderAggregations.map(agg => ({
-      date: agg.dateCreated,
-      sales: agg.totalSold
-  }));
-
-  // Calculate profit over time by month
-  const profitOverTime = orderAggregations.reduce((acc, agg) => {
-      const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`;
+function calculateTrendData(orderAggregations) {
+  // Calculate sales over time by month
+  const salesOverTime = orderAggregations.reduce((acc, agg) => {
+      const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`; // Format as "YYYY-M"
       if (!acc[monthYear]) {
-          acc[monthYear] = { date: new Date(agg.dateCreated.getFullYear(), agg.dateCreated.getMonth()), profit: 0 };
+          acc[monthYear] = { date: monthYear, sales: 0 };
       }
-      acc[monthYear].profit += (agg.totalSold * sellingPrice) - (agg.totalSold * costPrice);
+      acc[monthYear].sales += agg.totalSold;
       return acc;
   }, {});
 
-  // Convert profitOverTime object to array
+  // Convert salesOverTime object to an array
+  const salesOverTimeArray = Object.values(salesOverTime);
+
+  // Calculate profit over time by month
+  const profitOverTime = orderAggregations.reduce((acc, agg) => {
+      const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`; // Format as "YYYY-M"
+      if (!acc[monthYear]) {
+          acc[monthYear] = { date: monthYear, profit: 0 };
+      }
+      acc[monthYear].profit += agg.grossProfit// - (agg.netCost);
+      return acc;
+  }, {});
+
+  // Convert profitOverTime object to an array
   const profitOverTimeArray = Object.values(profitOverTime);
 
-  return { salesOverTime, profitOverTime: profitOverTimeArray };
+  // Calculate profit over time by month
+  const revenueOverTime = orderAggregations.reduce((acc, agg) => {
+    const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`; // Format as "YYYY-M"
+    if (!acc[monthYear]) {
+        acc[monthYear] = { date: monthYear, revenue: 0 };
+    }
+    acc[monthYear].revenue += agg.netRevenue;
+    return acc;
+}, {});
+
+// Convert profitOverTime object to an array
+const revenueOverTimeOverTimeArray = Object.values(revenueOverTime);
+
+  return { salesOverTime: salesOverTimeArray, profitOverTime: profitOverTimeArray, revenueOverTime: revenueOverTimeOverTimeArray };
 }
 
-module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled};
+module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getSalesMetric};

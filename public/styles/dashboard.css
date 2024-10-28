@@ -83,3 +83,16 @@
     border-radius: 7px;
     margin-bottom: 5px;
 }
+
+.report {
+    flex-direction: row;
+    overflow-x: scroll;
+    width: 2fr;
+}
+
+.chart-container {
+    justify-content: center;
+    margin: 0 15px;
+    width: 300px; /* Ensure each chart takes up more space */
+    height: fit-content; /* Increase height for larger graphs */
+}
