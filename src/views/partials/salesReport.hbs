@@ -67,9 +67,10 @@
                     data: {
                         labels: salesDates,
                         datasets: [{
+                            label: 'Sales over Time',
                             data: salesOverTime,
                             borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 2,
+                            borderWidth: 1,
                             fill: false
                         }]
                     },
@@ -83,40 +84,44 @@
                     
                 });
 
-                profitChart = new Chart(profitChartCtx, {
-                    type: 'line',
-                    data: {
-                        labels: profitDates,
-                        datasets: [{
-                            data: profitOverTime,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 2,
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: { title: { display: true, text: 'Month' } },
-                            y: { title: { display: true, text: 'Profit' } }
-                        }
-                    }
-                });
-
                 revenueChart = new Chart(revenueChartCtx, {
                     type: 'line',
                     data: {
                         labels: revenueDates,
                         datasets: [{
+                            label: 'revenue over Time',
                             data: revenueOverTime,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 2,
+                            borderColor: 'rgba(255, 127, 127, 1)',
+                            borderWidth: 1,
                             fill: false
                         }]
                     },
                     options: {
                         scales: {
-                            x: { title: { display: true, text: 'Month' } },
+                            x: { title: { display: true, text: 'Date' } },
                             y: { title: { display: true, text: 'Revenue' } }
+                        }
+                    }
+
+                    
+                });
+
+                profitChart = new Chart(profitChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: profitDates,
+                        datasets: [{
+                            label: 'Profit over Time',
+                            data: profitOverTime,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Profit' } }
                         }
                     }
                 });

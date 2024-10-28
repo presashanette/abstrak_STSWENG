@@ -87,12 +87,13 @@
 .report {
     flex-direction: row;
     overflow-x: scroll;
-    width: 2fr;
+    width: 550px;
 }
 
 .chart-container {
     justify-content: center;
     margin: 0 15px;
-    width: 300px; /* Ensure each chart takes up more space */
+    min-width: 45%; /* Ensure each chart takes up more space */
     height: fit-content; /* Increase height for larger graphs */
+    background-color: white;
 }

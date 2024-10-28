@@ -136,7 +136,7 @@ function calculateTrendData(orderAggregations) {
       if (!acc[monthYear]) {
           acc[monthYear] = { date: monthYear, profit: 0 };
       }
-      acc[monthYear].profit += agg.grossProfit// - (agg.netCost);
+      acc[monthYear].profit += agg.totalSold * (agg.sellingPrice - 9); // TO FOLLOW, PLS FIND A WAY TO CALCULATE COST
       return acc;
   }, {});
 
@@ -145,16 +145,16 @@ function calculateTrendData(orderAggregations) {
 
   // Calculate profit over time by month
   const revenueOverTime = orderAggregations.reduce((acc, agg) => {
-    const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`; // Format as "YYYY-M"
-    if (!acc[monthYear]) {
-        acc[monthYear] = { date: monthYear, revenue: 0 };
-    }
-    acc[monthYear].revenue += agg.netRevenue;
-    return acc;
-}, {});
+      const monthYear = `${agg.dateCreated.getFullYear()}-${agg.dateCreated.getMonth() + 1}`; // Format as "YYYY-M"
+      if (!acc[monthYear]) {
+          acc[monthYear] = { date: monthYear, revenue: 0 };
+      }
+      acc[monthYear].revenue += agg.totalSold * agg.sellingPrice;
+      return acc;
+  }, {});
 
-// Convert profitOverTime object to an array
-const revenueOverTimeOverTimeArray = Object.values(revenueOverTime);
+  // Convert profitOverTime object to an array
+  const revenueOverTimeOverTimeArray = Object.values(revenueOverTime);
 
   return { salesOverTime: salesOverTimeArray, profitOverTime: profitOverTimeArray, revenueOverTime: revenueOverTimeOverTimeArray };
 }
