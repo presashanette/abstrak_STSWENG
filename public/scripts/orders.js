@@ -81,26 +81,30 @@ $(document).ready(() => {
     };
 
     nextButton.addEventListener('click', () => {
-        const currentPage = parseInt(pageNumber.textContent);
+        const currentPage = parseInt(pageNumber.textContent, 10);
+    
         if (currentPage < totalPagesPagination) {
             if (isFiltersApplied(currentFilters)) {
-                filterResult(currentPage + 1);
+                filterResult(currentPage + 1); // Use filterResult when filters are applied
             } else {
-                loadPage(currentPage + 1);
+                loadPage(currentPage + 1); // Use loadPage when no filters are applied
             }
         }
     });
 
     prevButton.addEventListener('click', () => {
-        const currentPage = parseInt(pageNumber.textContent);
+        const currentPage = parseInt(pageNumber.textContent, 10);
+    
         if (currentPage > 1) {
             if (isFiltersApplied(currentFilters)) {
-                filterResult(currentPage - 1);
+                filterResult(currentPage - 1); // Use filterResult when filters are applied
             } else {
-                loadPage(currentPage - 1);
+                loadPage(currentPage - 1); // Use loadPage when no filters are applied
             }
         }
     });
+    
+
 
     // Initial load
     loadPage(1);
@@ -675,27 +679,54 @@ $(document).ready(() => {
         $('#search-bar').toggle();
     });
 
-    $('#search-button').click(function() {
+    $('#search-button').click(async function () {
         const searchText = $('#search-input').val().toLowerCase();
-        $('.orders-row').each(function() {
-            const rowText = $(this).text().toLowerCase();
-            const itemsText = $(this).data('itemslist') ? $(this).data('itemslist').toLowerCase() : '';
-            if (rowText.includes(searchText) || itemsText.includes(searchText)) {
-                highlightText($(this), searchText);
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+        const response = await fetch(`/orders?searchText=${encodeURIComponent(searchText)}&page=1`, {
+            headers: { Accept: 'application/json' },
         });
-        $('.pagination-container').hide();
+    
+        if (response.ok) {
+            const result = await response.json();
+            const { orders, totalPages } = result;
+    
+            // Clear table and render new results
+            const tbody = document.getElementById('orders-body');
+            tbody.innerHTML = '';
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.classList.add('orders-row');
+                tr.innerHTML = `
+                    <td>${order.orderNumber}</td>
+                    <td>${new Date(order.dateCreated).toLocaleDateString()}</td>
+                    <td>${order.totalOrderQuantity}</td>
+                    <td>${order.paymentMethod}</td>
+                    <td>${order.fulfillmentStatus}</td>
+                    <td>${order.paymentStatus}</td>
+                    <td>${order.total}</td>
+                    <td>${order.shippingRate}</td>
+                    <td>${order.orderedFrom}</td>
+                `;
+                tbody.appendChild(tr);
+    
+                // Add event listener for the modal
+                tr.addEventListener('click', () => openViewModal(order.orderNumber));
+                tr.style.cursor = 'pointer';
+            });
+    
+            // Update pagination
+            document.getElementById('total-pages').textContent = totalPages;
+            document.getElementById('page-number').textContent = 1;
+        } else {
+            console.error('Failed to fetch search results.');
+        }
     });
+    
 
-    $('#clear-search-button').click(function() {
-        $('#search-input').val(''); 
-        $('.orders-row').show(); 
-        $('.pagination-container').show();
-        removeHighlights();
+    $('#clear-search-button').click(function () {
+        $('#search-input').val('');
+        loadPage(1); // Reload first page without any search filter
     });
+    
 
     const highlightText = (element, text) => {
         const innerHTML = element.html();
@@ -724,9 +755,18 @@ $(document).ready(() => {
         });
     });
 
-    $('#filter-sort-done').on('click', function() {
-        $('#filter-sort-modal').hide();
+    $('#filter-sort-done').on('click', () => {
+        currentFilters.sort = $('.sorting').val();
+        currentFilters.fulfillmentStatus = $('.fulfillmentfilter').val();
+        currentFilters.orderedFrom = $('.orderfromfilter').val();
+        currentFilters.paymentStatus = $('.paymentstatusfilter').val();
+        currentFilters.startDate = $('#start-date').val();
+        currentFilters.endDate = $('#end-date').val();
+    
+        $('#filter-sort-modal').hide(); // Hide the modal
+        filterResult(1); // Fetch and display the filtered results from page 1
     });
+    
 
     // Optional: Hide the modal if clicked outside of it
     $(document).on('click', function(event) {
@@ -775,31 +815,66 @@ $(document).ready(() => {
         filterResult(1); 
     });
 
-    $('#filter-sort-clear').click(function() {
+    $('#filter-sort-clear').click(() => {
+        // Reset filters
+        currentFilters = {
+            sort: '',
+            fulfillmentStatus: '',
+            orderedFrom: '',
+            paymentStatus: '',
+            startDate: '',
+            endDate: ''
+        };
+    
+        // Reset UI elements
         $('#start-date').val('');
         $('#end-date').val('');
         $('#sorting').prop('selectedIndex', 0);
         $('#fulfillmentfilter').prop('selectedIndex', 0);
         $('#orderfromfilter').prop('selectedIndex', 0);
         $('#paymentstatusfilter').prop('selectedIndex', 0);
+    
+        // Reload unfiltered results
+        $('#filter-sort-modal').hide();
+        loadPage(1); // Fetch unfiltered data starting from page 1
     });
-
+    
     const filterResult = async (page) => {
-        const query = $.param({ ...currentFilters, page });
+        // Build the query string from the current filters and page number
+        const queryParams = {
+            sort: currentFilters.sort || '',
+            fulfillmentStatus: currentFilters.fulfillmentStatus || '',
+            orderedFrom: currentFilters.orderedFrom || '',
+            paymentStatus: currentFilters.paymentStatus || '',
+            startDate: currentFilters.startDate || '',
+            endDate: currentFilters.endDate || '',
+            page: page || 1
+        };
+    
+        const query = new URLSearchParams(queryParams).toString();
+    
         try {
             const response = await fetch(`/orders?${query}`, {
                 headers: {
                     'Accept': 'application/json'
                 }
             });
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+    
             const result = await response.json();
             const { orders, totalPages } = result;
+    
+            // Update the total number of pages and set it globally
+            totalPagesPagination = totalPages;
+    
+            // Clear the current table rows
             const tbody = document.getElementById('orders-body');
             tbody.innerHTML = '';
-            document.getElementById('total-pages').textContent = totalPages;
+    
+            // Populate the table with filtered orders
             orders.forEach(order => {
                 const orderNumber = order.orderNumber || 'N/A';
                 const dateCreated = order.dateCreated ? new Date(order.dateCreated).toLocaleDateString() : 'N/A';
@@ -810,6 +885,7 @@ $(document).ready(() => {
                 const total = order.total ? `₱${order.total}` : 'N/A';
                 const shippingRate = order.shippingRate || 'N/A';
                 const orderedFrom = order.orderedFrom || 'N/A';
+    
                 const tr = document.createElement('tr');
                 tr.classList.add('orders-row');
                 tr.innerHTML = `
@@ -824,31 +900,27 @@ $(document).ready(() => {
                     <td>${orderedFrom}</td>
                 `;
                 tbody.appendChild(tr);
-
-                // Add event listener for click to open the modal
-                tr.addEventListener('click', () => openViewModal(orderNumber));
-                // Set the cursor to pointer
+    
+                // Add event listener for the modal
+                tr.addEventListener('click', () => openViewModal(order.orderNumber));
                 tr.style.cursor = 'pointer';
             });
-
+    
+            // Update the pagination controls
             pageNumber.textContent = page;
-            if (totalPages <= 1) {
+            document.getElementById('total-pages').textContent = totalPages;
+    
+            prevButton.style.display = page > 1 ? 'inline' : 'none';
+            nextButton.style.display = page < totalPages ? 'inline' : 'none';
+    
+            // If no orders are found, display a message
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9">No orders found.</td></tr>';
                 prevButton.style.display = 'none';
                 nextButton.style.display = 'none';
-            } else {
-                if (page === 1) {
-                    prevButton.style.display = 'none';
-                } else {
-                    prevButton.style.display = 'inline';
-                }
-                if (page === totalPages) {
-                    nextButton.style.display = 'none';
-                } else {
-                    nextButton.style.display = 'inline';
-                }
             }
         } catch (error) {
-            console.error('Error loading page:', error);
+            console.error('Error filtering results:', error);
         }
     };
     

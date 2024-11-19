@@ -25,10 +25,22 @@ const getOrders = async (req, res) => {
         const limit = 15;
         const skip = (page - 1) * limit;
 
-        const { sort, fulfillmentStatus, orderedFrom, paymentStatus, startDate, endDate } = req.query;
+        const { searchText, sort, fulfillmentStatus, orderedFrom, paymentStatus, startDate, endDate } = req.query;
 
         // Build filter object
         let filter = {};
+
+        // Add search condition
+        if (searchText) {
+            filter = {
+                $or: [
+                    { orderNumber: { $regex: searchText, $options: 'i' } },
+                    { orderedFrom: { $regex: searchText, $options: 'i' } },
+                    { paymentMethod: { $regex: searchText, $options: 'i' } },
+                ],
+            };
+        }
+
         if (fulfillmentStatus) {
             filter.fulfillmentStatus = fulfillmentStatus;
         }
@@ -41,17 +53,15 @@ const getOrders = async (req, res) => {
         if (startDate || endDate) {
             filter.dateCreated = {};
             if (startDate) {
-                filter.dateCreated.$gte = new Date(startDate).setHours(0, 0, 0, 0); // Start of the day
+                filter.dateCreated.$gte = new Date(startDate).setHours(0, 0, 0, 0);
             }
             if (endDate) {
-                filter.dateCreated.$lte = new Date(endDate).setHours(23, 59, 59, 999); // End of the day
+                filter.dateCreated.$lte = new Date(endDate).setHours(23, 59, 59, 999);
             }
         }
 
-        console.log('Filter:', filter);
-
-        // Build sort object
-        let sortOrder = { };
+        // Define sortOrder based on the 'sort' query parameter
+        let sortOrder = {};
         if (sort) {
             if (sort === 'ordernumascending') {
                 sortOrder.orderNumber = 1;
@@ -62,36 +72,28 @@ const getOrders = async (req, res) => {
             } else if (sort === 'orderdateearliest') {
                 sortOrder.dateCreated = 1;
             }
-        }
-        else {
-            sortOrder.dateCreated = -1;
+        } else {
+            sortOrder.dateCreated = -1; // Default sort: latest orders first
         }
 
         const totalOrders = await OrderInfo.countDocuments(filter);
         const totalPages = Math.ceil(totalOrders / limit);
 
         const orders = await OrderInfo.find(filter).sort(sortOrder).skip(skip).limit(limit).lean();
-        console.log('Orders:', orders);
-
-        const nextPage = page < totalPages ? page + 1 : null;
-
-        console.log('Total Pages:', totalPages);
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             res.json({
                 orders,
                 currentPage: page,
-                totalPages, // Ensure totalPages is included in the response
+                totalPages,
             });
         } else {
             res.render('orders', {
                 orders: JSON.stringify(orders),
                 currentPage: page,
                 totalPages,
-                nextPage,
-                lastUpdatedDate: new Date(), // Assuming this needs to be the current date
-                "grid-add-button": "Order",
-                "grid-title": "ORDERS"
+                nextPage: page < totalPages ? page + 1 : null,
+                lastUpdatedDate: new Date(),
             });
         }
     } catch (err) {
@@ -99,6 +101,7 @@ const getOrders = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 
 async function addOrder(req, res) {
