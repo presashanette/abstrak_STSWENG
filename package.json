@@ -2,12 +2,16 @@
   "name": "abstrak",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "mocha"
+    "test": "playwright",
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
     "axios": "^1.7.2",
