@@ -28,6 +28,40 @@ document.addEventListener('DOMContentLoaded', () => {
         startDate: '',
         endDate: ''
     };
+    const mainFundElement = document.getElementById('main-fund');
+    const currentDateElement = document.getElementById('current-date');
+    const loadMainFundBalance = async () => {
+        try {
+            const response = await fetch('/api/mainfund/balance');
+            if (response.ok) {
+                const data = await response.json();
+                const balance = data.balance;
+
+                // Update the balance display with the fetched value
+                mainFundElement.textContent = `₱${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            } else {
+                console.error('Failed to fetch balance');
+            }
+        } catch (error) {
+            console.error('Error fetching balance:', error);
+        }
+
+        // Format and display the current date
+        const currentDate = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = currentDate.toLocaleDateString('en-US', options);
+        currentDateElement.textContent = formattedDate;
+    };
+
+    // Call the async function for loading balance and date
+    loadMainFundBalance();
+
+    // Attach this function call to relevant buttons or actions (e.g., after adding/updating/deleting expenses)
+    const reloadMainFund = async () => {
+        await loadMainFundBalance();
+    };
+
+
 
     const openModal = () => {
         modal.style.display = "block";
@@ -50,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filterModal.style.display = "block";
     };
     
-        let mainFund = 100000; // Initialize fund or fetch from server/database
+        let mainFund = 0; // Initialize fund or fetch from server/database
 
     // Function to update the main fund display
     const updateMainFundDisplay = () => {
@@ -92,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-    
-        const expenseId = document.getElementById("expense-id").value;
+        
+        const expenseId = document.getElementById("expense-id").value;  // This value should be correctly populated during edit
+        
         const expenseData = {
             name: form.name.value,
             collectionName: form.collection.value,
@@ -105,30 +140,25 @@ document.addEventListener('DOMContentLoaded', () => {
             description: form.description.value,
             receiptUrl: form["receipt-url"].value
         };
-    
-        // Input validation
+        
         if (expenseData.amount <= 0 || expenseData.quantity <= 0) {
             alert("Amount and Quantity must be greater than zero.");
             return;
         }
-    
-        const expenseAmount = parseFloat(form.amount.value);
-        mainFund -= expenseAmount; // Deduct from main fund
-        updateMainFundDisplay();
         
         try {
             let response;
             if (expenseId) {
                 // Edit expense
                 response = await fetch(`/api/expenses/${expenseId}`, {
-                    method: 'PUT',
+                    method: 'PUT',  // This ensures it's a PUT request
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(expenseData)
                 });
             } else {
-                // Add expense
+                // Add new expense
                 response = await fetch('/api/expenses', {
                     method: 'POST',
                     headers: {
@@ -137,20 +167,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(expenseData)
                 });
             }
-    
+        
             if (response.ok) {
-                reloadGraphData();
-                const successMessage = expenseId ? 'Expense edited successfully!' : 'Expense added successfully!';
-                reloadGraphData();
                 Swal.fire({
                     title: 'Success',
-                    text: successMessage,
+                    text: expenseId ? 'Expense edited successfully!' : 'Expense added successfully!',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 }).then(() => {
+                    reloadMainFund(); 
                     reloadExpensesTable();
+                    reloadGraphData();   // Refresh the table after editing
                     closeModal();
-                    $('#expense-id').val(''); // Ensure the expense ID is cleared after operation
+                    $('#expense-id').val('');  // Clear ID after submission
                 });
             } else {
                 throw new Error('Failed to save the expense');
@@ -160,19 +189,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    
 
     const fetchExpenseDetails = (expenseId) => {
         $.ajax({
             url: `/api/expenses/${expenseId}`,
             type: 'GET',
             success: function(response) {
-                populateForm(response);
+                populateForm(response); // Ensure this populates the form
             },
             error: function(error) {
                 console.error('Error fetching expense:', error);
             }
         });
     };
+    
 
     const fetchCollections = () => {
         $.ajax({
@@ -206,8 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const populateForm = async (expense) => {
-        await fetchCollections();
-        $('#expense-id').val(expense.expenseId);
+        await fetchCollections();  // Ensures collections are populated before setting form values
+        $('#expense-id').val(expense._id);  // Correctly set the hidden input with the expense ID
         $('#name').val(expense.name);
         $('#collection').val(expense.collectionName);
         $('#date').val(new Date(expense.date).toISOString().split('T')[0]);
@@ -219,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         $('#receipt-url').val(expense.receiptUrl);
         $('#modal-title').text('Edit Expense');
     };
+    
     
     function fetchExpenseGraphs() {
         $.ajax({
@@ -660,12 +692,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 method: 'DELETE'
                             }).then(response => {
                                 if (response.ok) {
+                                    reloadMainFund(); 
                                     reloadGraphData();
                                     Swal.fire(
                                         'Deleted!',
                                         'Your expense has been deleted.',
                                         'success'
                                     ).then(() => {
+                                        reloadMainFund(); 
+                                        reloadGraphData();  
                                         reloadExpensesTable();
                                     });
                                 } else {
@@ -770,10 +805,11 @@ document.addEventListener('DOMContentLoaded', () => {
             quantityType: '',
             quantityValue: ''
         };
-        
+        reloadMainFund(); 
         reloadExpensesTable();
+        reloadGraphData();  // Reload graphs after resetting the filters
         closeFilterModal();
-    });
+    });    
     
 
     loadExpensesPage(1);

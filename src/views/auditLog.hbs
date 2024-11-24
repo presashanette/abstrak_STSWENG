@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log</title>
+    <link rel="stylesheet" href="/styles/auditLog.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="/scripts/general.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        {{>navbar}}
+        <div class="container">
+            <header>
+                <h1>Audit Log</h1>
+                {{!-- <button id="audit-filter-sort-btn" class="btn">Filter and Sort</button> --}}
+            </header>
+            <section class="history">
+                <table class="action-table">
+                    <thead>
+                        <tr>
+                            <th>Date and Time</th>
+                            <th>User</th>
+                            <th>Page</th>
+                            <th>Action</th>
+                            <th>Old Data</th>
+                            <th>New Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audits-list">   
+                        {{#each changes}}
+                        <tr>
+                            <td>{{formatDateTime dateTime}}</td>
+                            <td>{{username}}</td>
+                            <td>{{page}}</td>
+                            <td>{{action}}</td>
+                            <td>{{{oldData}}}</td>
+                            <td>{{{newData}}}</td>
+                        </tr>
+                        
+                        {{/each}}
+                    </tbody>
+                </table>
+            </section>
+            
+            <div class="pagination-container">
+                <button id="prev-audit-button">Previous</button>
+                <span id="audit-page-number">{{currentPage}}</span>
+                <span class="of-text">of</span>
+                <span id="total-audit-pages">{{totalPages}}</span>
+                <button id="next-audit-button">Next</button>
+            </div>
+        </div>
+    </div>
+    <script src="/scripts/auditLog.js" defer>console.log("Script is running")</script>
+</body>
+
+</html>
+
+
+    

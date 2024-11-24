@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const users = require('../models/data/data-users.json');
-const User = require('../models/User')
+const User = require('../models/User');
+const Audit = require('../models/Audit');
 
 /*
 async function hashPassword(password) {
@@ -84,6 +85,16 @@ async function createUser(req, res) {
             })
         }
 
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Created a new " + selectedRole + " user",
+            page: "User Dashboard",
+            oldData: "--",
+            newData: "New User: " + firstName
+        })
+
+        await newAudit.save();
         console.log(newUser);
         await newUser.save();
         res.send({ success: true, message: 'User successfully created!'})

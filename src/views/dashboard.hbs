@@ -14,7 +14,6 @@
 <body>
 <div class="main">
     {{>navbar}}
-    {{>gridheader}}
 
     <div class="container">
         <main class="dashboard">
@@ -24,9 +23,7 @@
                 <h3>Sales Report</h3>
             </section>
 
-            <section class="low-inventory">
-                <h3>Low Inventory</h3>
-            </section>
+            {{>lowStocks}}
 
             <section class="order-notifications">
                 <h3>Order Notifications</h3>
