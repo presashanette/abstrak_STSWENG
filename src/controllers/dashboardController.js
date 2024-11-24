@@ -61,6 +61,15 @@ async function getStocks(req, res) {
     console.error(err);
     res.status(500).send('Server Error');
   }
+
+  async function getOrderNotifications(req, res) {
+    try {
+      
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Server Errror.");
+    }
+  }
 }
 
 module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks};

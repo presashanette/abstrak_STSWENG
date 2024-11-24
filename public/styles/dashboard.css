@@ -144,3 +144,50 @@
     border-radius: 10px;
     overflow: hidden;
 }
+
+/* Orders Notifications */
+.order-notifications {
+    display: block;
+    width: 300px;
+    overflow-y: scroll;
+    justify-items: center;
+    justify-content: space-between;
+}
+
+.alerts-container {
+    display: flex;
+    max-height: 400px;
+    flex-direction: column;
+}
+
+.alert-item {
+    height: 30px;
+    width: 250px;
+    padding: 5px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+}
+
+.alert-icon {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    border: #2a2929;
+    margin-right: 12px;
+}
+
+.alert-details {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.alert-description, .alert-orderId {
+    font-size: 12px;
+    text-align: left;
+}
