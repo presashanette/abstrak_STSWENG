@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const AbstrakCol = require('../models/AbstrakCol');
+const Audit = require('../models/Audit');
 const OrderInfo = require('../models/OrderInfo');
 const { addProductToCollection } = require('./collectionControllers');
 
@@ -430,14 +431,45 @@ async function deleteProductById(req, res) {
             if (req.query.deleteAssociations === 'true') {
                 await AbstrakCol.updateMany({ pieces: productId }, { $pull: { pieces: productId } });
                 await Product.findByIdAndDelete(productId);
+
+                // Record this action 
+                const newAudit = new Audit ({
+                    username: req.session.username,
+                    action: "Delete",
+                    page: "Products",
+                    oldData: product.name,
+                    newData: "--" 
+                })
+                await newAudit.save();
+
                 return res.send('Product and associations deleted');
             } else if (req.query.deleteAssociations === 'false') {
                 await Product.findByIdAndDelete(productId);
+
+                // Record this action 
+                const newAudit = new Audit ({
+                    username: req.session.username,
+                    action: "Delete",
+                    page: "Products of ",
+                    oldData: product.name,
+                    newData: "--" 
+                })
+                await newAudit.save();
+
                 return res.send('Product deleted, associations retained');
             } else {
                 return res.status(400).send('Invalid deleteAssociations query parameter');
             }
         } else {
+            // Record this action 
+            const newAudit = new Audit ({
+                username: req.session.username,
+                action: "Delete",
+                page: "Products",
+                oldData: product.name,
+                newData: "--" 
+            })
+            await newAudit.save();
             await Product.findByIdAndDelete(productId);
             return res.send('Product deleted');
         }
@@ -469,26 +501,41 @@ async function checkName(req, res) {
 
 async function addProduct(req, res) {
     const { name, price, SKU, material, variations, collectionId } = req.body;
+    
+    // Log collectionId for debugging
+    console.log("collectionId from request:", collectionId);
+
+    if (!collectionId) {
+        return res.status(400).json({ error: 'Collection ID is required' });
+    }
 
     const newProduct = new Product({
         name,
-        picture: req.file.filename ,
+        picture: req.file.filename,
         price,
         SKU,
         material: JSON.parse(material),
-        variations: JSON.parse(variations)
+        variations: JSON.parse(variations),
+        lastInventoryUpdate: new Date()
     });
 
-
-    try{
+    try {
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Added a product into " + collectionId,
+            page: "Collections Page",
+            oldData: "--",
+            newData: "New Product: " + name
+        })
+        await newAudit.save();
         await newProduct.save();
-        addProductToCollection(collectionId, newProduct._id);
+        await addProductToCollection(collectionId, newProduct._id);
         res.send({ success: true, message: 'Product added successfully' });
-        
     } catch (err) {
-        console.log("error in add product: " + err)
+        console.log("Error in add product:", err);
+        res.status(500).json({ error: 'Error adding product' });
     }
-    
 }
 
 async function fetchSizeStockCost(req, res) {
@@ -529,11 +576,38 @@ async function updateProduct(req, res) {
 
   try {
       // Find the product by ID and update its details
+      const originalProduct = await Product.findById(productId);
       const updatedProduct = await Product.findByIdAndUpdate(productId, updates, { new: true });
 
       if (!updatedProduct) {
           return res.status(404).json({ error: 'Product not found' });
       }
+
+      function formatData(data) {
+        const formatDate = (date) => {
+            const d = new Date(date);
+            return d.toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
+        };
+    
+        return `
+            <strong>Name</strong>: ${String(data.name || '')} <br>
+            <strong>Picture</strong>: ${String(data.picture || '')} <br>
+            <strong>Price</strong>: ${String(data.price || '')} <br>
+            <strong>SKU</strong>: ${String(data.SKU || '')} <br>
+            <strong>Material</strong>: ${Array.isArray(data.material) ? data.material.join(', ') : ''} <br>
+            <strong>Variations</strong>: ${data.variations ? JSON.stringify(data.variations) : ''} <br>
+            <strong>Last Inventory Update</strong>: ${data.lastInventoryUpdate ? formatDate(data.lastInventoryUpdate) : 'N/A'} <br>
+        `;
+    }
+
+    const newAudit = new Audit ({
+        username: req.session.username,
+        action: "Edit",
+        page: "Product",
+        oldData: formatData(originalProduct),
+        newData: formatData(updatedProduct) 
+    })
+    await newAudit.save();
 
       res.json(updatedProduct); // Return the updated product
   } catch (error) {
