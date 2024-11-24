@@ -7,7 +7,10 @@ const Expense = require('./Expense');
 const AbstrakCol = require('./AbstrakCol');
 
 function connect () {
-    mongoose.connect(process.env.MONGODB_URI)
+    mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000, // 30 seconds timeout
+      socketTimeoutMS: 30000 // 30 seconds timeout
+        })
     // add models here
     mongoose.model('Product', Product.schema);
     mongoose.model('User', User.schema);

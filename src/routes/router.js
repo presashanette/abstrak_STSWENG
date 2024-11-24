@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
+const {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks} = require('../controllers/dashboardController');
 const {  handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation, checkStock } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
 const { fetchExpenseGraphs, getPaginatedExpenses, getAllCollections, getAllExpenses, getExpense, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
+const { signup } = require('../controllers/signupController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 const { viewDashboard, updateProfile, getProfile, checkIfAdmin, getNonAdminDetails, updateNonAdminDetails, checkExistingEmail, checkExistingUsername, createUser } = require('../controllers/userController');
 
@@ -47,9 +49,9 @@ const uploadCollectionPicture = multer({ storage: storageCollectionPicture });
 const uploadProductPicture = multer({ storage: storageProductPicture });
 
 
-// Apply isAuthenticated middleware to all routes except login and logout
+// Apply isAuthenticated middleware to all routes except login and logout (and signup)
 router.use((req, res, next) => {
-  if (req.path === '/login' || req.path === '/logout') {
+  if (req.path === '/login' || req.path === '/logout' || req.path === '/signup') {
       return next();
   }
   return isAuthenticated(req, res, next);
@@ -68,15 +70,35 @@ router.get('/login', (req, res) => {
   if(!req.session.userId){
     res.render('login');
   } else {
-    res.redirect('/collections');
+    res.redirect('/');
   }
 });
 router.post('/login', login);
 router.get('/logout', logout);
 
+router.get('/signup', (req, res) => {
+  if (!req.session.userId) {
+    res.render('signup');
+  } else {
+    res.redirect('/');
+  }
+});
+router.post('/signup', signup);
+
+
+router.get('/', (req, res) => {
+    res.render('dashboard'); // main page
+});
+
+// dashboard
+router.get('/api/ordersUnfulfilled', getOrdersUnfulfilled);
+router.get('/api/ordersFulfilled', getOrdersFulfilled);
+router.get('/api/ordersCancelled', getOrdersCancelled);
+
+router.get('/api/stocks', getStocks);
 
 // collections page
-router.get(['/', '/collections'], handleCollectionPageRequest);
+router.get('/collections', handleCollectionPageRequest);
 router.get('/collections/:id', handleCollectionProductsRequest);
 router.post('/api/collections/add', uploadCollectionPicture.single('collectionPicture'), handleAddCollectionRequest)
 router.delete('/api/products/delete/:id', deleteProductById);
