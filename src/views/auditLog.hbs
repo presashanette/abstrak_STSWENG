@@ -20,7 +20,7 @@
         <div class="container">
             <header>
                 <h1>Audit Log</h1>
-                <button id="audit-filter-sort-btn" class="btn">Filter and Sort</button>
+                {{!-- <button id="audit-filter-sort-btn" class="btn">Filter and Sort</button> --}}
             </header>
             <section class="history">
                 <table class="action-table">
@@ -59,7 +59,7 @@
             </div>
         </div>
     </div>
-    <script src="/public/scripts/auditLog.js"></script>
+    <script src="/scripts/auditLog.js" defer>console.log("Script is running")</script>
 </body>
 
 </html>
