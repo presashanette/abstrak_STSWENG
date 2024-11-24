@@ -35,9 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeModal = () => {
         modal.style.display = "none";
-        form.reset();
-        $('#expense-id').val('');
+        form.reset();  // Reset the form after closing the modal
+        $('#expense-id').val('');  // Clear the hidden expense ID field
     };
+    
     const openFilterModal = () => {
         document.getElementById('sorting-expense').value = currentFilters.sort || '';
         document.getElementById('filter-payment-method').value = currentFilters.paymentMethod || '';
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-    
+        
         const expenseId = document.getElementById("expense-id").value;
         const expenseData = {
             name: form.name.value,
@@ -105,73 +106,73 @@ document.addEventListener('DOMContentLoaded', () => {
             description: form.description.value,
             receiptUrl: form["receipt-url"].value
         };
-    
+        
         // Input validation
         if (expenseData.amount <= 0 || expenseData.quantity <= 0) {
             alert("Amount and Quantity must be greater than zero.");
             return;
         }
     
-        const expenseAmount = parseFloat(form.amount.value);
-        mainFund -= expenseAmount; // Deduct from main fund
-        updateMainFundDisplay();
-        
         try {
             let response;
             if (expenseId) {
-                // Edit expense
-                response = await fetch(`/api/expenses/${expenseId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(expenseData)
-                });
+                // Fetch the original expense for comparison
+                const originalExpense = await fetch(`/api/expenses/${expenseId}`).then(res => res.json());
+    
+                // Calculate original and new total cost (amount * quantity)
+                const originalTotal = originalExpense.amount * originalExpense.quantity;
+                const newTotal = expenseData.amount * expenseData.quantity;
+    
+                // Calculate the difference
+                const difference = newTotal - originalTotal;
+    
+                // Update the main fund by the difference
+                mainFund -= difference;  // If the new total is higher, mainFund decreases, otherwise it increases
             } else {
-                // Add expense
-                response = await fetch('/api/expenses', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(expenseData)
-                });
+                // Add new expense
+                const newTotal = expenseData.amount * expenseData.quantity;
+                mainFund -= newTotal; // Subtract the new total from the main fund
             }
     
+            // Update the main fund display
+            updateMainFundDisplay();
+    
+            // Send the updated data to the server
+            response = expenseId
+                ? await fetch(`/api/expenses/${expenseId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(expenseData) })
+                : await fetch('/api/expenses', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(expenseData) });
+    
             if (response.ok) {
-                reloadGraphData();
-                const successMessage = expenseId ? 'Expense edited successfully!' : 'Expense added successfully!';
-                reloadGraphData();
-                Swal.fire({
-                    title: 'Success',
-                    text: successMessage,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    reloadExpensesTable();
-                    closeModal();
-                    $('#expense-id').val(''); // Ensure the expense ID is cleared after operation
+                const successMessage = expenseId ? 'Expense updated successfully!' : 'Expense added successfully!';
+                Swal.fire({ title: 'Success', text: successMessage, icon: 'success', confirmButtonText: 'OK' }).then(() => {
+                    reloadGraphData(); // Reload graph data
+                    reloadExpensesTable(); // Reload expenses table
+                    closeModal(); // Close the modal
                 });
             } else {
-                throw new Error('Failed to save the expense');
+                throw new Error('Failed to save the expense.');
             }
         } catch (error) {
             console.error("Error:", error);
         }
     });
     
-
-    const fetchExpenseDetails = (expenseId) => {
-        $.ajax({
-            url: `/api/expenses/${expenseId}`,
-            type: 'GET',
-            success: function(response) {
-                populateForm(response);
-            },
-            error: function(error) {
-                console.error('Error fetching expense:', error);
+    const fetchExpenseDetails = async (expenseId) => {
+        try {
+            const response = await fetch(`/api/expenses/${expenseId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+    
+            if (response.ok) {
+                const expense = await response.json();
+                populateForm(expense); // Call populateForm to load the data into the form
+            } else {
+                throw new Error('Failed to fetch expense details.');
             }
-        });
+        } catch (error) {
+            console.error('Error fetching expense:', error);
+        }
     };
 
     const fetchCollections = () => {
@@ -205,21 +206,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const populateForm = async (expense) => {
-        await fetchCollections();
-        $('#expense-id').val(expense.expenseId);
-        $('#name').val(expense.name);
-        $('#collection').val(expense.collectionName);
-        $('#date').val(new Date(expense.date).toISOString().split('T')[0]);
-        $('#amount').val(expense.amount);
-        $('#quantity').val(expense.quantity);
-        $('#payment-method').val(expense.paymentMethod);
-        $('#category').val(expense.category);
-        $('#description').val(expense.description);
-        $('#receipt-url').val(expense.receiptUrl);
-        $('#modal-title').text('Edit Expense');
+    const populateForm = (expense) => {
+        document.getElementById('expense-id').value = expense._id; // Set the hidden field with expense ID
+        document.getElementById('name').value = expense.name;
+        document.getElementById('collection').value = expense.collectionName;
+        document.getElementById('date').value = new Date(expense.date).toISOString().split('T')[0];
+        document.getElementById('amount').value = expense.amount;
+        document.getElementById('quantity').value = expense.quantity;
+        document.getElementById('payment-method').value = expense.paymentMethod;
+        document.getElementById('category').value = expense.category;
+        document.getElementById('description').value = expense.description;
+        document.getElementById('receipt-url').value = expense.receiptUrl;
+        document.getElementById("modal-title").innerText = "Edit Expense";
     };
-    
     function fetchExpenseGraphs() {
         $.ajax({
             url: '/api/expense-graphs',
