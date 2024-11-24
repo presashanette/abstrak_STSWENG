@@ -1,5 +1,6 @@
 const OrderInfo = require("../models/OrderInfo");
 const Product = require('../models/Product');
+const Reminder = require('../models/Reminders');
 
 async function getOrdersUnfulfilled(req, res) {
   try {
@@ -61,15 +62,32 @@ async function getStocks(req, res) {
     console.error(err);
     res.status(500).send('Server Error');
   }
+}
 
-  async function getOrderNotifications(req, res) {
-    try {
-      
-    } catch (err) {
-      console.log(err);
-      res.status(500).send("Server Errror.");
-    }
+async function getReminders(req, res) {
+  try {
+    const reminders = await Reminder.find({ });
+    res.send(reminders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Errror.");
   }
 }
 
-module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks};
+async function addReminder(req, res) {
+  try {
+    const { description } = req.body;
+
+    const newReminder = new Reminder({
+      description
+    });
+    
+    newReminder.save();
+    res.send({ succesful: true, message: "New reminder created."})
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Errror.");
+  }
+}
+
+module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, getReminders, addReminder };
