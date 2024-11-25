@@ -160,4 +160,4 @@ jobs:
         run: npm i
         
       - name: Run tests
-        run: npx jest test/mainFund.test.js
+        run: npx jest test/signup.test.js
