@@ -1,5 +1,5 @@
 const mockingoose = require("mockingoose");
-const { addExpense } = require("../src/controllers/ExpensesController");
+const { addExpense } = require("../src/controllers/expensesController");
 const Expense = require("../src/models/Expense");
 const MainFund = require("../src/models/MainFund");
 
@@ -7,7 +7,6 @@ describe("addExpense Controller", () => {
   let req, res;
 
   beforeEach(() => {
-    // Mock request and response objects
     req = {
       body: {
         name: "Office Supplies",
