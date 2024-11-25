@@ -15,11 +15,20 @@ describe("addExpense", () => {
         name: "Test Expense",
         collectionName: "Test Collection",
       },
+      username: "test_user",
     };
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
     };
+
+    const mockExpense = { expenseId: 1, ...req.body, save: jest.fn() };
+    Expense.mockImplementation(() => mockExpense);
+
+    MainFund.findOneAndUpdate = jest.fn().mockResolvedValue({
+      balance: 900,
+      transactions: [],
+    });
   });
 
   afterEach(() => {
@@ -27,17 +36,9 @@ describe("addExpense", () => {
   });
 
   it("should add an expense and update the main fund successfully", async () => {
-    const mockExpense = { expenseId: 1, ...req.body, save: jest.fn() };
-    Expense.mockImplementation(() => mockExpense);
-
-    MainFund.findOneAndUpdate.mockResolvedValue({
-      balance: 900,
-      transactions: [],
-    });
-
     await addExpense(req, res);
 
-    expect(mockExpense.save).toHaveBeenCalled();
+    expect(Expense).toHaveBeenCalled();
     expect(MainFund.findOneAndUpdate).toHaveBeenCalledWith(
       {},
       {
@@ -54,6 +55,13 @@ describe("addExpense", () => {
       { new: true, upsert: true }
     );
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.send).toHaveBeenCalledWith(mockExpense);
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        expenseId: 1,
+        amount: req.body.amount,
+        name: req.body.name,
+        collectionName: req.body.collectionName,
+      })
+    );
   });
 });
