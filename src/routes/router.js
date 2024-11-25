@@ -12,8 +12,34 @@ const { login, logout } = require('../controllers/loginController');
 const { signup } = require('../controllers/signupController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 const { viewDashboard, updateProfile, getProfile, checkIfAdmin, getNonAdminDetails, updateNonAdminDetails, checkExistingEmail, checkExistingUsername, createUser } = require('../controllers/userController');
+// Import the suppliers controller
+const {
+  getPaginatedSuppliers,
+  getSupplier,
+  addSupplier,
+  updateSupplier,
+  deleteSupplier,
+  getAllSuppliers
+} = require('../controllers/suppliersController');
 
+// Suppliers Routes
+// Get all suppliers for dropdowns or quick listings
+router.get('/suppliers', getAllSuppliers);
 
+// Get paginated suppliers (with optional filters)
+router.get('/api/suppliers', getPaginatedSuppliers);
+
+// Get a specific supplier by ID
+router.get('/api/suppliers/:id', getSupplier);
+
+// Add a new supplier
+router.post('/api/suppliers', addSupplier);
+
+// Update an existing supplier
+router.put('/api/suppliers/:id', updateSupplier);
+
+// Delete a supplier
+router.delete('/api/suppliers/:id', deleteSupplier);
 
 
 const storageCollectionPicture = multer.diskStorage({

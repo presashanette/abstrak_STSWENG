@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers Management</title>
+    <link rel="stylesheet" href="/styles/suppliers.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+</head>
+
+<body>
+    <div class="main">
+        {{> navbar}} <!-- Include navbar partial -->
+        <div class="container">
+            <header>
+                <h1>Suppliers Management</h1>
+            </header>
+                <button id="add-supplier-btn" class="btn">Add Supplier</button>
+                <button id="open-filter-sort-modal" class="btn">Filter & Sort</button>
+            <!-- Search Bar -->
+            <div id="search-bar">
+                <input type="text" id="search-input" placeholder="Search Suppliers">
+                <button id="search-button">Search</button>
+                <button id="clear-search-button">Clear</button>
+            </div>
+
+            <!-- Suppliers Table -->
+            <section class="suppliers">
+                <table class="suppliers-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact Info</th>
+                            <th>Address</th>
+                            <th>Products Supplied</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliers-list">
+                        {{#if suppliers}}
+                            {{#each suppliers}}
+                            <tr>
+                                <td>{{name}}</td>
+                                <td>{{contactInfo}}</td>
+                                <td>{{address}}</td>
+                                <td>
+                                    <ul>
+                                        {{#each productsSupplied}}
+                                        <li>{{this.productName}} (SKU: {{this.sku}}, {{this.stocksSupplied}} units)</li>
+                                        {{/each}}
+                                    </ul>
+                                </td>
+                                <td>{{notes}}</td>
+                                <td>
+                                    <button class="edit-btn" data-id="{{_id}}">Edit</button>
+                                    <button class="delete-btn btn" data-id="{{_id}}">Delete</button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="6">No suppliers found.</td>
+                            </tr>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <button id="prev-supplier-button" class="btn">Previous</button>
+                <span id="supplier-page-number">1</span>
+                <span>of</span>
+                <span id="total-pages">--</span>
+                <button id="next-supplier-button" class="btn">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Supplier Modal -->
+    <div id="supplier-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">Add Supplier</h2>
+            <form id="supplier-form">
+                <input type="hidden" id="supplier-id">
+                <div class="form-row">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter supplier name" required>
+                </div>
+                <div class="form-row">
+                    <label for="contact-info">Contact Info:</label>
+                    <input type="text" id="contact-info" name="contactInfo" placeholder="Phone or Email" required>
+                </div>
+                <div class="form-row">
+                    <label for="address">Address:</label>
+                    <textarea id="address" name="address" placeholder="Enter supplier address" required></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="products-supplied">Products Supplied:</label>
+                    <div id="products-container">
+                        <!-- Dynamically added product rows -->
+                    </div>
+                    <button type="button" id="add-product-button" class="btn">Add</button>
+                </div>
+                <div class="form-row">
+                    <label for="notes">Notes:</label>
+                    <textarea id="notes" name="notes" placeholder="Additional notes"></textarea>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </div>
+    </div>
+<!-- Filter and Sort Bar -->
+
+<!-- Filter and Sort Modal -->
+<div id="filter-sort-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="filter-sort-close">&times;</span>
+        <h2>Filter and Sort Suppliers</h2>
+        <form id="filter-sort-form">
+            <div class="form-row">
+                <label for="filter-category">Category:</label>
+                <select id="filter-category" name="category">
+                    <option value="">All</option>
+                    <option value="Fabric">Fabric</option>
+                    <option value="Apparel">Apparel</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="filter-subcategory">Subcategory:</label>
+                <input type="text" id="filter-subcategory" name="subcategory" placeholder="Enter subcategory">
+            </div>
+            <div class="form-row">
+                <label for="sort-type">Sort By:</label>
+                <select id="sort-type" name="sort">
+                    <option value="">Sort By</option>
+                    <option value="name:asc">Name (A-Z)</option>
+                    <option value="name:desc">Name (Z-A)</option>
+                    <option value="productsSupplied.price:asc">Price (Low to High)</option>
+                    <option value="productsSupplied.price:desc">Price (High to Low)</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="apply-filters-button" class="btn">Apply Filters</button>
+                <button type="button" id="clear-filters-button" class="btn">Clear Filters</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Button to Trigger Filter/Sort Modal -->
+
+    <script src="/scripts/suppliers.js"></script>
+</body>
+
+</html>
