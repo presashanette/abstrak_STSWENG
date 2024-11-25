@@ -148,7 +148,7 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-  unit_test_mainfund:
+  unit_test_signup:
     runs-on: ubuntu-latest
 
     steps:
@@ -161,3 +161,17 @@ jobs:
         
       - name: Run tests
         run: npx jest test/signup.test.js
+
+  unit_test_mainfund:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.0
+      - name: Install dependencies
+        run: npm i
+        
+      - name: Run tests
+        run: npx jest test/mainFund.test.js      
