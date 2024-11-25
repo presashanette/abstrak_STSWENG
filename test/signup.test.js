@@ -1,5 +1,5 @@
 const mockingoose = require('mockingoose');
-const { signup } = require('../src/controllers/signupController'); // Adjust path as needed
+const { signup } = require('../src/controllers/signupController'); 
 const User = require('../src/models/User');
 
 describe('Signup Backend Test', () => {
