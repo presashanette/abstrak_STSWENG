@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "^1.49.0",
+    "mockingoose": "^2.16.2"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
