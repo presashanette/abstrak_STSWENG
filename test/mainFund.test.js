@@ -14,16 +14,19 @@ describe("addExpense", () => {
         amount: 100,
         name: "Test Expense",
         collectionName: "Test Collection",
-        username: "test_user",
       },
-      
     };
     res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
     };
 
-    const mockExpense = { expenseId: 1, ...req.body, save: jest.fn() };
+    const mockExpense = {
+      expenseId: 1,
+      ...req.body,
+      save: jest.fn().mockResolvedValue({ expenseId: 1 }), 
+    };
+
     Expense.mockImplementation(() => mockExpense);
 
     MainFund.findOneAndUpdate = jest.fn().mockResolvedValue({
@@ -39,7 +42,8 @@ describe("addExpense", () => {
   it("should add an expense and update the main fund successfully", async () => {
     await addExpense(req, res);
 
-    expect(Expense).toHaveBeenCalled();
+    expect(Expense).toHaveBeenCalledWith(req.body);
+
     expect(MainFund.findOneAndUpdate).toHaveBeenCalledWith(
       {},
       {
@@ -55,6 +59,7 @@ describe("addExpense", () => {
       },
       { new: true, upsert: true }
     );
+
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.send).toHaveBeenCalledWith(
       expect.objectContaining({
