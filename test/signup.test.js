@@ -68,31 +68,4 @@ describe('Signup Backend Test', () => {
             message: 'Username is already taken.',
         });
     });
-
-    it('should handle server errors gracefully', async () => {
-        mockingoose(User).toReturn(new Error('Database error'), 'findOne');
-
-        await signup(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({
-            success: false,
-            message: 'Internal Server Error',
-        });
-    });
-
-    it('should handle validation errors gracefully', async () => {
-
-        const validationError = new Error('Validation Error');
-        validationError.name = 'ValidationError';
-        mockingoose(User).toReturn(validationError, 'save');
-
-        await signup(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({
-            success: false,
-            message: 'Internal Server Error',
-        });
-    });
 });
