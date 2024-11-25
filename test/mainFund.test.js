@@ -14,8 +14,9 @@ describe("addExpense", () => {
         amount: 100,
         name: "Test Expense",
         collectionName: "Test Collection",
+        username: "test_user",
       },
-      username: "test_user",
+      
     };
     res = {
       status: jest.fn().mockReturnThis(),
