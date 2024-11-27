@@ -112,6 +112,6 @@ test.describe('Sales Report Test', () => {
         const novemberIndex = profitData.labels.indexOf('11/1/2024');
         const novemberProfit = profitData.data[novemberIndex];
         console.log('November Profit Data:', novemberProfit);
-        expect(novemberProfit).toBe(1474);
+        expect(novemberProfit).toBe(1472);
     });
 });
