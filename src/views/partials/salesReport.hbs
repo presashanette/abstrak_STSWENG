@@ -1,0 +1,134 @@
+<section class="sales-report">
+    <div class="header-container">
+        <h3>Sales Report</h3>
+    </div>
+
+    <div class="report">
+        <div class="report-item">
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+            <span>No. of Sales</span>
+        </div>
+        <div class="report-item">
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <span>Revenue</span>
+        </div>
+        <div class="report-item">
+            <div class="chart-container">
+                <canvas id="profitChart"></canvas>
+            </div>
+            <span>Profit</span>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function() {
+        let salesChart, profitChart, revenueChart;
+
+        // Function to destroy existing charts
+        function destroyCharts() {
+            if (salesChart) {
+                salesChart.destroy();
+            }
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+            if (profitChart) {
+                profitChart.destroy();
+            }
+        }
+
+        $.ajax({
+            url: `/api/getSales`,
+            method: 'GET',
+            success: function(response) {
+                // Destroy existing chart if it exists
+                
+                var trendData = response.trendData;
+
+                var salesOverTime = trendData.salesOverTime.map(data => data.sales);
+                var profitOverTime = trendData.profitOverTime.map(data => data.profit);
+                var revenueOverTime = trendData.revenueOverTime.map(data => data.revenue);
+                var salesDates = trendData.salesOverTime.map(data => new Date(data.date).toLocaleDateString());
+                var profitDates = trendData.profitOverTime.map(data => new Date(data.date).toLocaleDateString());
+                var revenueDates = trendData.revenueOverTime.map(data => new Date(data.date).toLocaleDateString());
+
+                var salesChartCtx = document.getElementById('salesChart').getContext('2d');
+                var profitChartCtx = document.getElementById('profitChart').getContext('2d');
+                var revenueChartCtx = document.getElementById('revenueChart').getContext('2d');
+
+                // Create the sales chart
+                salesChart = new Chart(salesChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: salesDates,
+                        datasets: [{
+                            label: 'Sales over Time',
+                            data: salesOverTime,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Sales' } }
+                        }
+                    }
+
+                    
+                });
+
+                revenueChart = new Chart(revenueChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: revenueDates,
+                        datasets: [{
+                            label: 'revenue over Time',
+                            data: revenueOverTime,
+                            borderColor: 'rgba(255, 127, 127, 1)',
+                            borderWidth: 1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Revenue' } }
+                        }
+                    }
+
+                    
+                });
+
+                profitChart = new Chart(profitChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: profitDates,
+                        datasets: [{
+                            label: 'Profit over Time',
+                            data: profitOverTime,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Profit' } }
+                        }
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching product graphs:", error);
+            }
+        });
+    });
+</script>

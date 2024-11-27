@@ -3,15 +3,12 @@ const { test, expect } = require("@playwright/test");
 test.describe("Signup Test", () => {
   let page;
 
-  // Before each test
   test.beforeEach(async ({ browser }) => {
-    // Launch a browser and open a new page
     const context = await browser.newContext();
     page = await context.newPage();
     await page.goto("./signup");
   });
 
-  // After all tests
   test.afterAll(async () => {
     await page.close();
   });
@@ -111,23 +108,18 @@ test.describe("Signup Test", () => {
 
   testCases.forEach((testCase) => {
     test(`"${testCase.testName}"`, async () => {
-      // Navigate to the signup page
       await page.goto("./signup");
 
-      // Fill out the form
       await page.fill("#first-name", testCase.firstNameInput);
       await page.fill("#last-name", testCase.lastNameInput);
       await page.fill("#username", testCase.usernameInput);
       await page.fill("#password", testCase.passwordInput);
       await page.fill("#email", testCase.emailInput);
 
-      // Submit the form
       await page.click(".action-button");
 
-      // Wait for the page to load after form submission
       await page.waitForTimeout(1000);
 
-      // Assert the URL based on the test case
       const currentUrl = page.url();
       if (testCase.isValid) {
         expect(currentUrl).toBe("http://localhost:3000/login");
