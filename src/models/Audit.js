@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 const mongoose = require('mongoose');
 
 const auditSchema = new Schema({
-    _id: { type: String, required: true, unique: true, default: () => new mongoose.Types.ObjectId() }, 
+    _id: { type: String, required: true, unique: true }, 
     username: { type: String, unique: false, required: true },
     dateTime: { type: Date, default: Date.now },
     action: { type: String, required: true},
