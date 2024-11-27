@@ -1,17 +1,17 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('Sales Report Test', () => {
-    let browser; // Shared browser instance
-    let page; // Shared page instance
-    let context; // Shared browser context
+    let browser;
+    let page; 
+    let context; 
 
     test.beforeAll(async ({ browser }) => {
-        context = await browser.newContext(); // Create a single context
-        page = await context.newPage(); // Create a single page
+        context = await browser.newContext(); 
+        page = await context.newPage(); 
     });
 
     test.afterAll(async () => {
-        await context.close(); // Close the shared context and page
+        await context.close(); 
     });
     
     test('should add two orders and the sales graph should update', async () => {
@@ -26,7 +26,7 @@ test.describe('Sales Report Test', () => {
         // ADD ORDER 1
         await page.goto('./orders');
         await page.waitForTimeout(1000);
-        await page.click('text=Add Order'); 
+        await page.click('.grid-header-add-button'); 
         await page.fill('.order-num', '12345');
         await page.selectOption('.orderedfrom', 'In-person');
         await page.fill('#order-date', '2024-11-02');
@@ -44,7 +44,7 @@ test.describe('Sales Report Test', () => {
         // ADD ORDER 2
   
         await page.waitForTimeout(1000);
-        await page.click('text=Add Order'); 
+        await page.click('.grid-header-add-button'); 
         await page.fill('.order-num', '12346');
         await page.selectOption('.orderedfrom', 'In-person');
         await page.fill('#order-date', '2024-11-03');
