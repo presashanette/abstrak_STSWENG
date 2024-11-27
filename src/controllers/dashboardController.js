@@ -136,7 +136,7 @@ function calculateTrendData(orderAggregations) {
       if (!acc[monthYear]) {
           acc[monthYear] = { date: monthYear, profit: 0 };
       }
-      acc[monthYear].profit += agg.totalSold * (agg.sellingPrice - 9); // TO FOLLOW, PLS FIND A WAY TO CALCULATE COST
+      acc[monthYear].profit += agg.totalSold * (agg.sellingPrice - agg.costPrice); // TO FOLLOW, PLS FIND A WAY TO CALCULATE COST
       return acc;
   }, {});
 
