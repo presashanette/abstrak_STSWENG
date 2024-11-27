@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
-const {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, addReminder, getReminders, deleteReminder} = require('../controllers/dashboardController');
+const {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, addReminder, getReminders, deleteReminder, getSalesMetric} = require('../controllers/dashboardController');
 const {  handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation, checkStock } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
@@ -95,6 +95,7 @@ router.get('/', (req, res) => {
 router.get('/api/ordersUnfulfilled', getOrdersUnfulfilled);
 router.get('/api/ordersFulfilled', getOrdersFulfilled);
 router.get('/api/ordersCancelled', getOrdersCancelled);
+router.get('/api/getSales', getSalesMetric);
 router.post('/api/addReminder', addReminder);
 router.delete('/api/deleteReminder/:alertId', deleteReminder);
 router.get('/api/getReminders', getReminders);
