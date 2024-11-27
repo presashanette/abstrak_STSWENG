@@ -175,3 +175,18 @@ jobs:
         
       - name: Run tests
         run: npx jest test/mainFund.test.js      
+
+  unit_test_mainfund_order:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.0
+      - name: Install dependencies
+        run: npm i
+        
+      - name: Run tests
+        run: npx jest test/mainFund_Order.test.js      
+
