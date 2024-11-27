@@ -1,36 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/dashboard.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="/scripts/addcollection.js"></script>
     <title>Dashboard - AM Invento</title>
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/uploads/web-logo.png">
 
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/scripts/addcollection.js"></script>
+    <script src="/scripts/MainFund.js"></script>
 </head>
+
 <body>
-<div class="main">
-    {{>navbar}}
+    <div class="main">
+        <!-- Include Navbar Partial -->
+        {{>navbar}}
 
-    <div class="container">
-        <main class="dashboard">
-            {{>orderStatus}}
+        <div class="container">
+            <main class="dashboard">
+                <!-- Order Status Section -->
+                {{>orderStatus}}
 
-            <section class="sales-report">
-                <h3>Sales Report</h3>
-            </section>
+                <!-- Sales Report Section -->
+                <section class="sales-report">
+                    <h3>Sales Report</h3>
+                </section>
 
-            {{>lowStocks}}
+                <!-- Low Stocks Section -->
+                {{>lowStocks}}
 
-            {{>orderNotifications}}
+                
+               {{>orderNotifications}}
 
-            <section class="finances">
-                <h3>Finances</h3>
-            </section>
-        </main>
+                <!-- Finances Section -->
+                <section class="finances">
+                    <h3>Finances</h3>
+                    <!-- Link to Expenses -->
+                    <div class="finance-link">
+                        <a href="/expenses" class="link">Go to Expenses →</a>
+                    </div>
+
+                    <!-- Finance Cards -->
+                    <div class="finance-cards">
+                        <!-- Main Fund Wallet -->
+                        <div class="wallet-card">
+                            <div class="wallet-header">MainFund Wallet</div>
+                            <div id="main-fund-balance" class="wallet-balance">
+                                <h1>₱0.00</h1>
+                            </div>
+                            <div class="balance-date">As of: <span id="main-fund-date">-</span></div>
+                        </div>
+
+                        <!-- Total Expenses -->
+                        <div class="wallet-card">
+                            <div class="wallet-header">Total Expenses</div>
+                            <div id="total-expenses" class="wallet-balance">
+                                <h1>₱0.00</h1>
+                            </div>
+                            <div class="balance-date">As of: <span id="total-expenses-date">-</span></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
-</div>
 </body>
+
+</html>

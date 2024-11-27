@@ -61,6 +61,35 @@ const getAllCollections = async (req, res) => {
     }
 };
 
+const getTotalExpenses = async (req, res) => {
+    try {
+        const expenses = await Expense.find({}, { amount: 1, quantity: 1 }); // Fetch all records for debugging
+        console.log('Expenses Data:', expenses); // Log the fetched expenses
+
+        const totalExpenses = await Expense.aggregate([
+            {
+                $project: {
+                    totalCost: { $multiply: ['$amount', '$quantity'] } // Multiply amount and quantity
+                }
+            },
+            {
+                $group: {
+                    _id: null, // No grouping key, sum across all documents
+                    total: { $sum: '$totalCost' } // Sum the totalCost field
+                }
+            }
+        ]);
+
+        const total = totalExpenses.length > 0 ? totalExpenses[0].total : 0;
+        console.log('Total Expenses Calculated:', total); // Log the total calculated
+        res.json({ total });
+    } catch (err) {
+        console.error('Error calculating total expenses:', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+
 const getAllExpenses = async (req, res) => {
     try {
         const expenses = await Expense.find();
@@ -398,6 +427,7 @@ const fetchExpenseGraphs = async (req, res) => {
 
 module.exports = {
     getPaginatedExpenses,
+    getTotalExpenses,
     getAllCollections,
     getAllExpenses,
     getExpense,

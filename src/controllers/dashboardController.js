@@ -1,6 +1,23 @@
 const OrderInfo = require("../models/OrderInfo");
 const Product = require('../models/Product');
 const Reminder = require('../models/Reminders');
+const MainFund = require("../models/MainFund");
+
+async function getMainFundBalance(req, res) {
+    try {
+        const mainFund = await MainFund.findOne();
+        if (!mainFund) {
+            return res.status(404).json({ message: 'MainFund not found' });
+        }
+        res.json({ balance: mainFund.balance });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
+module.exports = { getMainFundBalance };
+
 
 async function getOrdersUnfulfilled(req, res) {
   try {
