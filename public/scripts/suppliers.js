@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     // Open Modal
     const openModal = () => {
-        modal.style.display = "block";
+        modal.style.display = "flex";
 
     };
 
@@ -91,24 +91,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add Product Row
-    addProductButton.addEventListener('click', () => {
-        const productRow = `
-            <div class="product-row">
-                <input type="text" placeholder="Product Name" class="product-name" required>
-                <select class="product-category" required>
-                    <option value="">Select Category</option>
-                    <option value="Fabric">Fabric</option>
-                    <option value="Apparel">Apparel</option>
-                    <option value="Miscellaneous">Miscellaneous</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="text" placeholder="Subcategory (e.g., Cotton, Caps)" class="product-subcategory">
-                <input type="number" placeholder="Price" class="product-price" required>
-                <input type="number" placeholder="Stocks Supplied" class="product-stocks" required>
-                <button type="button" class="remove-product-button">Remove</button>
-            </div>`;
-        productsContainer.innerHTML += productRow;
-    });
+// Add Product Row
+addProductButton.addEventListener('click', () => {
+    const productRow = `
+        <div class="product-row">
+            <input type="text" placeholder="Product Name" class="product-name" required>
+            <select class="product-category" required>
+                <option value="">Select Category</option>
+                <option value="Fabric">Fabric</option>
+                <option value="Apparel">Apparel</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" placeholder="Subcategory (e.g., Cotton, Caps)" class="product-subcategory">
+            <input type="number" placeholder="Price" class="product-price" required>
+            <input type="number" placeholder="Stocks Supplied" class="product-stocks" required>
+            <button type="button" class="remove-product-button">Remove</button>
+        </div>`;
+    productsContainer.insertAdjacentHTML('beforeend', productRow);
+});
+
     
 
     // Remove Product Row
@@ -120,68 +122,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reload Suppliers Table
     const reloadSuppliersTable = async () => {
+        console.log('Reloading suppliers table...'); // Log table reload event
         try {
             const currentPage = parseInt(pageNumber.textContent, 10);
             const response = await fetch(`/api/suppliers?page=${currentPage}&limit=${limit}`);
             const data = await response.json();
-
+    
+            console.log('Fetched suppliers data:', data); // Log fetched supplier data
+    
             suppliersData = data.suppliers; // Cache updated data
             renderSuppliersTable(suppliersData);
             totalPages = data.totalPages;
-
+    
             prevButton.disabled = currentPage === 1;
             nextButton.disabled = currentPage === totalPages;
         } catch (error) {
             console.error('Error reloading suppliers table:', error);
         }
     };
+    
+// Submit Form (Add/Edit Supplier)
+console.log('Attaching submit event listener to the form');
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    console.log('Form submit event triggered');
 
-    // Submit Form (Add/Edit Supplier)
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-    
-        const productsSupplied = Array.from(productsContainer.querySelectorAll('.product-row')).map(row => ({
-            productName: row.querySelector('.product-name').value,
-            category: row.querySelector('.product-category').value,
-            subCategory: row.querySelector('.product-subcategory').value || null,
-            price: parseFloat(row.querySelector('.product-price').value),
-            stocksSupplied: parseInt(row.querySelector('.product-stocks').value, 10),
-        }));
-    
-        const supplierData = {
-            name: form.name.value,
-            contactInfo: form["contact-info"].value,
-            address: form.address.value,
-            productsSupplied,
-            notes: form.notes.value,
-        };
-    
-        try {
-            const response = await fetch('/api/suppliers', {
-                method: form["supplier-id"].value ? 'PUT' : 'POST', // Add or Edit
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(supplierData),
-            });
-    
-            if (response.ok) {
-                closeModal();
-                reloadSuppliersTable(); // Reload the updated table
-            } else {
-                console.error('Failed to save supplier.');
-            }
-        } catch (error) {
-            console.error('Error saving supplier:', error);
+    console.log('Submitting form...'); // Log form submission event
+
+    // Collect all product rows
+    const productsSupplied = Array.from(productsContainer.querySelectorAll('.product-row')).map(row => ({
+        productName: row.querySelector('.product-name').value.trim(),
+        category: row.querySelector('.product-category').value.trim(),
+        subCategory: row.querySelector('.product-subcategory').value.trim() || null,
+        price: parseFloat(row.querySelector('.product-price').value),
+        stocksSupplied: parseInt(row.querySelector('.product-stocks').value, 10),
+    }));
+    console.log('Collected products supplied:', productsSupplied); // Log collected products
+
+    const supplierData = {
+        name: form.name.value.trim(),
+        contactInfo: form["contact-info"].value.trim(),
+        address: form.address.value.trim(),
+        productsSupplied, // Includes all collected product rows
+        notes: form.notes.value.trim(),
+    };
+    console.log('Prepared supplier data for submission:', supplierData); // Log prepared data
+
+    try {
+        const response = await fetch(`/api/suppliers/${form["supplier-id"].value}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(supplierData),
+        });        
+
+        if (response.ok) {
+            console.log('Supplier saved successfully.'); // Log success
+            closeModal();
+            reloadSuppliersTable(); // Reload the updated table
+        } else {
+            const errorData = await response.json();
+            console.error('Failed to save supplier:', errorData); // Log server error response
         }
-    });
-    
-
+    } catch (error) {
+        console.error('Error saving supplier:', error);
+    }
+});
     // Fetch Supplier Details for Editing
     const fetchSupplierDetails = async (supplierId) => {
+        console.log(`Fetching details for supplier ID: ${supplierId}`); // Log supplier ID
         try {
             const response = await fetch(`/api/suppliers/${supplierId}`);
             if (!response.ok) throw new Error('Failed to fetch supplier details.');
-
+    
             const supplier = await response.json();
+            console.log('Fetched supplier details:', supplier); // Log fetched data
             populateForm(supplier);
             document.getElementById("modal-title").innerText = "Edit Supplier"; // Update the title here
             openModal();
@@ -190,9 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error fetching supplier details:", error);
         }
     };
+    
 
     // Populate Modal Form
     const populateForm = (supplier) => {
+        console.log('Populating form with supplier data:', supplier); // Log data to populate
         document.getElementById("supplier-id").value = supplier._id;
         form.name.value = supplier.name;
         form["contact-info"].value = supplier.contactInfo;
@@ -200,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.notes.value = supplier.notes;
         document.getElementById("modal-title").innerText = "Edit Supplier"; // Update the title here
         modal.style.display = 'flex';
-
+    
         productsContainer.innerHTML = supplier.productsSupplied.map(product => `
             <div class="product-row">
                 <input type="text" placeholder="Product Name" class="product-name" value="${product.productName}" required>
@@ -211,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `).join('');
     };
+    
 
     // Delete Supplier
     const deleteSupplier = async (supplierId) => {
@@ -239,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Render Table
     const renderSuppliersTable = (suppliers) => {
+        console.log('Rendering suppliers table with data:', suppliers); // Log data for table rendering
         suppliersList.innerHTML = suppliers.map(supplier => `
             <tr>
                 <td>${supplier.name}</td>
@@ -257,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </tr>
         `).join('');
     };
+    
     
 
     // Pagination Controls
@@ -341,22 +360,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const searchSuppliers = async (keyword) => {
         try {
-            const currentPage = 1; // Reset to the first page for new search
-            const response = await fetch(`/api/suppliers?page=${currentPage}&limit=${limit}&keyword=${encodeURIComponent(keyword)}`);
+            const response = await fetch(`/api/suppliers?page=1&limit=${limit}&keyword=${encodeURIComponent(keyword)}`);
             const data = await response.json();
     
             suppliersData = data.suppliers; // Cache search results
             renderSuppliersTable(suppliersData);
     
-            pageNumber.textContent = currentPage;
+            pageNumber.textContent = 1;
             totalPages = data.totalPages;
     
-            prevButton.disabled = currentPage === 1;
-            nextButton.disabled = currentPage === totalPages;
+            prevButton.disabled = true;
+            nextButton.disabled = data.totalPages <= 1;
         } catch (error) {
             console.error('Error searching suppliers:', error);
         }
     };
+    
     
     // Apply Filters and Sorting
     applyFiltersButton.addEventListener('click', () => {

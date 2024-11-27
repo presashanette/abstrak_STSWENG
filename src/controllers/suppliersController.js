@@ -107,24 +107,31 @@ async function addSupplier(req, res) {
 async function updateSupplier(req, res) {
     try {
         const supplierId = req.params.id;
-        const { productsSupplied } = req.body;
+        const { name, contactInfo, address, productsSupplied, notes } = req.body;
 
         const updatedSupplier = await Supplier.findByIdAndUpdate(
             supplierId,
-            { $push: { productsSupplied: { $each: productsSupplied } } },
-            { new: true }
+            {
+                name,
+                contactInfo,
+                address,
+                productsSupplied, // Replace the entire array
+                notes,
+            },
+            { new: true } // Return the updated document
         );
 
         if (!updatedSupplier) {
             return res.status(404).json({ success: false, message: 'Supplier not found.' });
         }
 
-        res.status(200).json({ success: true, message: 'Products added to supplier.', supplier: updatedSupplier });
+        res.status(200).json({ success: true, message: 'Supplier updated successfully.', supplier: updatedSupplier });
     } catch (error) {
         console.error('Error updating supplier:', error);
         res.status(500).json({ success: false, message: 'Error updating supplier.' });
     }
 }
+
 
 
 
