@@ -1,6 +1,7 @@
 const Expense = require('../models/Expense');
 const Collection = require('../models/AbstrakCol');
 const MainFund = require('../models/MainFund')
+const Audit = require('../models/Audit');
 
 
 const getPaginatedExpenses = async (req, res) => {
@@ -59,6 +60,35 @@ const getAllCollections = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
+const getTotalExpenses = async (req, res) => {
+    try {
+        const expenses = await Expense.find({}, { amount: 1, quantity: 1 }); // Fetch all records for debugging
+        console.log('Expenses Data:', expenses); // Log the fetched expenses
+
+        const totalExpenses = await Expense.aggregate([
+            {
+                $project: {
+                    totalCost: { $multiply: ['$amount', '$quantity'] } // Multiply amount and quantity
+                }
+            },
+            {
+                $group: {
+                    _id: null, // No grouping key, sum across all documents
+                    total: { $sum: '$totalCost' } // Sum the totalCost field
+                }
+            }
+        ]);
+
+        const total = totalExpenses.length > 0 ? totalExpenses[0].total : 0;
+        console.log('Total Expenses Calculated:', total); // Log the total calculated
+        res.json({ total });
+    } catch (err) {
+        console.error('Error calculating total expenses:', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 
 const getAllExpenses = async (req, res) => {
     try {
@@ -137,15 +167,15 @@ const buildSortOrder = (sort) => {
             console.log('Sorting by date descending');
         }
     } else {
-        sortOrder.date = -1; // Default sort by date in descending order
-        console.log('Default sorting by date descending');
+        sortOrder.createdAt = -1; // Default sort by creation date in descending order
+        console.log('Default sorting by createdAt descending');
     }
 
     return sortOrder;
 };
 
 const getExpense = async (req, res) => {
-    const expenseId = req.params.id;
+    const expenseId = req.params.id;  // this refers to the MongoDB _id
     console.log(`Received request to get expense with ID: ${expenseId}`);
 
     try {
@@ -164,21 +194,35 @@ const getExpense = async (req, res) => {
     }
 };
 
+
 const addExpense = async (req, res) => {
     try {
-        const expense = new Expense(req.body); // Expense will automatically have an incremented expenseId
+        const expense = new Expense(req.body);
         await expense.save();
 
-        // Update the main fund by subtracting the expense amount
+        // Record this action 
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Add",
+            page: "Expense",
+            oldData: "--",
+            newData: "New expense under: " + expense.name
+        })
+        await newAudit.save();
+
+        // Calculate the total cost (amount * quantity)
+        const totalCost = expense.amount * expense.quantity;
+
+        // Update the main fund by subtracting the total cost
         await MainFund.findOneAndUpdate(
             {},
             {
-                $inc: { balance: -expense.amount },
+                $inc: { balance: -totalCost },  // Deduct total cost from the main fund
                 $push: {
                     transactions: {
-                        expenseId: expense.expenseId, // Include expenseId in main fund transaction
+                        expenseId: expense._id, // Use ObjectId of the expense
                         type: 'expense',
-                        amount: expense.amount,
+                        amount: totalCost,
                         description: `Expense added: ${expense.name} - ${expense.collectionName}`
                     }
                 }
@@ -188,37 +232,44 @@ const addExpense = async (req, res) => {
 
         res.status(201).send(expense);
     } catch (err) {
+        console.error("Error adding expense:", err);
         res.status(400).send(err);
     }
 };
+
 
 
 const updateExpense = async (req, res) => {
     try {
         const originalExpense = await Expense.findById(req.params.id);
         if (!originalExpense) {
-            return res.status(404).send();
+            return res.status(404).send('Expense not found');
         }
 
-        // Update the expense with new values
         const updatedExpense = await Expense.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true, runValidators: true }
         );
 
-        // Calculate the difference between the original and updated amount
-        const amountDifference = updatedExpense.amount - originalExpense.amount;
+        // Calculate the original and updated total costs
+        const originalTotalCost = originalExpense.amount * originalExpense.quantity;
+        const updatedTotalCost = updatedExpense.amount * updatedExpense.quantity;
 
-        // Adjust the main fund based on the difference
+        // Calculate the difference in total cost
+        const costDifference = updatedTotalCost - originalTotalCost;
+
+        // If costDifference is positive, deduct the additional amount from the main fund.
+        // If costDifference is negative, add back the difference to the main fund.
         await MainFund.findOneAndUpdate(
             {},
             {
-                $inc: { balance: -amountDifference },
+                $inc: { balance: -costDifference },  // Adjust main fund based on the cost difference
                 $push: {
                     transactions: {
+                        expenseId: updatedExpense._id, // Use ObjectId of the updated expense
                         type: 'expense',
-                        amount: amountDifference,
+                        amount: costDifference,
                         description: `Expense updated: ${updatedExpense.name} - ${updatedExpense.collectionName}`
                     }
                 }
@@ -226,24 +277,93 @@ const updateExpense = async (req, res) => {
             { new: true, upsert: true }
         );
 
+        function formatData(data) {
+            const formatDate = (date) => {
+                const d = new Date(date);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                const year = d.getFullYear();
+                return `${month}/${day}/${year}`;
+            };
+        
+            return `
+                <strong>Name</strong>: ${String(data.name || '')} <br>
+                <strong>Collection Name</strong>: ${String(data.collectionName || '')} <br>
+                <strong>Date</strong>: ${data.date ? formatDate(data.date) : ''} <br>
+                <strong>Amount</strong>: ${String(data.amount || '')} <br>
+                <strong>Quantity</strong>: ${String(data.quantity || '')} <br>
+                <strong>Payment Method</strong>: ${String(data.paymentMethod || '')} <br>
+                <strong>Category</strong>: ${String(data.category || '')} <br>
+                <strong>Description</strong>: ${String(data.description || '')} <br>
+                <strong>Receipt URL</strong>: ${String(data.receiptUrl || '')} <br>
+            `;
+        }
+        
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Edit",
+            page: "Expenses",
+            oldData: formatData(originalExpense),
+            newData: formatData(updatedExpense) 
+        })
+        await newAudit.save();
+
         res.send(updatedExpense);
     } catch (err) {
+        console.error("Error updating expense:", err);
         res.status(400).send(err);
     }
 };
 
-
 const deleteExpense = async (req, res) => {
     try {
-        const expense = await Expense.findByIdAndDelete(req.params.id);
+        // Fetch the expense before deleting
+        const expense = await Expense.findById(req.params.id);
         if (!expense) {
             return res.status(404).send();
         }
+
+        // Calculate the total cost to add back to the main fund
+        const totalCost = expense.amount * expense.quantity;
+
+        const newAudit = new Audit ({
+            username: req.session.username,
+            action: "Delete",
+            page: "Expenses",
+            oldData: "Deleted expense under: " + expense.name,
+            newData: "--" 
+        })
+        await newAudit.save();
+
+        // Delete the expense
+        await Expense.findByIdAndDelete(req.params.id);
+
+        // Update the main fund by adding the total cost back
+        await MainFund.findOneAndUpdate(
+            {},
+            {
+                $inc: { balance: totalCost },  // Add the total cost back to the main fund
+                $push: {
+                    transactions: {
+                        expenseId: expense._id,
+                        type: 'refund',
+                        amount: totalCost,
+                        description: `Expense deleted: ${expense.name} - ${expense.collectionName}`
+                    }
+                }
+            },
+            { new: true, upsert: true }
+        );
+
+        // Send the deleted expense back in the response
         res.send(expense);
+
     } catch (err) {
+        console.error('Error deleting expense:', err);
         res.status(500).send(err);
     }
 };
+
 
 const fetchExpenseGraphs = async (req, res) => {
     try {
@@ -307,6 +427,7 @@ const fetchExpenseGraphs = async (req, res) => {
 
 module.exports = {
     getPaginatedExpenses,
+    getTotalExpenses,
     getAllCollections,
     getAllExpenses,
     getExpense,

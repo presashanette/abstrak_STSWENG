@@ -2,19 +2,20 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Product = require('../models/Product');
-const {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getSalesMetric} = require('../controllers/dashboardController');
+const {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, addReminder, getReminders, deleteReminder, getSalesMetric} = require('../controllers/dashboardController');
 const {  handleCollectionPageRequest, handleAddCollectionRequest, handleCollectionProductsRequest, checkCollectionName, handleAllProductsRequest } = require('../controllers/collectionControllers');
 const { fetchProductData, fetchProductMetrics, fetchProductGraphs, deleteProductById, checkName, checkSKU, fetchSizeStockCost, updateProduct, addProduct, getVariation, checkStock } = require('../controllers/productController');
 const { uploadCSV, getOrders, getAnOrder, uploadCSVFile, addOrder, checkOrderNo } = require('../controllers/ordersController');
-const { fetchExpenseGraphs, getPaginatedExpenses, getAllCollections, getAllExpenses, getExpense, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
+const { fetchExpenseGraphs, getTotalExpenses, getPaginatedExpenses, getAllCollections, getAllExpenses, getExpense, addExpense, updateExpense, deleteExpense } = require('../controllers/expensesController');
 const { getVouchers } = require('../controllers/vouchersController');
 const { login, logout } = require('../controllers/loginController');
 const { signup } = require('../controllers/signupController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 const { viewDashboard, updateProfile, getProfile, checkIfAdmin, getNonAdminDetails, updateNonAdminDetails, checkExistingEmail, checkExistingUsername, createUser } = require('../controllers/userController');
+const { getMainFundBalance } = require('../controllers/mainFundController');
+const { viewAuditLog, getPaginatedAudits } = require('../controllers/auditLogControllers');
 
-
-
+router.get('/api/mainfund/balance', getMainFundBalance);
 
 const storageCollectionPicture = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -95,6 +96,10 @@ router.get('/api/ordersUnfulfilled', getOrdersUnfulfilled);
 router.get('/api/ordersFulfilled', getOrdersFulfilled);
 router.get('/api/ordersCancelled', getOrdersCancelled);
 router.get('/api/getSales', getSalesMetric);
+router.post('/api/addReminder', addReminder);
+router.delete('/api/deleteReminder/:alertId', deleteReminder);
+router.get('/api/getReminders', getReminders);
+router.get('/api/stocks', getStocks);
 
 // collections page
 router.get('/collections', handleCollectionPageRequest);
@@ -144,10 +149,15 @@ router.get('/expenses', getAllExpenses);
 router.get('/api/expenses', getPaginatedExpenses);
 router.get('/api/expense-graphs', fetchExpenseGraphs);
 router.get('/api/collections', getAllCollections);
+router.get('/api/expenses/total', getTotalExpenses); // Add this new route
 router.get('/api/expenses/:id',getExpense);
 router.post('/api/expenses', addExpense);
 router.put('/api/expenses/:id', updateExpense);
 router.delete('/api/expenses/:id', deleteExpense);
+
+
+// audit log
+router.get('/auditLog', getPaginatedAudits);
 
 // vouchers
 router.get('/api/search-voucher', getVouchers);

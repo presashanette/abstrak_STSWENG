@@ -52,18 +52,20 @@ describe("Audit Log Test", function () {
         await driver.get("http://localhost:3000/auditlog");
         await driver.sleep(2000);
 
-        let logEntries = await driver.findElements(By.css("#actions-list tr"));
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
 
         let found = false;
-        for (let entry of logEntries) {
-            let columns = await entry.findElements(By.tagName("td"));
+
+        if (logEntries.length > 0) {
+            let latestEntry = logEntries[0]; // Select the first (top) row
+        
+            let columns = await latestEntry.findElements(By.tagName("td"));
             let page = await columns[2].getText();
             let action = await columns[3].getText();
             let newData = await columns[5].getText();
-
-            if (newData.includes("New collection: TESTCOLL") && action.includes("Added a new collection") && page.includes("Collections")) {
+        
+            if (newData.includes("New collection: TESTCOLL") && action.includes("Add") && page.includes("Collections")) {
                 found = true;
-                break;
             }
         }
 
@@ -120,9 +122,9 @@ describe("Audit Log Test", function () {
 
         // Navigate to audit log and verify
         await driver.get("http://localhost:3000/auditlog");
-        await driver.sleep(2000);
+        await driver.sleep(4000);
 
-        let logEntries = await driver.findElements(By.css("#actions-list tr"));
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
 
         let found = false;
         for (let entry of logEntries) {
@@ -131,13 +133,63 @@ describe("Audit Log Test", function () {
             let action = await columns[3].getText();
             let newData = await columns[5].getText();
 
-            if (newData.includes("New Product: TESTPRODUCT") && action.includes("Added a product into") && page.includes("Collections")) {
+            if (newData.includes("New Product: TESTPRODUCT") && action.includes("Add") && page.includes("Collections")) {
                 found = true;
                 break;
             }
         }
 
         assert.strictEqual(found, true, "Audit log did not contain the expected entry for the added product.");
+        
+    });
+
+    it("should edit a product and log it in the audit log", async function () {
+        await driver.get("http://localhost:3000/collections");
+        await driver.sleep(2000);
+
+        let item = await driver.findElement(By.className("collection-item-container"));
+        await item.click();
+        await driver.sleep(1000);
+
+        let threeDots = await driver.findElement(By.css("span.three-dots-product-option"));
+        await threeDots.click();
+
+        let deleteProduct = await driver.findElement(By.css("a.product-option-popup.edit-product"));
+        await deleteProduct.click();
+
+        let prodname = await driver.findElement(By.id("product-name-input"));
+        await prodname.sendKeys("EDITED");
+
+        await driver.sleep(1000);
+
+        let nextButton = await driver.findElement(By.id("next-form-button"));
+        await nextButton.click();
+        await driver.sleep(2000);
+
+        let doneButton = await driver.findElement(By.id("next-form-button"));
+        await doneButton.click();
+        await driver.sleep(1000);
+
+        // Navigate to audit log and verify
+        await driver.get("http://localhost:3000/auditlog");
+        await driver.sleep(2000);
+
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
+
+        let found = false;
+        for (let entry of logEntries) {
+            let columns = await entry.findElements(By.tagName("td"));
+            let page = await columns[2].getText();
+            let action = await columns[3].getText();
+            let newData = await columns[5].getText();
+
+            if (newData.includes("EDITED") && action.includes("Edit") && page.includes("Product")) {
+                found = true;
+                break;
+            }
+        }
+
+        assert.strictEqual(found, true, "Audit log did not contain the expected entry for the edited product.");
         
     });
 
@@ -157,7 +209,7 @@ describe("Audit Log Test", function () {
 
         let deleteButton = await driver.findElement(By.xpath("//button[text()='Yes, delete it!']"));
         await deleteButton.click();
-        await driver.sleep(1000);
+        await driver.sleep(2000);
 
         let deleteAssociationsButton = await driver.findElement(By.xpath("//button[text()='Yes, delete associations']"));
         await deleteAssociationsButton.click();
@@ -166,7 +218,7 @@ describe("Audit Log Test", function () {
         await driver.get("http://localhost:3000/auditlog");
         await driver.sleep(1000);
 
-        let logEntries = await driver.findElements(By.css("#actions-list tr"));
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
 
         let found = false;
         for (let entry of logEntries) {
@@ -175,7 +227,7 @@ describe("Audit Log Test", function () {
             let action = await columns[3].getText();
             let oldData = await columns[4].getText();
 
-            if (oldData.includes("Hand-Drawn Tee") && action.includes("Deleted a product and") && page.includes("Collections")) {
+            if (oldData.includes("Hand-Drawn TeeEDITED") && action.includes("Delete") && page.includes("Products")) {
                 found = true;
                 break;
             }
@@ -236,7 +288,7 @@ describe("Audit Log Test", function () {
         await driver.get("http://localhost:3000/auditlog");
         
 
-        let logEntries = await driver.findElements(By.css("#actions-list tr"));
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
 
         await driver.sleep(1000);
         let found = false;
@@ -246,7 +298,7 @@ describe("Audit Log Test", function () {
             let action = await columns[3].getText();
             let newData = await columns[5].getText();
 
-            if (newData.includes("12345") ) {
+            if (newData.includes("New order: 12345") && action.includes("Add") && page.includes("Orders")) {
                 found = true;
                 break;
             }
@@ -296,7 +348,43 @@ describe("Audit Log Test", function () {
         await driver.get("http://localhost:3000/auditlog");
         await driver.sleep(2000);
 
-        let logEntries = await driver.findElements(By.css("#actions-list tr"));
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
+
+        let found = false;
+        for (let entry of logEntries) {
+            let columns = await entry.findElements(By.tagName("td"));
+            let page = await columns[2].getText();
+            let action = await columns[3].getText();
+            let newData = await columns[5].getText();
+            let user = await columns[1].getText();
+
+            if (newData.includes("New expense under: TESTEXPENSE") && action.includes("Add") && page.includes("Expense")) {
+                found = true;
+                break;
+            }
+        }
+
+        assert.strictEqual(found, true, "Audit log did not contain the expected entry for the added expense.");
+        
+    });
+
+    it("should edit an expense and log it in the audit log", async function () {
+        await driver.get("http://localhost:3000/expenses");
+        await driver.sleep(1000);
+        let deleteButton = await driver.findElement(By.css("button.edit-btn.btn"));
+        await deleteButton.click();  
+
+        await driver.sleep(1000);
+        let expname = await driver.findElement(By.id("name"));
+        await expname.sendKeys("EDITED");
+
+        let submitButton = await driver.findElement(By.xpath("//button[@type='submit' and text()='Submit']"));
+        await submitButton.click();
+
+        await driver.get("http://localhost:3000/auditlog");
+        await driver.sleep(2000);
+
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
 
         let found = false;
         for (let entry of logEntries) {
@@ -305,13 +393,13 @@ describe("Audit Log Test", function () {
             let action = await columns[3].getText();
             let newData = await columns[5].getText();
 
-            if (action.includes("Added a new expense") && page.includes("Expense")) {
+            if (newData.includes("TESTEXPENSEEDITED") && action.includes("Edit") && page.includes("Expenses")) {
                 found = true;
                 break;
             }
         }
 
-        assert.strictEqual(found, true, "Audit log did not contain the expected entry for the added expense.");
+        assert.strictEqual(found, true, "Audit log did not contain the expected entry for the edited expense.");
         
     });
 
@@ -328,15 +416,16 @@ describe("Audit Log Test", function () {
         await driver.get("http://localhost:3000/auditlog");
         await driver.sleep(2000);
 
-        let logEntries = await driver.findElements(By.css("#actions-list tr"));
+        let logEntries = await driver.findElements(By.css("#audits-list tr"));
 
         let found = false;
         for (let entry of logEntries) {
             let columns = await entry.findElements(By.tagName("td"));
             let page = await columns[2].getText();
             let action = await columns[3].getText();
+            let oldData = await columns[4].getText();
 
-            if (action.includes("Deleted an expense") && page.includes("Expenses")) {
+            if (oldData.includes("Deleted expense under: TESTEXPENSEEDITED") && action.includes("Delete") && page.includes("Expenses")) {
                 found = true;
                 break;
             }
