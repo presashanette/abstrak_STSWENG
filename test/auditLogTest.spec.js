@@ -18,12 +18,13 @@ test.describe('Audit Log Tests', () => {
     await page.fill('input[name="username"]', 'Abstrak_Admin');
     await page.fill('input[name="password"]', 'TOUCH.DOWN!');
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(5000);
 
+    await page.goto('./collections');
     await page.click('.grid-header-add-button');
     await page.fill('#collection-name-input', 'TESTCOLL');
     await page.fill('#collection-description-input', 'TESTDESC');
-    await page.setInputFiles('#imageInput', 'C:/Users/Jersey/Downloads/Y3/T1/STSWENG/abstrak_STSWENG/test/testimages/test.png');
+    await page.setInputFiles('#imageInput', 'test/testimages/test.png');
     await page.click('.submit-collection-button');
     await page.waitForTimeout(2000);
 
@@ -59,7 +60,7 @@ test.describe('Audit Log Tests', () => {
     await page.fill('#product-sku-input', '123');
     await page.fill('#material-input', 'TEST');
     await page.keyboard.press('Enter');
-    await page.setInputFiles('#imageInput', 'C:/Users/Jersey/Downloads/Y3/T1/STSWENG/abstrak_STSWENG/test/testimages/test.png');
+    await page.setInputFiles('#imageInput', 'test/testimages/test.png');
     await page.click('#next-form-button');
     await page.fill('input.product-form-variation.table-type', 'A');
     await page.fill('input.product-form-stock.table-type', '123');
@@ -240,8 +241,8 @@ test.describe('Audit Log Tests', () => {
     await page.waitForTimeout(2000);
     
     await page.goto('./orders');
-    await page.waitForTimeout(1000);
-    await page.click('text=Add Order'); // Clicks the "Add Order" button
+    await page.waitForTimeout(4000);
+    await page.click('.grid-header-add-button'); // Clicks the "Add Order" button
     await page.fill('.order-num', '12345');
     await page.selectOption('.orderedfrom', 'In-person');
     await page.fill('#order-date', '2024-10-23');
