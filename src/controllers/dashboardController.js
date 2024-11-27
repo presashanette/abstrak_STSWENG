@@ -1,5 +1,6 @@
 const OrderInfo = require("../models/OrderInfo");
 const Product = require('../models/Product');
+const Reminder = require('../models/Reminders');
 const MainFund = require("../models/MainFund");
 
 async function getMainFundBalance(req, res) {
@@ -16,6 +17,7 @@ async function getMainFundBalance(req, res) {
 }
 
 module.exports = { getMainFundBalance };
+
 
 async function getOrdersUnfulfilled(req, res) {
   try {
@@ -79,4 +81,54 @@ async function getStocks(req, res) {
   }
 }
 
-module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks};
+async function getReminders(req, res) {
+  try {
+    const reminders = await Reminder.find({ }).lean();
+    console.log(reminders);
+    res.send(reminders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Errror.");
+  }
+}
+
+async function addReminder(req, res) {
+  try {
+    const { description } = req.body;
+
+    const newReminder = new Reminder({
+      description
+    });
+    
+    await newReminder.save();
+
+    const reminders = await Reminder.find({ }).lean();
+
+    res.send(reminders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Errror.");
+  }
+}
+
+async function deleteReminder(req, res) {
+  try {
+    const { alertId } = req.params;
+
+    // Attempt to find and delete the reminder by alertId
+    const result = await Reminder.findByIdAndDelete(alertId);
+
+    if (!result) {
+        return res.status(404).send({ message: 'Reminder not found.' });
+    }
+
+    // Get the updated list of reminders and send it back to the frontend
+    const reminders = await Reminder.find({}).lean();
+    res.send(reminders); // Send updated list of reminders after deletion
+  } catch (err) {
+      console.error('Error deleting reminder:', err);
+      res.status(500).send('Server error.');
+  }
+}
+
+module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, getReminders, addReminder, deleteReminder };

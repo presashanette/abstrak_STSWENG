@@ -7,6 +7,7 @@ const User = require('../models/User');
 const fs = require('fs');
 const csv = require('csv-parser');
 const Audit = require('../models/Audit');
+const Reminder = require('../models/Reminders');
 const MainFund = require('../models/MainFund'); 
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
@@ -54,6 +55,13 @@ async function loadAudit() {
     const result = parseJson(auditJson);
     await Audit.deleteMany({}).deleteMany({}).then(() => {
         Audit.insertMany(result);
+      });
+}
+
+async function loadReminder() {
+    const result = parseJson(auditJson);
+    await Reminder.deleteMany({}).deleteMany({}).then(() => {
+        Reminder.insertMany(result);
       });
 }
 
@@ -234,4 +242,4 @@ async function processCsvData(csvFilePath) {
 
 
 
-module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers,  loadAudit };
+module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers,  loadAudit, loadReminder };
