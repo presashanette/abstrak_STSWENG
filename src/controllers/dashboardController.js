@@ -259,5 +259,5 @@ async function deleteReminder(req, res) {
   }
 }
 
-module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, getReminders, addReminder, deleteReminder, getSalesMetrics};
+module.exports = {getOrdersUnfulfilled, getOrdersFulfilled, getOrdersCancelled, getStocks, getReminders, addReminder, deleteReminder, getSalesMetric};
 
