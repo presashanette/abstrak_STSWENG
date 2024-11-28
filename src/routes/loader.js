@@ -6,12 +6,15 @@ const Voucher = require('../models/Voucher');
 const User = require('../models/User'); 
 const fs = require('fs');
 const csv = require('csv-parser');
+const Audit = require('../models/Audit');
+const Reminder = require('../models/Reminders');
 const MainFund = require('../models/MainFund'); 
 
 const collectionsJson = "src/models/data/data-abstrakcols.json";
 const productsJson = "src/models/data/data-products.json";
 const voucherJson = "src/models/data/data-vouchers.json"; 
 const usersJson = "src/models/data/data-users.json";
+const auditJson = "src/models/data/data-audit.json";
 
 function parseJson(pathToJson) {
   return JSON.parse(fs.readFileSync(pathToJson));
@@ -46,6 +49,20 @@ async function loadUsers() {
     const user = new User(userData);
     await user.save();
   }
+}
+
+async function loadAudit() {
+    const result = parseJson(auditJson);
+    await Audit.deleteMany({}).deleteMany({}).then(() => {
+        Audit.insertMany(result);
+      });
+}
+
+async function loadReminder() {
+    const result = parseJson(auditJson);
+    await Reminder.deleteMany({}).deleteMany({}).then(() => {
+        Reminder.insertMany(result);
+      });
 }
 
 /*async function processCsvData(csvFilePath) {
@@ -224,4 +241,5 @@ async function processCsvData(csvFilePath) {
 
 
 
-module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers };
+
+module.exports = { loadCollections, loadProducts, loadUsers, processCsvData, loadVouchers,  loadAudit, loadReminder };

@@ -1,0 +1,140 @@
+<section class="order-notifications">
+    <div class="header-container">
+        <h3>Reminders</h3>
+    </div>
+
+    <div class="alerts-container" id="alerts-container">
+        {{#each alerts}}
+            <div class="alert-item" id="{{alertId}}">
+                <div class="alert-details">
+                    <p class="alert-description">{{description}}</p>
+                    <button class="delete-alert" data-id="{{alertId}}">x</button>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+
+    <button class="add-alert" id="add-alert">Add Reminder</button>
+</section>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>Enter Description</h3>
+        <input type="text" id="descriptionInput" placeholder="Type your description here" />
+        <div class="modal-actions">
+            <button id="confirmButton" class="button confirm">Confirm</button>
+            <button id="cancelButton" class="button cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/api/getReminders',  // Ensure this is the correct API endpoint
+            method: 'GET',
+            success: function (data) {
+                renderReminders(data);
+            },
+            error: function (err) {
+                console.log(err);
+                alert('Error fetching reminders.');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('modal');
+        const confirmButton = document.getElementById('confirmButton');
+        const cancelButton = document.getElementById('cancelButton');
+        const descriptionInput = document.getElementById('descriptionInput');
+        const addButton = document.getElementById('add-alert');
+        const deleteButton = document.getElementsByClassName('delete-alert');
+
+        function showModal() {
+            modal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            modal.style.display = 'none';
+            descriptionInput.value = ''; 
+        }
+
+        confirmButton.addEventListener('click', function () {
+            const description = descriptionInput.value.trim();
+            if (description) {
+                // Prepare the payload
+                const payload = { description };
+
+                // Make the API request
+                $.ajax({
+                    url: '/api/addReminder',
+                    method: 'POST',
+                    contentType: 'application/json', // Ensure the server knows you're sending JSON
+                    data: JSON.stringify(payload), // Convert the payload to JSON string
+                    success: function (data) {
+                        alert('Reminder added successfully!');
+                        hideModal(); // Hide the modal on success
+                        renderReminders(data);
+                    },
+                    error: function (err) {
+                        console.error('Error adding reminder:', err);
+                        alert('Error adding reminder. Please try again.');
+                    },
+                });
+            } else {
+                alert('Please enter a description.');
+            }
+        });
+
+        cancelButton.addEventListener('click', hideModal);
+        addButton.addEventListener('click', showModal);
+    });
+
+    function renderReminders(reminders) {
+        const alertsContainer = document.getElementById('alerts-container');
+        alertsContainer.innerHTML = ''; // Clear existing content
+
+        reminders.forEach((alert) => {
+            const alertItem = document.createElement('div');
+            alertItem.classList.add('alert-item');
+            alertItem.setAttribute('data-id', alert._id); // Set alertId on the item
+
+            alertItem.innerHTML = `
+                <div class="alert-details" id="{{alertId}}">
+                    <p class="alert-description">${alert.description}</p>
+                    <button class="delete-alert" data-id="${alert._id}">x</button> 
+                </div>
+            `;
+            
+            // Append the alert item to the container
+            alertsContainer.appendChild(alertItem);
+        });
+
+        function deleteAlert(alertId) {
+            $.ajax({
+                url: `/api/deleteReminder/${alertId}`,
+                method: 'DELETE',
+                success: function (data) {
+                    renderReminders(data);
+                },
+                error: function (err) {
+                    console.error('Error deleting reminder:', err);
+                    alert('Error deleting reminder. Please try again.');
+                }
+            });
+        };
+
+        // Add event listeners for the dynamically generated delete buttons
+        const deleteButtons = document.querySelectorAll('.delete-alert');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const alertId = this.getAttribute('data-id'); // Get the ID of the alert to be deleted
+
+                // Call delete function when "x" is clicked
+                deleteAlert(alertId);
+            });
+        });
+    }
+
+</script>
