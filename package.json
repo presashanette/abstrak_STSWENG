@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.49.0",
+    "@types/node": "^22.9.3",
     "mockingoose": "^2.16.2"
   },
   "dependencies": {
@@ -34,8 +35,4 @@
     "path": "^0.12.7",
     "selenium-webdriver": "^4.21.0"
   },
-  "devDependencies": {
-    "@playwright/test": "^1.49.0",
-    "@types/node": "^22.9.3"
-  }
 }
