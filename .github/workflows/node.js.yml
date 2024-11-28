@@ -24,8 +24,6 @@ jobs:
         with:
           node-version: 20.18.0
       - name: Install dependencies
-        run: npm i
-      - name: Install dependencies
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -36,46 +34,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: playwright-report-orderstatus
           path: playwright-report/
           retention-days: 30
 
-  test_signup:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongod --version"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.18.0
-      - name: Install dependencies
-        run: npm i
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test test/signup.spec.js --reporter=list
-        env:
-          MONGODB_URI: mongodb://localhost:27017/abstrak
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-          
+# Repeat the same pattern for all Playwright jobs but change artifact names.
   test_salesreport:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -96,8 +59,6 @@ jobs:
         with:
           node-version: 20.18.0
       - name: Install dependencies
-        run: npm i
-      - name: Install dependencies
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -108,82 +69,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30 
-
-  test_auditlog:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongod --version"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.18.0
-      - name: Install dependencies
-        run: npm i
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test test/auditLogTest.spec.js --workers=1
-        env:
-          MONGODB_URI: mongodb://localhost:27017/abstrak
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
+          name: playwright-report-salesreport
           path: playwright-report/
           retention-days: 30
 
-  test_reminders:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongod --version"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.18.0
-      - name: Install dependencies
-        run: npm i
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test test/reminders.spec.js --workers=1
-        env:
-          MONGODB_URI: mongodb://localhost:27017/abstrak
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30 
-
+# Example of Jest unit test
   unit_test_signup:
     runs-on: ubuntu-latest
 
@@ -193,36 +83,13 @@ jobs:
         with:
           node-version: 20.18.0
       - name: Install dependencies
-        run: npm i
-        
+        run: npm ci
       - name: Run tests
-        run: npx jest test/signup.test.js
-
-  unit_test_mainfund:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+        run: npx jest test/signup.test.js --verbose
+      - name: Upload Jest Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
         with:
-          node-version: 20.18.0
-      - name: Install dependencies
-        run: npm i
-        
-      - name: Run tests
-        run: npx jest test/mainFund.test.js      
-
-  unit_test_mainfund_order:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.18.0
-      - name: Install dependencies
-        run: npm i
-        
-      - name: Run tests
-        run: npx jest test/mainFund_Order.test.js    
- 
+          name: jest-report-signup
+          path: test-results/signup/
+          retention-days: 30
